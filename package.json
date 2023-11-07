@@ -25,8 +25,7 @@
         "prod": "tsc && node ./build/index.js",
         "test": "mocha --require ts-node/register tests/*",
         "fmt": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
-        "fmt-check": "prettier --check \"**/*.+(js|ts|json)\"",
-        "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run"
+        "fmt-check": "prettier --check \"**/*.+(js|ts|json)\""
     },
     "prettier": {
         "tabWidth": 4
