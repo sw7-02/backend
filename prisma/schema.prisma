@@ -9,3 +9,94 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Enrollments {
+  enrollment_id Int    @id @default(autoincrement())
+  course        Course @relation(fields: [enrollment_id], references: [course_id], map: "course_id")
+  student       User   @relation(fields: [enrollment_id], references: [user_id], map: "student_id")
+  total_points  Int    @default(0)
+}
+
+// NOTE: Maybe change to two tables, one for each row
+model User {
+  user_id               Int                  @id @default(autoincrement())
+  username              String               @unique
+  password              String
+  role                  Role[]               @default([STUDENT])
+  enrollments           Enrollments[]
+  course                Course               @relation(fields: [user_id], references: [course_id], map: "course_id") //TODO: Relation to courses not only for Teachers
+  submitted_assignments AssignmentSolution[]
+  submitted_exercises   ExerciseSolution[]
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+model Course {
+  course_id   Int           @id @default(autoincrement())
+  enrollments Enrollments[]
+  teachers    User[]
+  sessions    Session[]
+}
+
+model Session {
+  session_id  Int          @id @default(autoincrement())
+  name        String       @unique
+  course      Course       @relation(fields: [session_id], references: [course_id], map: "course_id")
+  exercises   Exercise[]
+  assignments Assignment[]
+}
+
+model Assignment {
+  assignment_id Int                  @id @default(autoincrement())
+  name          String
+  description   String
+  due_date      DateTime
+  session       Session              @relation(fields: [assignment_id], references: [session_id], map: "session_id")
+  solutions     AssignmentSolution[]
+}
+
+model AssignmentSolution {
+  assignment_solution_id Int        @id @default(autoincrement())
+  assignment             Assignment @relation(fields: [assignment_solution_id], references: [assignment_id], map: "assignment_id")
+  student                User       @relation(fields: [assignment_solution_id], references: [user_id], map: "student_id")
+  solution               String
+  feedback               String //TODO: line-specefic feedback like when reviewing on GH?
+}
+
+model Exercise {
+  exercise_id Int                @id @default(autoincrement())
+  name        String             @unique
+  description String
+  points      Int
+  session     Session            @relation(fields: [exercise_id], references: [session_id], map: "session_id")
+  test_case   TestCase[]
+  hints       Hint[]
+  solutions   ExerciseSolution[]
+}
+
+model TestCase {
+  test_case_id Int      @id @default(autoincrement())
+  exercise     Exercise @relation(fields: [test_case_id], references: [exercise_id], map: "exercise_id")
+  inputs       String[] //TODO: Handle types in C?
+  output       String
+  visible      Boolean
+}
+
+model Hint {
+  hint_id     Int      @id @default(autoincrement())
+  exercise    Exercise @relation(fields: [hint_id], references: [exercise_id], map: "exercise_id")
+  description String
+  ordering    Int      @default(autoincrement())
+}
+
+model ExerciseSolution {
+  exercise_solution_id Int      @id @default(autoincrement())
+  exercise             Exercise @relation(fields: [exercise_solution_id], references: [exercise_id], map: "exercise_id")
+  student              User     @relation(fields: [exercise_solution_id], references: [user_id], map: "student_id")
+  solution             String
+  feedback             String //TODO: line-specefic feedback like when reviewing on GH?
+}
