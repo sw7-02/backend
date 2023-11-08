@@ -1,15 +1,24 @@
-import { PrismaClient } from "@prisma/client";
-
-// PrismaClient is attached to the `global` object in development to prevent
-// exhausting your database connection limit.
-//
-// Learn more:
-// https://pris.ly/d/help/next-js-best-practices
+import { PrismaClient, Role } from "@prisma/client";
+import bcrypt from 'bcryptjs';
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-export const prisma = globalForPrisma.prisma || new PrismaClient();
+export const prisma = globalForPrisma.prisma || new PrismaClient().$extends({
+        model: {
+            user: {
+                async signUp(email: string, password: string) {
+                    const hash = await bcrypt.hash(password, 10)
+                    return prisma.user.create({
+                        data: {
+                            username: email,
+                            password: hash,
+                        },
+                    },)
+                },
+            },
+        },
+    });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+globalForPrisma.prisma = prisma;
 
 export default prisma;

@@ -24,7 +24,7 @@ model User {
   password              String
   role                  Role[]               @default([STUDENT])
   enrollments           Enrollments[]
-  course                Course               @relation(fields: [user_id], references: [course_id], map: "course_id") //TODO: Relation to courses not only for Teachers
+  course                Course              @relation(fields: [user_id], references: [course_id], map: "course_id") //TODO: Relation to courses not only for Teachers
   submitted_assignments AssignmentSolution[]
   submitted_exercises   ExerciseSolution[]
 }
