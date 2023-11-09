@@ -11,7 +11,6 @@ const userId = 1;
 const username = "test";
 let response: Response;
 let request: Request;
-config.jwt.jwtSecret = "@@TEST_SECRET";
 
 describe("Testing checkJWT", function () {
     beforeEach("Reset request and response", () => {
