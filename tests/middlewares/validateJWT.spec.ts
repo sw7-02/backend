@@ -12,7 +12,7 @@ const username = "test";
 let response: Response;
 let request: Request;
 
-describe("Testing checkJWT", () => {
+describe("Testing checkJWT", function () {
     beforeEach("Reset request and response", () => {
         request = httpMocks.createRequest();
         response = httpMocks.createResponse();
@@ -104,7 +104,8 @@ describe("Testing checkJWT", () => {
         assert.equal(jwtPayload.username, username);
     });
 
-    it("Deadline causes error token is invalid", async () => {
+    it("Deadline causes error token is invalid", async function () {
+        this.timeout(5000);
         request.headers.auth = jwt.sign(
             { userId, username },
             config.jwt.jwtSecret,
@@ -122,5 +123,39 @@ describe("Testing checkJWT", () => {
             "Status code not what checkJWT should return",
         );
         assert.equal(response.locals.jwtPayload, undefined);
+    });
+
+    it("New token differs", async function () {
+        request.headers.auth = jwt.sign(
+            { userId, username },
+            config.jwt.jwtSecret,
+            {
+                expiresIn: config.jwt.jwtDeadline,
+            },
+        );
+
+        validateJWT(request, response, nxtFunc);
+
+        let auth: string = response.getHeader("auth-token")!.toString();
+        let jwtPayload = <any>jwt.verify(auth, config.jwt.jwtSecret);
+
+        await delay(1000);
+
+        request.headers.auth = jwt.sign(
+            { userId, username },
+            config.jwt.jwtSecret,
+            {
+                expiresIn: config.jwt.jwtDeadline,
+            },
+        );
+
+        validateJWT(request, response, nxtFunc);
+
+        let newAuth = response.getHeader("auth-token")!.toString();
+        let newJwtPayload = <any>jwt.verify(newAuth, config.jwt.jwtSecret);
+
+        assert.notEqual(auth, newAuth);
+        assert.equal(jwtPayload.username, newJwtPayload.username);
+        assert.equal(jwtPayload.userId, newJwtPayload.userId);
     });
 });
