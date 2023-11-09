@@ -10,7 +10,7 @@ on:
     branches: [ "main" ]
 
 env:
-  JWT_SECRET="@@TEST_SECRET$$"
+  JWT_SECRET: "@@TEST_SECRET$$"
 
 jobs:
   build-linux:
