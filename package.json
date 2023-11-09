@@ -26,7 +26,7 @@
         "tsc": "tsc",
         "start": "set debug=* && ts-node-dev --respawn --transpile-only ./src/index.ts",
         "prod": "tsc && node ./build/index.js",
-        "test": "mocha --require ts-node/register \"./tests/**\"",
+        "test": "JWT_SECRET=\"TESTSECRET\" mocha --require ts-node/register \"./tests/**\"",
         "fmt": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
         "fmt-check": "prettier --check \"**/*.+(js|ts|json)\""
     },
