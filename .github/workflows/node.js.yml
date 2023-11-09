@@ -26,7 +26,7 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build --if-present
-    - run: npm test
+    - run: JWT_SECRET="@@TEST_SECRET$$" npm test
 
   build-win:
     runs-on: windows-latest
@@ -44,8 +44,7 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build --if-present
-    - run: set JWT_SECRET="@@TEST_SECRET$$"
-    - run: npm test
+    - run: set JWT_SECRET="@@TEST_SECRET$$" && npm test
 
   build-mac:
     runs-on: macos-latest
@@ -63,7 +62,7 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build --if-present
-    - run: npm test
+    - run: JWT_SECRET="@@TEST_SECRET$$" npm test
 
   fmt:
     runs-on: ubuntu-latest
