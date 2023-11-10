@@ -160,15 +160,11 @@ describe("Testing checkJWT", function () {
     });
 
     it("Different users have different tokens", function () {
-        let sig1 = jwt.sign(
-            { userId, username },
-            config.jwt.jwtSecret,
-            {
-                expiresIn: config.jwt.jwtDeadline,
-            },
-        );
+        let sig1 = jwt.sign({ userId, username }, config.jwt.jwtSecret, {
+            expiresIn: config.jwt.jwtDeadline,
+        });
         let sig2 = jwt.sign(
-            { userId: userId+1, username: "other user" },
+            { userId: userId + 1, username: "other user" },
             config.jwt.jwtSecret,
             {
                 expiresIn: config.jwt.jwtDeadline,
