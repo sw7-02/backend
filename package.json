@@ -23,7 +23,7 @@
         "jsonwebtoken": "^9.0.2"
     },
     "scripts": {
-        "tsc": "tsc",
+        "build": "tsc",
         "start": "set debug=* && ts-node-dev --respawn --transpile-only ./src/index.ts",
         "prod": "tsc && node ./build/index.js",
         "test": "mocha --require ts-node/register \"./tests/**\"",
