@@ -25,7 +25,7 @@ export const validateJWT = (
     //We want to send a new token on every request
     const { userId, username } = jwtPayload;
     res.setHeader(
-        "auth-token",
+        config.jwt.jwtHeader,
         jwt.sign({ userId, username }, config.jwt.jwtSecret, {
             expiresIn: config.jwt.jwtDeadline,
         }),

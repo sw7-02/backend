@@ -39,7 +39,7 @@ describe("Testing checkJWT", function () {
         assert.equal(response.locals.jwtPayload.username, username);
 
         let auth: string = (
-            response.getHeader("auth-token") || "FAIL"
+            response.getHeader(config.jwt.jwtHeader) || "FAIL"
         ).toString();
         let jwtPayload = <any>jwt.verify(auth, config.jwt.jwtSecret);
 
@@ -78,7 +78,7 @@ describe("Testing checkJWT", function () {
         assert.equal(response.locals.jwtPayload.userId, userId);
         assert.equal(response.locals.jwtPayload.username, username);
         let auth: string = (
-            response.getHeader("auth-token") || "FAIL"
+            response.getHeader(config.jwt.jwtHeader) || "FAIL"
         ).toString();
         let jwtPayload = <any>jwt.verify(auth, config.jwt.jwtSecret);
         assert.equal(jwtPayload.userId, userId);
@@ -98,7 +98,7 @@ describe("Testing checkJWT", function () {
         );
         assert.equal(response.locals.jwtPayload.userId, userId);
         assert.equal(response.locals.jwtPayload.username, username);
-        auth = (response.getHeader("auth-token") || "FAIL").toString();
+        auth = (response.getHeader(config.jwt.jwtHeader) || "FAIL").toString();
         jwtPayload = <any>jwt.verify(auth, config.jwt.jwtSecret);
         assert.equal(jwtPayload.userId, userId);
         assert.equal(jwtPayload.username, username);
@@ -136,7 +136,7 @@ describe("Testing checkJWT", function () {
 
         validateJWT(request, response, nxtFunc);
 
-        let auth: string = response.getHeader("auth-token")!.toString();
+        let auth: string = response.getHeader(config.jwt.jwtHeader)!.toString();
         let jwtPayload = <any>jwt.verify(auth, config.jwt.jwtSecret);
 
         await delay(1000);
@@ -151,7 +151,7 @@ describe("Testing checkJWT", function () {
 
         validateJWT(request, response, nxtFunc);
 
-        let newAuth = response.getHeader("auth-token")!.toString();
+        let newAuth = response.getHeader(config.jwt.jwtHeader)!.toString();
         let newJwtPayload = <any>jwt.verify(newAuth, config.jwt.jwtSecret);
 
         assert.notEqual(auth, newAuth);
@@ -174,11 +174,15 @@ describe("Testing checkJWT", function () {
 
         request.headers.auth = sig1;
         validateJWT(request, response, nxtFunc);
-        let auth1: string = response.getHeader("auth-token")!.toString();
+        let auth1: string = response
+            .getHeader(config.jwt.jwtHeader)!
+            .toString();
         let jwtPayload1 = <any>jwt.verify(auth1, config.jwt.jwtSecret);
         request.headers.auth = sig2;
         validateJWT(request, response, nxtFunc);
-        let auth2: string = response.getHeader("auth-token")!.toString();
+        let auth2: string = response
+            .getHeader(config.jwt.jwtHeader)!
+            .toString();
         let jwtPayload2 = <any>jwt.verify(auth2, config.jwt.jwtSecret);
 
         assert.notEqual(auth1, auth2);

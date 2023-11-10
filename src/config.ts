@@ -10,5 +10,6 @@ export default {
     jwt: {
         jwtSecret: process.env["JWT_SECRET"] || error("No JWT secret supplied"),
         jwtDeadline: process.env["JWT_DEADLINE"] || "1h",
+        jwtHeader: process.env["JWT_HEADER"] || "auth-token",
     },
 };
