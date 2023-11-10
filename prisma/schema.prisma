@@ -117,7 +117,6 @@ model ExerciseSolution {
   exercise             Exercise @relation(fields: [exercise_solution_id], references: [exercise_id], map: "exercise_id")
   user                 User     @relation(fields: [exercise_solution_id], references: [user_id], map: "user_id")
   solution             String
-  feedback             String //TODO: line-specefic feedback like when reviewing on GH?
   is_public            Boolean
   is_pinned            Boolean
 
