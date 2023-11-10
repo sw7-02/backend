@@ -158,4 +158,35 @@ describe("Testing checkJWT", function () {
         assert.equal(jwtPayload.username, newJwtPayload.username);
         assert.equal(jwtPayload.userId, newJwtPayload.userId);
     });
+
+    it("Different users have different tokens", function () {
+        let sig1 = jwt.sign(
+            { userId, username },
+            config.jwt.jwtSecret,
+            {
+                expiresIn: config.jwt.jwtDeadline,
+            },
+        );
+        let sig2 = jwt.sign(
+            { userId: userId+1, username: "other user" },
+            config.jwt.jwtSecret,
+            {
+                expiresIn: config.jwt.jwtDeadline,
+            },
+        );
+        assert.notEqual(sig1, sig2);
+
+        request.headers.auth = sig1;
+        validateJWT(request, response, nxtFunc);
+        let auth1: string = response.getHeader("auth-token")!.toString();
+        let jwtPayload1 = <any>jwt.verify(auth1, config.jwt.jwtSecret);
+        request.headers.auth = sig2;
+        validateJWT(request, response, nxtFunc);
+        let auth2: string = response.getHeader("auth-token")!.toString();
+        let jwtPayload2 = <any>jwt.verify(auth2, config.jwt.jwtSecret);
+
+        assert.notEqual(auth1, auth2);
+        assert.notEqual(jwtPayload1.username, jwtPayload2.username);
+        assert.notEqual(jwtPayload1.userId, jwtPayload2.userId);
+    });
 });
