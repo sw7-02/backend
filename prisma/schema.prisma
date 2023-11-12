@@ -14,7 +14,7 @@ model Enrollments {
   enrollment_id Int    @id @default(autoincrement())
   course        Course @relation(fields: [enrollment_id], references: [course_id], map: "course_id")
   user          User   @relation(fields: [enrollment_id], references: [user_id], map: "user_id")
-  role          Role   @default(STUDENT)
+  role          Int    @default(0)
   total_points  Int?
 
   @@map("enrollments")
@@ -29,12 +29,6 @@ model User {
   submitted_exercises   ExerciseSolution[]
 
   @@map("users")
-}
-
-enum Role {
-  ADMIN
-  TEACHER
-  STUDENT
 }
 
 model Course {

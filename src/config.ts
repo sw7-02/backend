@@ -12,4 +12,7 @@ export default {
         jwtDeadline: process.env["JWT_DEADLINE"] || "1h",
         jwtHeader: process.env["JWT_HEADER"] || "auth-token",
     },
+    auth: {
+        salt: process.env["PW_SALT"] || 8,
+    },
 };
