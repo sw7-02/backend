@@ -29,6 +29,14 @@ async function seed() {
         },
     });
 
+    // Create sample sessions
+    const session1 = await prisma.session.create({
+        data: {
+            title: 'Session 1',
+            course_id: course1.course_id,
+        },
+    });
+
     // Create sample enrollments
     await prisma.enrollment.create({
         data: {
@@ -56,6 +64,47 @@ async function seed() {
             user_id: user1.user_id,
             solution: 'Sample solution 1',
             feedback: 'Feedback for solution 1',
+        },
+    });
+
+    // Create sample exercises
+    const exercise1 = await prisma.exercise.create({
+        data: {
+            title: 'Exercise 1',
+            description: 'Description of Exercise 1',
+            points: 10,
+            programming_language: 'JavaScript',
+            code_template: 'Your code template here',
+            session_id: session1.session_id,
+        },
+    });
+
+    // Create sample test cases
+    const testCase1 = await prisma.testCase.create({
+        data: {
+            code: 'Test case 1 code',
+            is_visible: true,
+            exercise_id: exercise1.exercise_id,
+        },
+    });
+
+    // Create sample hints
+    const hint1 = await prisma.hint.create({
+        data: {
+            description: 'Hint 1 description',
+            order: 1,
+            exercise_id: exercise1.exercise_id,
+        },
+    });
+
+    // Create sample exercise solutions
+    const exerciseSolution1 = await prisma.exerciseSolution.create({
+        data: {
+            solution: 'Sample exercise solution 1',
+            is_public: true,
+            is_pinned: false,
+            exercise_id: exercise1.exercise_id,
+            user_id: user1.user_id,
         },
     });
 
