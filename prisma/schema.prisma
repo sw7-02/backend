@@ -11,19 +11,23 @@ datasource db {
 }
 
 model Enrollment {
-  enrollment_id Int    @id @default(autoincrement())
-  course        Course @relation(fields: [enrollment_id], references: [course_id], map: "course_id")
-  user          User   @relation(fields: [enrollment_id], references: [user_id], map: "user_id")
-  user_role     Int    @default(0)
+  enrollment_id Int  @id @default(autoincrement())
+  course_id     Int
+  user_id       Int
+  user_role     Int  @default(0)
   total_points  Int?
+
+  course Course @relation(fields: [course_id], references: [course_id])
+  user   User   @relation(fields: [user_id], references: [user_id])
 
   @@map("enrollments")
 }
 
 model User {
-  user_id               Int                  @id @default(autoincrement())
-  username              String               @unique
-  user_password         String
+  user_id       Int    @id @default(autoincrement())
+  username      String @unique
+  user_password String
+
   enrollments           Enrollment[]
   submitted_assignments AssignmentSolution[]
   submitted_exercises   ExerciseSolution[]
@@ -32,8 +36,9 @@ model User {
 }
 
 model Course {
-  course_id   Int          @id @default(autoincrement())
-  title       String       @unique
+  course_id Int    @id @default(autoincrement())
+  title     String @unique
+
   enrollments Enrollment[]
   sessions    Session[]
   assignments Assignment[]
@@ -42,78 +47,94 @@ model Course {
 }
 
 model Assignment {
-  assignment_id        Int                  @id @default(autoincrement())
+  assignment_id        Int      @id @default(autoincrement())
+  course_id            Int
   title                String
   description          String
   code_template        String
   due_date             DateTime
-  course               Course               @relation(fields: [assignment_id], references: [course_id], map: "course_id")
-  solutions            AssignmentSolution[]
   programming_language String
+
+  course    Course               @relation(fields: [course_id], references: [course_id], map: "course_id")
+  solutions AssignmentSolution[]
 
   @@map("assignments")
 }
 
 model AssignmentSolution {
-  assignment_solution_id Int        @id @default(autoincrement())
-  assignment             Assignment @relation(fields: [assignment_solution_id], references: [assignment_id], map: "assignment_id")
-  user_id                User       @relation(fields: [assignment_solution_id], references: [user_id], map: "user_id")
+  assignment_solution_id Int    @id @default(autoincrement())
+  assignment_id          Int
+  user_id                Int
   solution               String
   feedback               String //TODO: line-specefic feedback like when reviewing on GH?
 
-  @@map("assigment_solutions")
+  assignment Assignment @relation(fields: [assignment_id], references: [assignment_id], map: "assignment_id")
+  user       User       @relation(fields: [user_id], references: [user_id], map: "user_id")
+
+  @@map("assignment_solutions")
 }
 
 model Session {
-  session_id Int        @id @default(autoincrement())
-  title      String     @unique
-  course     Course     @relation(fields: [session_id], references: [course_id], map: "course_id")
-  exercises  Exercise[]
+  session_id Int    @id @default(autoincrement())
+  title      String @unique
+  course_id  Int
+
+  course    Course     @relation(fields: [course_id], references: [course_id], map: "course_id")
+  exercises Exercise[]
 
   @@map("sessions")
 }
 
 model Exercise {
-  exercise_id          Int                @id @default(autoincrement())
-  title                String             @unique
+  exercise_id          Int    @id @default(autoincrement())
+  session_id           Int
+  title                String @unique
   description          String
   points               Int
-  session              Session            @relation(fields: [exercise_id], references: [session_id], map: "session_id")
   programming_language String
   code_template        String
-  test_case            TestCase[]
-  hints                Hint[]
-  solutions            ExerciseSolution[]
+
+  session   Session            @relation(fields: [session_id], references: [session_id], map: "session_id")
+  test_case TestCase[]
+  hints     Hint[]
+  solutions ExerciseSolution[]
 
   @@map("exercises")
 }
 
 model TestCase {
-  test_case_id Int      @id @default(autoincrement())
-  exercise     Exercise @relation(fields: [test_case_id], references: [exercise_id], map: "exercise_id")
+  test_case_id Int     @id @default(autoincrement())
+  exercise_id  Int
   code         String
   is_visible   Boolean
+
+  exercise Exercise @relation(fields: [exercise_id], references: [exercise_id], map: "exercise_id")
 
   @@map("test_cases")
 }
 
 model Hint {
-  hint_id     Int      @id @default(autoincrement())
-  exercise    Exercise @relation(fields: [hint_id], references: [exercise_id], map: "exercise_id")
+  hint_id     Int    @id @default(autoincrement())
+  exercise_id Int
   description String
   order       Int
+
+  exercise Exercise @relation(fields: [exercise_id], references: [exercise_id], map: "exercise_id")
 
   @@unique([hint_id, order])
   @@map("hints")
 }
 
 model ExerciseSolution {
-  exercise_solution_id Int      @id @default(autoincrement())
-  exercise             Exercise @relation(fields: [exercise_solution_id], references: [exercise_id], map: "exercise_id")
-  user                 User     @relation(fields: [exercise_solution_id], references: [user_id], map: "user_id")
+  exercise_solution_id Int     @id @default(autoincrement())
+  exercise_id          Int
+  user_id              Int
   solution             String
   is_public            Boolean
   is_pinned            Boolean
+
+  exercise Exercise @relation(fields: [exercise_id], references: [exercise_id], map: "exercise_id")
+  user     User     @relation(fields: [user_id], references: [user_id], map: "user_id")
 
   @@map("exercise_solutions")
 }
