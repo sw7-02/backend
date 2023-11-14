@@ -1,21 +1,17 @@
 import Router, {Request, Response} from "express"
 import prisma from "../prisma";
-import course_overview from './course_overview';
+import course_overview from "./course_overview";
+
 
 const routes = Router();
 
 // enables passing json bodies.
-    // express.json() is middleware
-routes.use(Router.json())
-routes.use("/", course_overview)
+routes.use(Router.json());
 
-// enables passing urlencoded bodies. Don't enable if not necessary.
-//app.use(express.urlencoded({extended: true}))
 
-// this is the middle-ware
-function handleGetX(req: Request, res: Response) {
-    //req.name = "IMPR";
-}
+routes.use("/courses", course_overview);
+
+
 
 // CRUD for Courses
 routes.route("/")
