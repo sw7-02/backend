@@ -1,19 +1,14 @@
-import Router, {Request, Response} from "express"
-import prisma from "../prisma";
+import Router, {Request, Response} from "express";
+import Express from "express";
 
-
-const routes = Router();
+// mergeParams makes it possible to access parameters such as session:id and exercise:id
+const routes = Express.Router({mergeParams:true});
 
 // enables passing json bodies.
-    // express.json() is middleware
 routes.use(Router.json());
 
-
-// enables passing urlencoded bodies. Don't enable if not necessary.
-//app.use(express.urlencoded({extended: true}))
-
-
-routes.get("/courses", (req: Request, res: Response) => {
+routes.get("/", (req: Request, res: Response) => {
+    res.send(req.params);
     return res.sendStatus(200);
 });
 

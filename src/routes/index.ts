@@ -1,7 +1,7 @@
 import Router, {Request, Response} from "express"
 import prisma from "../prisma";
 import course_overview from "./course_overview";
-
+import login from "./login";
 
 const routes = Router();
 
@@ -10,7 +10,7 @@ routes.use(Router.json());
 
 
 routes.use("/courses", course_overview);
-
+routes.use("/login", login);
 
 
 // CRUD for Courses
@@ -36,13 +36,10 @@ routes.route("/")
     })
     .delete((req: Request, res: Response) => {
         return res.send("u made a DELETE request");
-    })
-
-
+    });
 
 
 // Get
-
 routes.get("/hey", (req: Request, res: Response) => {
     return res.redirect("http://example.com");
 });
