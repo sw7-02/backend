@@ -14,7 +14,7 @@ export const validateJWT = (
 
     //Validate the token and get data
     try {
-        jwtPayload = <any>jwt.verify(token, config.jwt.jwtSecret);
+        jwtPayload = <any>jwt.verify(token, config.jwt.secret);
         res.locals.jwtPayload = jwtPayload;
     } catch (error) {
         //If token is not valid, 401 (unauthorized)
@@ -25,9 +25,9 @@ export const validateJWT = (
     //We want to send a new token on every request
     const { userId, username } = jwtPayload;
     res.setHeader(
-        config.jwt.jwtHeader,
-        jwt.sign({ userId, username }, config.jwt.jwtSecret, {
-            expiresIn: config.jwt.jwtDeadline,
+        config.jwt.header,
+        jwt.sign({ userId, username }, config.jwt.secret, {
+            expiresIn: config.jwt.deadline,
         }),
     );
 

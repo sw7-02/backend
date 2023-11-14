@@ -8,9 +8,9 @@ const error = (msg: string) => {
 
 export default {
     jwt: {
-        jwtSecret: process.env["JWT_SECRET"] || error("No JWT secret supplied"),
-        jwtDeadline: process.env["JWT_DEADLINE"] || "1h",
-        jwtHeader: process.env["JWT_HEADER"] || "auth-token",
+        secret: process.env["JWT_SECRET"] || error("No JWT secret supplied"),
+        deadline: process.env["JWT_DEADLINE"] || "1h",
+        header: process.env["JWT_HEADER"] || "auth-token",
     },
     server: {
         port: process.env["PORT"] || "8080",
