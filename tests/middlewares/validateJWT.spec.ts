@@ -174,15 +174,11 @@ describe("Testing checkJWT", function () {
 
         request.headers.auth = sig1;
         validateJWT(request, response, nxtFunc);
-        let auth1: string = response
-            .getHeader(config.jwt.header)!
-            .toString();
+        let auth1: string = response.getHeader(config.jwt.header)!.toString();
         let jwtPayload1 = <any>jwt.verify(auth1, config.jwt.secret);
         request.headers.auth = sig2;
         validateJWT(request, response, nxtFunc);
-        let auth2: string = response
-            .getHeader(config.jwt.header)!
-            .toString();
+        let auth2: string = response.getHeader(config.jwt.header)!.toString();
         let jwtPayload2 = <any>jwt.verify(auth2, config.jwt.secret);
 
         assert.notEqual(auth1, auth2);
