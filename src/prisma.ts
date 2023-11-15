@@ -13,7 +13,7 @@ export const prisma =
                     return prisma.user.create({
                         data: {
                             username: email,
-                            password: hash,
+                            user_password: hash,
                         },
                     });
                 },
