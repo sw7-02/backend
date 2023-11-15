@@ -45,8 +45,8 @@ export default class AuthController {
                             select: { user_id: true, username: true },
                         })
                         .then(
-                            ({ user_id, username }) =>
-                                generateJWTToken({ user_id, username }),
+                            ({ user_id: userId, username }) =>
+                                generateJWTToken({ userId, username }),
                             (_) => err(500, "Internal error"),
                         );
                 } catch (e) {
@@ -70,13 +70,13 @@ export default class AuthController {
                     return err(409, "Username exists");
                 } catch (e) {
                     // Add user
-                    let { user_id } = await prisma.user.create({
+                    let { user_id: userId } = await prisma.user.create({
                         data: {
                             username,
                             user_password: encrypt,
                         },
                     });
-                    return generateJWTToken({ user_id, username });
+                    return generateJWTToken({ userId, username });
                 }
             },
             (e) => err(301, `Password not valid: ${e}`),
