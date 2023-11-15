@@ -17,7 +17,7 @@ export default {
         test_runner:
             "http://" +
             (process.env["TEST_HOST"] || "test-runner") +
-            ((":" + process.env["TEST_PORT"]) || ":8081"),
+            (":" + process.env["TEST_PORT"] || ":8081"),
     },
     auth: {
         salt: process.env["PW_SALT"] || 8,

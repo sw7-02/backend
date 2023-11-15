@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import prisma from "../prisma";
+import * as jwt from "jsonwebtoken";
+import config from "../config";
 
 async function getAttendingCourses(req: Request, res: Response) {
     let user_id = res.locals.jwtPayload.userId;
 
-    await prisma.enrollments
+    await prisma.enrollment
         .findMany({
             where: {
                 user: user_id,
@@ -13,7 +15,7 @@ async function getAttendingCourses(req: Request, res: Response) {
                 course: {
                     select: {
                         course_id: true,
-                        name: true,
+                        title: true,
                     },
                 },
             },
@@ -29,13 +31,14 @@ async function enroll(req: Request, res: Response) {
         return;
     }
 
-    await prisma.enrollments.create({
-        //TODO: needs to be User and Course types
+    await prisma.enrollment.create({
         data: {
-            user: user_id,
-            course: course_id,
+            user_id,
+            course_id,
         },
     });
 }
+
+
 
 export { getAttendingCourses, enroll };

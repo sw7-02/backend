@@ -2,7 +2,8 @@ import prisma from "../prisma";
 import * as bcrypt from "bcryptjs";
 import config from "../config";
 import * as jwt from "jsonwebtoken";
-import { err, Result } from "../errors";
+import { err, Result } from "../lib";
+import { generateJWTToken } from "../lib";
 
 const specialCharRegEx = new RegExp("^[a-zA-Z\\s/!@#$%^&*()]+$");
 const numberRegEx = new RegExp("^[0-9]+$");
@@ -45,13 +46,7 @@ export default class AuthController {
                         })
                         .then(
                             ({ user_id, username }) =>
-                                jwt.sign(
-                                    { user_id, username },
-                                    config.jwt.jwtSecret,
-                                    {
-                                        expiresIn: config.jwt.jwtDeadline,
-                                    },
-                                ),
+                                generateJWTToken({ user_id, username }),
                             (_) => err(500, "Internal error"),
                         );
                 } catch (e) {
@@ -81,13 +76,7 @@ export default class AuthController {
                             user_password: encrypt,
                         },
                     });
-                    return jwt.sign(
-                        { user_id, username },
-                        config.jwt.jwtSecret,
-                        {
-                            expiresIn: config.jwt.jwtDeadline,
-                        },
-                    );
+                    return generateJWTToken({ user_id, username });
                 }
             },
             (e) => err(301, `Password not valid: ${e}`),
