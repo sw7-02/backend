@@ -1,13 +1,11 @@
 import Router, {Request, Response} from "express"
+import course_overview from "./course_overview";
 
 const routes = Router();
 
 // enables passing json bodies.
 routes.use(Router.json());
 
-routes.get("/", (req: Request, res: Response) => {
-    res.send("This is the leaderboard");
-    return res.sendStatus(200);
-});
+routes.use("/", course_overview);
 
 export default routes;

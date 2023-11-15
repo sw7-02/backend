@@ -1,16 +1,16 @@
 import Router, {Request, Response} from "express"
 import prisma from "../prisma";
-import course_overview from "./course_overview";
+import course_overview from "./course/course_overview";
 import login from "./login";
+import course from "./course";
 
 const routes = Router();
 
 // enables passing json bodies.
 routes.use(Router.json());
 
-routes.use("/courses", course_overview);
+routes.use("/course", course);
 routes.use("/login", login);
-
 
 // CRUD for Courses
 routes.route("/")
