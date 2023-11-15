@@ -1,7 +1,6 @@
 import prisma from "../prisma";
 import * as bcrypt from "bcryptjs";
 import config from "../config";
-import * as jwt from "jsonwebtoken";
 import { err, Result } from "../lib";
 import { generateJWTToken } from "../lib";
 
