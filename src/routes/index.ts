@@ -1,5 +1,8 @@
 import { Router } from "express";
 import prisma from "../prisma";
+import config from "../config";
+import http from "http"
+import axios from "axios";
 
 const routes = Router();
 
@@ -8,6 +11,28 @@ routes.get("/", (_, res) => {
 
     res.status(201).send("Hello World!");
 });
+
+routes.get("/ex", async (_, res) => {
+    console.log("ex")
+    axios.get('https://example.com')
+        .then(function (r) {
+            res.status(r.status || 404).send(r.data);
+        });
+
+});
+
+routes.get("/apitest", async (_, res) => {
+    console.log("apitset")
+    axios.get(config.server.test_runner, {
+        //timeout: 2000,
+    })
+        .then(function (r) {
+            res.status(r.status || 404).send(r.data);
+        }).catch(r => res.status(501).send(`bad because: ${r}`));
+
+
+});
+
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
