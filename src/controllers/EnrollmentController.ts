@@ -39,6 +39,4 @@ async function enroll(req: Request, res: Response) {
     });
 }
 
-
-
 export { getAttendingCourses, enroll };
