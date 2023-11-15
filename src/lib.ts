@@ -13,13 +13,15 @@ function err(code: number, msg: string): Error {
 type Result<T> = T | Error;
 
 type JWTPayload = {
-    user_id: number;
+    userId: number;
     username: string;
 };
 
-const generateJWTToken = (payload: JWTPayload): string =>
-    jwt.sign(payload, config.jwt.secret, {
+const generateJWTToken = (payload: JWTPayload): string => {
+    const { userId, username } = payload;
+    return jwt.sign({ userId, username }, config.jwt.secret, {
         expiresIn: config.jwt.deadline,
     });
+};
 
 export { err, Error, Result, generateJWTToken };
