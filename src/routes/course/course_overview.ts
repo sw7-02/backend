@@ -51,7 +51,6 @@ routes.put("/:course_id/:session_id/:exercise_id", (req: Request, res: Response)
     return res.sendStatus(201);
 });
 
-
 // exercise solutions
 routes.get("/:course_id/:session_id/:exercise_id/exercise-solutions", (req: Request, res: Response) => {
     res.send("This is the exercise solutions for a specific exercise");

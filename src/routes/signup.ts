@@ -6,7 +6,7 @@ const routes = Router();
 routes.use(Router.json());
 
 routes.get("/", (req: Request, res: Response) => {
-    res.send("This is the login page");
+    res.send("This is the signup page");
     return res.sendStatus(200);
 });
 

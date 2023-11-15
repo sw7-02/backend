@@ -1,7 +1,7 @@
 import Router, {Request, Response} from "express"
 import prisma from "../prisma";
-import course_overview from "./course/course_overview";
-import login from "./login";
+import auth from "./auth";
+import signup from "./signup";
 import course from "./course";
 
 const routes = Router();
@@ -10,7 +10,8 @@ const routes = Router();
 routes.use(Router.json());
 
 routes.use("/course", course);
-routes.use("/login", login);
+routes.use("/login", auth);
+routes.use("/login/sign-up", signup);
 
 // CRUD for Courses
 routes.route("/")
