@@ -14,5 +14,10 @@ export default {
     },
     auth: {
         salt: process.env["PW_SALT"] || 8,
+        pw: {
+            length: +(process.env["PW_MINLENGTH"] || 8),
+            num_count: +(process.env["PW_NUMC_OUNT"] || 1),
+            special_count: +(process.env["PW_SPECIAL_COUNT"] || 1),
+        },
     },
 };

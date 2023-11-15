@@ -1,5 +1,3 @@
-
-
 type Error = {
     code: number;
     msg: string;
@@ -11,4 +9,4 @@ function err(code: number, msg: string): Error {
 
 type Result = string | Error;
 
-export {err, Error, Result}
+export { err, Error, Result };
