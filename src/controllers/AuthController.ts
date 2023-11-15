@@ -1,31 +1,34 @@
 import prisma from "../prisma";
-import { Request, Response } from "express";
 import * as bcrypt from "bcryptjs";
 import config from "../config";
 import * as jwt from "jsonwebtoken";
+import { err, Result } from "../errors";
 
-//TODO: Check for length, numbers, special character, etc.
 async function validateAndHashPassword(pw: string): Promise<string> {
+    //TODO: Check for length, numbers, special character, etc.
     return bcrypt.hash(pw, config.auth.salt);
 }
 
-async function login(req: Request, res: Response) {
-    let { username, password } = req.body;
-    if (!(username && password)) {
-        res.status(400).send();
-    }
-    await validateAndHashPassword(password).then(
-        async (encrypt) => {
-            try {
-                await prisma.user
-                    .findFirstOrThrow({
-                        where: { username, password: encrypt },
-                        select: { user_id: true, username: true },
-                    })
-                    .then(
-                        ({ user_id, username }) => {
-                            res.setHeader(
-                                config.jwt.jwtHeader,
+
+export default class AuthController {
+    static login = async (
+        username: string,
+        password: string,
+    ): Promise<Result> => {
+        /*let { username, password } = req.body;
+        if (!(username && password)) {
+            res.status(400).send();
+        }*/
+        return await validateAndHashPassword(password).then(
+            async (encrypt) => {
+                try {
+                    return await prisma.user
+                        .findFirstOrThrow({
+                            where: { username, user_password: encrypt },
+                            select: { user_id: true, username: true },
+                        })
+                        .then(
+                            ({ user_id, username }) =>
                                 jwt.sign(
                                     { user_id, username },
                                     config.jwt.jwtSecret,
@@ -33,52 +36,45 @@ async function login(req: Request, res: Response) {
                                         expiresIn: config.jwt.jwtDeadline,
                                     },
                                 ),
-                            );
-                            res.send();
-                        },
-                        (_) => res.status(500).send(),
-                    );
-            } catch (e) {
-                res.status(301).send("Username does not exist");
-            }
-        },
-        (e) => res.status(301).send(`Password not valid: ${e}`),
-    );
-}
+                            (_) => err(500, "Internal error"),
+                        );
+                } catch (e) {
+                    return err(301, "Username does not exist");
+                }
+            },
+            (e) => err(301, `Password not valid: ${e}`),
+        );
+    };
 
-async function signUp(req: Request, res: Response) {
-    let { username, password } = req.body;
-    if (!(username && password)) {
-        res.status(400).send();
-    }
-
-    await validateAndHashPassword(password).then(
-        async (encrypt) => {
-            try {
-                await prisma.user
-                    .findFirstOrThrow({
+    static signUp = async (
+        username: string,
+        password: string,
+    ): Promise<Result> => {
+        return await validateAndHashPassword(password).then(
+            async (encrypt) => {
+                try {
+                    await prisma.user.findFirstOrThrow({
                         where: { username },
-                    })
-                    .finally(() => res.status(409).send("Username exists"));
-            } catch (e) {
-                // Add user
-                let { user_id } = await prisma.user.create({
-                    data: {
-                        username,
-                        password: encrypt,
-                    },
-                });
-                res.setHeader(
-                    config.jwt.jwtHeader,
-                    jwt.sign({ user_id, username }, config.jwt.jwtSecret, {
-                        expiresIn: config.jwt.jwtDeadline,
-                    }),
-                );
-                res.send(`User ${username} created!`);
-            }
-        },
-        (e) => res.status(301).send(`Password not valid: ${e}`),
-    );
+                    });
+                    return err(409, "Username exists");
+                } catch (e) {
+                    // Add user
+                    let { user_id } = await prisma.user.create({
+                        data: {
+                            username,
+                            user_password: encrypt,
+                        },
+                    });
+                    return jwt.sign(
+                        { user_id, username },
+                        config.jwt.jwtSecret,
+                        {
+                            expiresIn: config.jwt.jwtDeadline,
+                        },
+                    );
+                }
+            },
+            (e) => err(301, `Password not valid: ${e}`),
+        );
+    };
 }
-
-export { login, signUp };

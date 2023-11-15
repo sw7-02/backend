@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../prisma";
 
-
 async function getAttendingCourses(req: Request, res: Response) {
     let user_id = res.locals.jwtPayload.userId;
 
@@ -30,11 +29,13 @@ async function enroll(req: Request, res: Response) {
         return;
     }
 
-    await prisma.enrollments.create({ //TODO: needs to be User and Course types
+    await prisma.enrollments.create({
+        //TODO: needs to be User and Course types
         data: {
-            user: user_id, course: course_id
-        }
-    })
+            user: user_id,
+            course: course_id,
+        },
+    });
 }
 
-export {getAttendingCourses, enroll};
+export { getAttendingCourses, enroll };
