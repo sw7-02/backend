@@ -10,7 +10,7 @@ function err(code: number, msg: string): Error {
     return { code, msg };
 }
 
-type Result = string | Error;
+type Result<T> = T | Error;
 
 type JWTPayload = {
     user_id: number;

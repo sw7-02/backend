@@ -31,7 +31,7 @@ export default class AuthController {
     static login = async (
         username: string,
         password: string,
-    ): Promise<Result> => {
+    ): Promise<Result<string>> => {
         /*let { username, password } = req.body;
         if (!(username && password)) {
             res.status(400).send();
@@ -60,7 +60,7 @@ export default class AuthController {
     static signUp = async (
         username: string,
         password: string,
-    ): Promise<Result> => {
+    ): Promise<Result<string>> => {
         return await validateAndHashPassword(password).then(
             async (encrypt) => {
                 try {
