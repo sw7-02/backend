@@ -10,4 +10,9 @@ routes.get("/", (req: Request, res: Response) => {
     return res.sendStatus(200);
 });
 
+routes.put("/", (req: Request, res: Response) => {
+    res.send("You created a new sign-in");
+    return res.sendStatus(200);
+});
+
 export default routes;
