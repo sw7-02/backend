@@ -44,5 +44,8 @@
     },
     "prettier": {
         "tabWidth": 4
+    },
+    "prisma": {
+        "seed": "ts-node prisma/seed.ts"
     }
 }
