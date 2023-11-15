@@ -66,20 +66,15 @@ export default class UserController {
             .catch((r) => err(500, `Internal error: ${r}`));
     };
 
-
     //TODO: Remember role middleware on this
-    static setPinnedcExerciseSolution = async (
-        userId: number,
-        exerciseId: number,
+    static setPinnedExerciseSolution = async (
+        exerciseSolutionId: number,
         isPinned: boolean,
     ): Promise<Result<void>> => {
         prisma.exerciseSolution
             .update({
                 where: {
-                    exercise_id_user_id: {
-                        user_id: userId,
-                        exercise_id: exerciseId,
-                    },
+                    exercise_solution_id: exerciseSolutionId,
                 },
                 data: {
                     is_pinned: isPinned,
@@ -87,4 +82,36 @@ export default class UserController {
             })
             .catch((r) => err(500, `Internal error: ${r}`));
     };
+
+    static getPublicExerciseSolutions = async (
+        exerciseId: number,
+        isPinned: boolean,
+    ): Promise<Result<any>> =>
+        prisma.exerciseSolution
+            .findMany({
+                where: {
+                    exercise_id: exerciseId,
+                    is_public: true,
+                },
+                select: {
+                    solution: true,
+                    is_pinned: true,
+                    user: {
+                        select: {
+                            username: true,
+                        },
+                    },
+                    orderBy: {
+                        is_pinned: "desc"
+                    },
+                },
+            })  //TODO: Map anon and check for ordering (might be asc on booleans)
+            .then((es) => es.map(ex => {
+                const {solution, is_pinned } = ex;
+                const username = ex.user.username;
+
+
+                return {solution, is_pinned, username };
+            }))
+            .catch((r) => err(500, `Internal error: ${r}`));
 }

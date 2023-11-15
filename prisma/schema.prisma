@@ -125,7 +125,7 @@ model Hint {
   @@map("hints")
 }
 
-model ExerciseSolution {
+model ExerciseSolution { //TODO: Anon?
   exercise_solution_id Int     @id @default(autoincrement())
   exercise_id          Int
   user_id              Int
