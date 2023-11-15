@@ -5,7 +5,7 @@ const routes = Router();
 // enables passing json bodies.
 routes.use(Router.json());
 
-routes.put("/", (req: Request, res: Response) => {
+routes.post("/", (req: Request, res: Response) => {
     res.send("You created a new sign-in");
     return res.sendStatus(200);
 });
