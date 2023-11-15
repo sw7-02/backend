@@ -130,11 +130,12 @@ model ExerciseSolution {
   exercise_id          Int
   user_id              Int
   solution             String
-  is_public            Boolean
-  is_pinned            Boolean
+  is_public            Boolean @default(false)
+  is_pinned            Boolean @default(false)
 
   exercise Exercise @relation(fields: [exercise_id], references: [exercise_id], map: "exercise_id")
   user     User     @relation(fields: [user_id], references: [user_id], map: "user_id")
 
+  @@unique([exercise_id, user_id])
   @@map("exercise_solutions")
 }

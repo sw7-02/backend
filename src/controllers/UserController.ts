@@ -6,33 +6,85 @@ type Course = { course_id: number; title: string };
 
 export default class UserController {
     static getAttendingCourses = async (
-        user_id: number,
+        userId: number,
     ): Promise<Result<Course[]>> =>
         prisma.course
             .findMany({
                 where: {
                     enrollments: {
                         some: {
-                            user_id,
+                            user_id: userId,
                         },
                     },
                 },
             })
             .catch((r) => err(500, `Internal error: ${r}`));
-}
 
-async function enroll(req: Request, res: Response) {
-    let user_id = res.locals.jwtPayload.userId;
-    let course_id = +req.params.id;
-    if (isNaN(course_id)) {
-        res.status(404).send("ID is not a number");
-        return;
-    }
+    // TODO: hvad når de har kort det, hvordan husker vi at det kode de sender er korrekt? Skal vi køre det igen før vi submitter fr?
+    static submitExerciseSolution = async (
+        userId: number,
+        exerciseId: number,
+        solution: string,
+    ): Promise<Result<void>> => {
+        prisma.exerciseSolution
+            .upsert({
+                where: {
+                    exercise_id_user_id: {
+                        user_id: userId,
+                        exercise_id: exerciseId,
+                    },
+                },
+                create: {
+                    user_id: userId,
+                    exercise_id: exerciseId,
+                    solution,
+                },
+                update: {
+                    solution,
+                },
+            })
+            .catch((r) => err(500, `Internal error: ${r}`));
+    };
 
-    await prisma.enrollment.create({
-        data: {
-            user_id,
-            course_id,
-        },
-    });
+    static setPublicExerciseSolution = async (
+        userId: number,
+        exerciseId: number,
+        isPublic: boolean,
+    ): Promise<Result<void>> => {
+        prisma.exerciseSolution
+            .update({
+                where: {
+                    exercise_id_user_id: {
+                        user_id: userId,
+                        exercise_id: exerciseId,
+                    },
+                },
+                data: {
+                    is_public: isPublic,
+                },
+            })
+            .catch((r) => err(500, `Internal error: ${r}`));
+    };
+
+
+    //TODO: Remember role middleware on this
+    static setPinnedcExerciseSolution = async (
+        userId: number,
+        exerciseId: number,
+        isPinned: boolean,
+    ): Promise<Result<void>> => {
+        prisma.exerciseSolution
+            .update({
+                where: {
+                    exercise_id_user_id: {
+                        user_id: userId,
+                        exercise_id: exerciseId,
+                    },
+                },
+                data: {
+                    is_pinned: isPinned,
+                },
+            })
+            .catch((r) => err(500, `Internal error: ${r}`));
+    };
 }
