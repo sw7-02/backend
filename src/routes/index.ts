@@ -11,7 +11,7 @@ routes.use(Router.json());
 
 routes.use("/course", course);
 routes.use("/login", auth);
-routes.use("/login/sign-up", signup);
+routes.use("/sign-up", signup);
 
 // CRUD for Courses
 routes.route("/")
