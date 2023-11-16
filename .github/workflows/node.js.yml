@@ -9,10 +9,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-matrix:
-  node-version: [ 16.x, 20.9.0 ]
-  runs: [ ubuntu-latest, windows-latest, macos-latest ]
-
 env:
   JWT_SECRET: "@@TEST_SECRET$$"
 
