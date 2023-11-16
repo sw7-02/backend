@@ -10,7 +10,7 @@ const app = express();
 // Call middlewares
 app.use(cors());
 app.use(helmet());
-app.disable('x-powered-by');
+app.disable("x-powered-by");
 app.use(bodyParser.json());
 
 //Set all routes from routes folder

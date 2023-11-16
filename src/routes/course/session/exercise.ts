@@ -1,4 +1,4 @@
-import Router, {Request, Response} from "express";
+import Router, { Request, Response } from "express";
 
 const routes = Router();
 
@@ -20,15 +20,21 @@ routes.get("/:exercise_id", (req: Request, res: Response) => {
     return res.sendStatus(200);
 });
 
-routes.delete("/", (req: Request, res: Response) => {
+routes.delete("/:exercise_id", (req: Request, res: Response) => {
     res.send("You deleted a exercise to a specific course");
     return res.sendStatus(201);
 });
 
 // submit exercise solution
-routes.put("/:exercise_id", (req: Request, res: Response) => {
+routes.post("/:exercise_id", (req: Request, res: Response) => {
     // TODO: Put solution to exercise_solution table
     res.send("You have submitted your exercise solution");
+    return res.sendStatus(201);
+});
+
+routes.put("/:exercise_id", (req: Request, res: Response) => {
+    // TODO: Put solution to exercise_solution table
+    res.send("You have updated your exercise solution");
     return res.sendStatus(201);
 });
 

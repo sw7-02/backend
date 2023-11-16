@@ -1,4 +1,4 @@
-import Router, {Request, Response} from "express"
+import Router, { Request, Response } from "express";
 import prisma from "../prisma";
 import auth from "./auth";
 import signup from "./signup";
@@ -14,7 +14,8 @@ routes.use("/login", auth);
 routes.use("/sign-up", signup);
 
 // CRUD for Courses
-routes.route("/")
+routes
+    .route("/")
     .get(async (req: Request, res: Response) => {
         return res.send("u made a GET request");
     })
@@ -27,7 +28,6 @@ routes.route("/")
     .delete((req: Request, res: Response) => {
         return res.send("u made a DELETE request");
     });
-
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 

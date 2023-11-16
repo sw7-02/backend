@@ -1,5 +1,5 @@
-import Router, {Request, Response} from "express"
-import exercise from "./exercise";
+import Router, { Request, Response } from "express";
+import session from "./session";
 import assignment from "./assignment";
 
 const routes = Router();
@@ -7,11 +7,12 @@ const routes = Router();
 // enables passing json bodies.
 routes.use(Router.json());
 
-routes.use("/:course_id/:session_id", exercise);
-routes.use("/:course_id", assignment);
+routes.use("/:course_id/assignment", assignment);
+routes.use("/:course_id/session", session);
 
 // This file is intended for both accessing all courses and a specific one
-routes.route("/")
+routes
+    .route("/")
     .get((req: Request, res: Response) => {
         res.send("This is the course overview");
         return res.sendStatus(201);
@@ -31,23 +32,13 @@ routes.put("/:course_id", (req: Request, res: Response) => {
     return res.sendStatus(201);
 });
 
-routes.post("/:course_id", (req: Request, res: Response) => {
-    res.send("You have just created a new session");
-    return res.sendStatus(201);
-});
-
 routes.delete("/:course_id", (req: Request, res: Response) => {
     res.send("You have just updated a course");
     return res.sendStatus(201);
 });
 
-routes.put("/:course_id/:session_id", (req: Request, res: Response) => {
-    res.send("You have just updated a session");
-    return res.sendStatus(201);
-});
-
-routes.delete("/:course_id/:session_id", (req: Request, res: Response) => {
-    res.send("You have just deleted a session");
+routes.post("/:course_id", (req: Request, res: Response) => {
+    res.send("You have just created a new session");
     return res.sendStatus(201);
 });
 

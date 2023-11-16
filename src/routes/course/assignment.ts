@@ -1,4 +1,4 @@
-import Router, {Request, Response} from "express";
+import Router, { Request, Response } from "express";
 
 const routes = Router();
 
@@ -21,10 +21,12 @@ routes.put("/:assignment_id", (req: Request, res: Response) => {
     return res.sendStatus(201);
 });
 
-routes.get("/:assignment_id/assignment-solutions", (req: Request, res: Response) => {
-    res.send("This is assignment solutions");
-    return res.sendStatus(200);
-});
-
+routes.get(
+    "/:assignment_id/assignment-solutions",
+    (req: Request, res: Response) => {
+        res.send("This is assignment solutions");
+        return res.sendStatus(200);
+    },
+);
 
 export default routes;
