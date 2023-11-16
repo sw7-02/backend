@@ -9,63 +9,32 @@ on:
   pull_request:
     branches: [ "main" ]
 
+matrix:
+  node-version: [ 16.x, 20.9.0 ]
+  runs: [ ubuntu-latest, windows-latest, macos-latest ]
+
 env:
   JWT_SECRET: "@@TEST_SECRET$$"
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
-
+  build-and-test:
     strategy:
       matrix:
         node-version: [16.x, 20.9.0]
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
-
-  build-win:
-    runs-on: windows-latest
-
-    strategy:
-      matrix:
-        node-version: [16.x, 20.9.0]
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
-
-  build-mac:
-    runs-on: macos-latest
-
-    strategy:
-      matrix:
-        node-version: [16.x, 20.9.0]
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
 
   fmt:
     runs-on: ubuntu-latest
