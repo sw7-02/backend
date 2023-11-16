@@ -23,12 +23,9 @@ routes.put("/:session_id", (req: Request, res: Response) => {
     return res.sendStatus(201);
 });
 
-routes.delete(
-    "/:session_id",
-    (req: Request, res: Response) => {
-        res.send("You have just deleted a session");
-        return res.sendStatus(201);
-    },
-);
+routes.delete("/:session_id", (req: Request, res: Response) => {
+    res.send("You have just deleted a session");
+    return res.sendStatus(201);
+});
 
 export default routes;
