@@ -103,14 +103,16 @@ export default class UserController {
                     },
                 },
                 orderBy: {
-                    is_pinned: "desc"
+                    is_pinned: "desc",
                 },
-            })  //TODO: Map anon and check for ordering (might be asc on booleans)
-            .then((es) => es.map(ex => {
-                const {solution, is_pinned } = ex;
-                const username = ex.user.username;
+            }) //TODO: Map anon and check for ordering (might be asc on booleans)
+            .then((es) =>
+                es.map((ex) => {
+                    const { solution, is_pinned } = ex;
+                    const username = ex.user.username;
 
-                return {solution, is_pinned, username };
-            }))
+                    return { solution, is_pinned, username };
+                }),
+            )
             .catch((r) => err(500, `Internal error: ${r}`));
 }
