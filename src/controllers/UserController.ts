@@ -101,15 +101,14 @@ export default class UserController {
                             username: true,
                         },
                     },
-                    orderBy: {
-                        is_pinned: "desc"
-                    },
+                },
+                orderBy: {
+                    is_pinned: "desc"
                 },
             })  //TODO: Map anon and check for ordering (might be asc on booleans)
             .then((es) => es.map(ex => {
                 const {solution, is_pinned } = ex;
                 const username = ex.user.username;
-
 
                 return {solution, is_pinned, username };
             }))
