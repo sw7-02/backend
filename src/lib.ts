@@ -17,7 +17,7 @@ type JWTPayload = {
     username: string;
 };
 
-const generateJWTToken = (payload: JWTPayload): string => {
+function generateJWTToken(payload: JWTPayload): string {
     const { userId, username } = payload;
     return jwt.sign({ userId, username }, config.jwt.secret, {
         expiresIn: config.jwt.deadline,
