@@ -27,6 +27,7 @@ model User {
   user_id       Int    @id @default(autoincrement())
   username      String @unique
   user_password String
+  is_teacher Boolean @default(false)
 
   enrollments           Enrollment[]
   submitted_assignments AssignmentSolution[]
@@ -130,8 +131,8 @@ model ExerciseSolution {
   exercise_id          Int
   user_id              Int
   solution             String
-  is_public            Boolean
-  is_pinned            Boolean
+  is_anonymous         Boolean @default(true)
+  is_pinned            Boolean @default(false)
 
   exercise Exercise @relation(fields: [exercise_id], references: [exercise_id], map: "exercise_id")
   user     User     @relation(fields: [user_id], references: [user_id], map: "user_id")

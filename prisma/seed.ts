@@ -101,8 +101,6 @@ async function seed() {
     const exerciseSolution1 = await prisma.exerciseSolution.create({
         data: {
             solution: "Sample exercise solution 1",
-            is_public: true,
-            is_pinned: false,
             exercise_id: exercise1.exercise_id,
             user_id: user1.user_id,
         },
