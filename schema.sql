@@ -55,7 +55,7 @@ CREATE TABLE improved_schema.assignment_solutions (
 );
 
 
-ALTER TABLE improved_schema.assignment_solutions OWNER TO postgres;
+
 
 --
 -- TOC entry 223 (class 1259 OID 16555)
@@ -71,7 +71,7 @@ CREATE SEQUENCE improved_schema.assignment_solutions_assignment_solution_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE improved_schema.assignment_solutions_assignment_solution_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4893 (class 0 OID 0)
@@ -98,7 +98,7 @@ CREATE TABLE improved_schema.assignments (
 );
 
 
-ALTER TABLE improved_schema.assignments OWNER TO postgres;
+
 
 --
 -- TOC entry 221 (class 1259 OID 16541)
@@ -114,7 +114,7 @@ CREATE SEQUENCE improved_schema.assignments_assignment_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE improved_schema.assignments_assignment_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4894 (class 0 OID 0)
@@ -136,7 +136,7 @@ CREATE TABLE improved_schema.courses (
 );
 
 
-ALTER TABLE improved_schema.courses OWNER TO postgres;
+
 
 --
 -- TOC entry 215 (class 1259 OID 16504)
@@ -152,7 +152,7 @@ CREATE SEQUENCE improved_schema.courses_course_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE improved_schema.courses_course_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4895 (class 0 OID 0)
@@ -177,7 +177,7 @@ CREATE TABLE improved_schema.enrollments (
 );
 
 
-ALTER TABLE improved_schema.enrollments OWNER TO postgres;
+
 
 --
 -- TOC entry 219 (class 1259 OID 16524)
@@ -193,7 +193,7 @@ CREATE SEQUENCE improved_schema.enrollments_enrollment_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE improved_schema.enrollments_enrollment_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4896 (class 0 OID 0)
@@ -219,7 +219,7 @@ CREATE TABLE improved_schema.exercise_solutions (
 );
 
 
-ALTER TABLE improved_schema.exercise_solutions OWNER TO postgres;
+
 
 --
 -- TOC entry 233 (class 1259 OID 16628)
@@ -235,7 +235,7 @@ CREATE SEQUENCE improved_schema.exercise_solutions_exercise_solution_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE improved_schema.exercise_solutions_exercise_solution_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4897 (class 0 OID 0)
@@ -262,7 +262,7 @@ CREATE TABLE improved_schema.exercises (
 );
 
 
-ALTER TABLE improved_schema.exercises OWNER TO postgres;
+
 
 --
 -- TOC entry 227 (class 1259 OID 16586)
@@ -278,7 +278,7 @@ CREATE SEQUENCE improved_schema.exercises_exercise_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE improved_schema.exercises_exercise_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4898 (class 0 OID 0)
@@ -302,7 +302,7 @@ CREATE TABLE improved_schema.hints (
 );
 
 
-ALTER TABLE improved_schema.hints OWNER TO postgres;
+
 
 --
 -- TOC entry 231 (class 1259 OID 16614)
@@ -318,7 +318,7 @@ CREATE SEQUENCE improved_schema.hints_hint_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE improved_schema.hints_hint_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4899 (class 0 OID 0)
@@ -341,7 +341,7 @@ CREATE TABLE improved_schema.sessions (
 );
 
 
-ALTER TABLE improved_schema.sessions OWNER TO postgres;
+
 
 --
 -- TOC entry 225 (class 1259 OID 16574)
@@ -357,7 +357,7 @@ CREATE SEQUENCE improved_schema.sessions_session_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE improved_schema.sessions_session_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4900 (class 0 OID 0)
@@ -381,7 +381,7 @@ CREATE TABLE improved_schema.test_cases (
 );
 
 
-ALTER TABLE improved_schema.test_cases OWNER TO postgres;
+
 
 --
 -- TOC entry 229 (class 1259 OID 16600)
@@ -397,7 +397,7 @@ CREATE SEQUENCE improved_schema.test_cases_test_case_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE improved_schema.test_cases_test_case_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4901 (class 0 OID 0)
@@ -421,7 +421,7 @@ CREATE TABLE improved_schema.users (
 );
 
 
-ALTER TABLE improved_schema.users OWNER TO postgres;
+
 
 --
 -- TOC entry 217 (class 1259 OID 16513)
@@ -437,7 +437,7 @@ CREATE SEQUENCE improved_schema.users_user_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE improved_schema.users_user_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4902 (class 0 OID 0)
