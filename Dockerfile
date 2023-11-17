@@ -1,15 +1,10 @@
 # Preparation and creation stage
-# Using a builder stage in order to cache npm installs on seperate stage
 FROM node:alpine3.17 as init
 
 # Set current user to non-root in current working directory
 WORKDIR /dist
 RUN chown node:node ./
-#RUN apk add libressl-dev
-# RUN apk add openssl-dev
-#RUN apk add openssl1.1-compat
 RUN apk add --update --no-cache openssl1.1-compat
-#RUN apk update && apk upgrade openssl
 USER node
 
 # This stage is strictly for development dependencies
@@ -31,7 +26,7 @@ RUN npm run build
 
 # The runtime stage
 FROM node:alpine
-RUN apk add --update --no-cache openssl1.1-compat
+#RUN apk add --update --no-cache openssl1.1-compat
 
 # Defaults to production, docker-compose overrides this to development on build and run.
 ARG NODE_ENV=production
@@ -61,4 +56,5 @@ HEALTHCHECK --interval=10s --timeout=2s --start-period=15s \
     CMD PORT=$PORT STATUS_PATH=$STATUS_PATH node /app/healthcheck.js
 
 # Execute NodeJS (not NPM script) to handle SIGTERM and SIGINT signals.
-CMD ["node", "./build/index.js"]
+CMD ["node", "./build/src/index.js"]
+
