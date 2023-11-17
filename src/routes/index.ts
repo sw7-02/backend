@@ -36,8 +36,7 @@ routes.get("/delay", async (_, res) => {
 });
 
 routes.get("/prismatest", async (_, res) => {
-    if (!seeded)
-        seed();
+    if (!seeded) seed();
     try {
         res.status(201).send(
             `User count from Prisma: ${await prisma.user.count()}`,
@@ -159,7 +158,3 @@ async function seed() {
 }
 
 export default routes;
-
-
-
-// TODO: New branch, don't copy .env, but read from docker compose

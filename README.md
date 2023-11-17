@@ -21,11 +21,13 @@ npx prisma generate
 to get the new models
 
 ## Database
-create .env file in root of repository and add connection string:
+Load the schema.sql file into a database and run it.
+
+Create .env file in root of repository and add connection string:
 ```
 DATABASE_URL="postgresql://username:password@host:port/database_name"
 ```
-to create mock data run
+To create mock data run:
 ```
 npx prisma db seed
 ``` 

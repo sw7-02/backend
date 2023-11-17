@@ -14,7 +14,6 @@ ENV NODE_ENV $NODE_ENV
 # Copy package confs to builder and make a clean install
 COPY package*.json ./
 COPY prisma ./prisma/
-COPY /.env ./
 RUN npm ci -D && npm cache clean --force
 RUN npx prisma generate
 
@@ -57,4 +56,3 @@ HEALTHCHECK --interval=10s --timeout=2s --start-period=15s \
 
 # Execute NodeJS (not NPM script) to handle SIGTERM and SIGINT signals.
 CMD ["node", "./build/src/index.js"]
-
