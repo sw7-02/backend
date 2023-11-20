@@ -25,17 +25,17 @@ describe("Testing framework test (and prisma)", () => {
             assert.equal(true, true);
         }
     });
-    it("prisma empty", async () => {
+    it("prisma has", async () => {
         const user1 = await prisma.user.create({
             data: {
-                username: "user1",
+                username: "tsetuser1",
                 user_password: "password1",
             },
         });
         try {
             return await prisma.user
                 .findFirstOrThrow({
-                    where: { username: "user1", user_password: "password1" },
+                    where: { username: "testuser1", user_password: "password1" },
                     select: { user_id: true, username: true },
                 })
                 .then(
