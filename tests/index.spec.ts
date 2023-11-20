@@ -23,7 +23,7 @@ describe("Testing framework test (and prisma)", () => {
                     },
                     (r) => {
                         assert.equal(r, "what");
-                    }
+                    },
                 );
         } catch (e) {
             console.log("no users = no errors");
