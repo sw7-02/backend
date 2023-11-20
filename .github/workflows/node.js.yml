@@ -27,7 +27,7 @@ jobs:
        # Provide the password for postgres
        env:
          POSTGRES_PASSWORD: postgres
-         POSTGRES_USER: runner
+         POSTGRES_USER: postgres
        # Set health checks to wait until postgres has started
        options: >-
          --health-cmd pg_isready
@@ -40,7 +40,7 @@ jobs:
       POSTGRES_HOST: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_PORT: 5432
-      DATABASE: "postgresql://runner:postgres@localhost:5432/improved?schema=improved_schema"
+      DATABASE: "postgresql://postgres:postgres@localhost:5432/improved?schema=improved_schema"
 
     steps:
       - uses: actions/checkout@v3
@@ -49,12 +49,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: sudo -i -u postgres
+      - run: sudo su - postgres
       - name: Setup programs
         run: sudo apt install -y postgresql postgresql-contrib
       - run: sudo systemctl start postgresql.service
       - name: Create database
-        run: psql -U runner -tc "SELECT 'CREATE DATABASE improved' WHERE NOT EXISTS (SELECT FROM 'schema.sql' WHERE datname = 'improved')"
+        run: psql -U postgres -tc "SELECT 'CREATE DATABASE improved' WHERE NOT EXISTS (SELECT FROM 'schema.sql' WHERE datname = 'improved')"
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
