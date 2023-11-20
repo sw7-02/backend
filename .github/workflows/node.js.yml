@@ -58,7 +58,7 @@ jobs:
         #  sudo -u postgres psql
       - name: Setup database
         run: |
-          PGPASSWORD=postgres psql -U postgres -f ./schema.sql postgresql://postgres:postgres@localhost:5432/improved
+          PGPASSWORD=postgres psql -U postgres -f ./tests/lib/schema.sql postgresql://postgres:postgres@localhost:5432/improved
         #  sudo -u runner
         # psql -h localhost -U postgres -c 'CREATE DATABASE "improved";'
       #- name: Create database
