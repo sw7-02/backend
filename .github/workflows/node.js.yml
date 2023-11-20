@@ -28,6 +28,7 @@ jobs:
        env:
          POSTGRES_PASSWORD: postgres
          POSTGRES_USER: postgres
+         POSTGRES_DB: improved
        # Set health checks to wait until postgres has started
        options: >-
          --health-cmd pg_isready
@@ -49,12 +50,15 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: sudo su - postgres
       - name: Setup programs
-        run: sudo apt install -y postgresql postgresql-contrib
+        run: |
+          apt-get update
+          apt-get install --yes postgresql-client postgresql postgresql-contrib
       - run: sudo systemctl start postgresql.service
-      - name: Create database
-        run: psql -U postgres -tc "SELECT 'CREATE DATABASE improved' WHERE NOT EXISTS (SELECT FROM 'schema.sql' WHERE datname = 'improved')"
+      - name: Setup database
+        run: psql -h postgres -U postgres -c 'CREATE DATABASE "improved";'
+      #- name: Create database
+     #   run: psql -U postgres -tc "SELECT 'CREATE DATABASE improved' WHERE NOT EXISTS (SELECT FROM 'schema.sql' WHERE datname = 'improved')"
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
