@@ -55,14 +55,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes postgresql-client postgresql postgresql-contrib
           sudo systemctl restart postgresql.service
-        #  sudo -u postgres psql
       - name: Setup database
         run: |
           PGPASSWORD=postgres psql -U postgres -f ./tests/lib/schema.sql postgresql://postgres:postgres@localhost:5432/improved
-        #  sudo -u runner
-        # psql -h localhost -U postgres -c 'CREATE DATABASE "improved";'
-      #- name: Create database
-      #  run: psql -U postgres -tc "SELECT 'CREATE DATABASE improved' WHERE NOT EXISTS (SELECT FROM 'schema.sql' WHERE datname = 'improved')"
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
@@ -84,4 +79,3 @@ jobs:
       - run: npm ci
       - run: npm run fmt-check
 #npm can be used with package.json file to install all needed dependencies
-
