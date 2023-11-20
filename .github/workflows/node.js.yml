@@ -35,6 +35,9 @@ jobs:
          --health-interval 10s
          --health-timeout 5s
          --health-retries 5
+       ports:
+         # Maps tcp port 5432 on service container to the host
+         - 5432:5432
 
     env:
       JWT_SECRET: "@@TEST_SECRET$$"
@@ -54,6 +57,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes postgresql-client postgresql postgresql-contrib
           sudo systemctl restart postgresql.service
+        #  sudo -u postgres psql
       - name: Setup database
         run: |
           PGPASSWORD=postgres psql -U postgres -f ./schema.sql postgresql://postgres:postgres@localhost:5432/improved
