@@ -48,8 +48,7 @@ describe("Testing framework test (and prisma)", () => {
                     },
                 );
         } catch (e) {
-            console.log("There should be an user");
-            assert.equal(true, false);
+            assert.equal(e, "wtf");
         }
     });
 });
