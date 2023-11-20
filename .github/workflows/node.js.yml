@@ -61,7 +61,7 @@ jobs:
       - name: Setup database
         run: |
           PGPASSWORD=postgres psql -U postgres -f ./schema.sql postgresql://postgres:postgres@localhost:5432/improved
-          sudo -u runner
+        #  sudo -u runner
         # psql -h localhost -U postgres -c 'CREATE DATABASE "improved";'
       #- name: Create database
       #  run: psql -U postgres -tc "SELECT 'CREATE DATABASE improved' WHERE NOT EXISTS (SELECT FROM 'schema.sql' WHERE datname = 'improved')"
