@@ -17,12 +17,11 @@ describe("Testing framework test (and prisma)", () => {
                     select: { user_id: true, username: true },
                 })
                 .then(
-                    (a) => {
-                        console.log("what?");
+                    (_) => {
                         assert.equal(true, false);
                     },
-                    (r) => {
-                        assert.equal(r, "what");
+                    (reason: string) => {
+                        assert.equal(reason, "failure");
                     },
                 );
         } catch (e) {
@@ -47,9 +46,9 @@ describe("Testing framework test (and prisma)", () => {
                 select: { user_id: true, username: true },
             })
             .then(
-                (a) => assert.equal(true, true),
-                (reason) => {
-                    assert.equal(reason, "wth");
+                () => assert.equal(true, true),
+                (reason: string) => {
+                    assert.equal(reason, "failure");
                 },
             );
     });
