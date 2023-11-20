@@ -24,4 +24,10 @@ const generateJWTToken = (payload: JWTPayload): string => {
     });
 };
 
-export { err, Error, Result, generateJWTToken };
+enum Role {
+    STUDENT = 0,
+    TEACHER = 1,
+    TA = 2,
+}
+
+export { err, Error, Result, generateJWTToken, Role };
