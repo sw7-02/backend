@@ -33,15 +33,18 @@ describe("Testing framework test (and prisma)", () => {
             },
         });
         try {
-            return await prisma.user
+            await prisma.user
                 .findFirstOrThrow({
-                    where: { username: "testuser1", user_password: "password1" },
+                    where: {
+                        username: "testuser1",
+                        user_password: "password1",
+                    },
                     select: { user_id: true, username: true },
                 })
                 .then(
-                    ({ user_id: userId, username }) => console.log("what?"),
+                    ({ user_id: userId, username }) => assert.equal(true, true),
                     (_) => {
-                        assert.equal(true, false);
+                        assert.equal(1, 2);
                     },
                 );
         } catch (e) {
