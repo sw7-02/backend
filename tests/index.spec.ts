@@ -9,7 +9,7 @@ describe("Testing framework test (and prisma)", () => {
     it("add two numbers", () => {
         assert.notEqual(2 + 3, 4);
     });
-    it("prisma", async () => {
+    it("prisma empty", async () => {
         try {
             return await prisma.user
                 .findFirstOrThrow({
@@ -17,13 +17,36 @@ describe("Testing framework test (and prisma)", () => {
                     select: { user_id: true, username: true },
                 })
                 .then(
-                    ({ user_id: userId, username }) =>
-                        console.log("what?"),
+                    ({ user_id: userId, username }) => console.log("what?"),
                     (_) => {},
                 );
         } catch (e) {
             console.log("no errors");
             assert.equal(true, true);
+        }
+    });
+    it("prisma empty", async () => {
+        const user1 = await prisma.user.create({
+            data: {
+                username: "user1",
+                user_password: "password1",
+            },
+        });
+        try {
+            return await prisma.user
+                .findFirstOrThrow({
+                    where: { username: "user1", user_password: "password1" },
+                    select: { user_id: true, username: true },
+                })
+                .then(
+                    ({ user_id: userId, username }) => console.log("what?"),
+                    (_) => {
+                        assert.equal(true, false);
+                    },
+                );
+        } catch (e) {
+            console.log("There should be an user");
+            assert.equal(true, false);
         }
     });
 });
