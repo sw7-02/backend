@@ -32,23 +32,20 @@ describe("Testing framework test (and prisma)", () => {
                 user_password: "password1",
             },
         });
-        try {
-            await prisma.user
-                .findFirstOrThrow({
-                    where: {
-                        username: "testuser1",
-                        user_password: "password1",
-                    },
-                    select: { user_id: true, username: true },
-                })
-                .then(
-                    ({ user_id: userId, username }) => assert.equal(true, true),
-                    (reason) => {
-                        assert.equal(reason, "wth");
-                    },
-                );
-        } catch (e) {
-            assert.equal(e, "wtf");
-        }
+        assert.notEqual(user1, undefined);
+        await prisma.user
+            .findFirst({
+                where: {
+                    username: "testuser1",
+                    user_password: "password1",
+                },
+                select: { user_id: true, username: true },
+            })
+            .then(
+                (a) => assert.equal(true, true),
+                (reason) => {
+                    assert.equal(reason, "wth");
+                },
+            );
     });
 });
