@@ -17,11 +17,16 @@ describe("Testing framework test (and prisma)", () => {
                     select: { user_id: true, username: true },
                 })
                 .then(
-                    ({ user_id: userId, username }) => console.log("what?"),
-                    (_) => {},
+                    (a) => {
+                        console.log("what?");
+                        assert.equal(true, false);
+                    },
+                    (r) => {
+                        assert.equal(r, "what");
+                    }
                 );
         } catch (e) {
-            console.log("no errors");
+            console.log("no users = no errors");
             assert.equal(true, true);
         }
     });
