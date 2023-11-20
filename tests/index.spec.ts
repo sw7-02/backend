@@ -43,8 +43,8 @@ describe("Testing framework test (and prisma)", () => {
                 })
                 .then(
                     ({ user_id: userId, username }) => assert.equal(true, true),
-                    (_) => {
-                        assert.equal(1, 2);
+                    (reason) => {
+                        assert.equal(reason, "wth");
                     },
                 );
         } catch (e) {
