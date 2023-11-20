@@ -41,8 +41,6 @@ jobs:
 
     env:
       JWT_SECRET: "@@TEST_SECRET$$"
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
       DATABASE: "postgresql://postgres:postgres@localhost:5432/improved?schema=improved_schema"
 
     steps:
