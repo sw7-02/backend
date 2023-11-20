@@ -39,7 +39,7 @@ jobs:
     env:
       JWT_SECRET: "@@TEST_SECRET$$"
       POSTGRES_HOST: postgres
-      POSTGRES_PASSWORD: postgres
+      PGPASSWORD: postgres
       POSTGRES_PORT: 5432
       DATABASE: "postgresql://postgres:postgres@localhost:5432/improved?schema=improved_schema"
 
@@ -58,7 +58,7 @@ jobs:
           sudo -u postgres psql postgres
       - name: Setup database
         run: |
-          echo postgres | psql -h localhost -U postgres -c 'CREATE DATABASE "improved";'
+          psql -h localhost -U postgres -c 'CREATE DATABASE "improved";'
       #- name: Create database
       #  run: psql -U postgres -tc "SELECT 'CREATE DATABASE improved' WHERE NOT EXISTS (SELECT FROM 'schema.sql' WHERE datname = 'improved')"
       - run: sudo -u runner
