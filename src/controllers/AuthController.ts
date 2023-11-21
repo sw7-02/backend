@@ -10,7 +10,9 @@ async function validateAndHashPassword(pw: string): Promise<string> {
     let pass = bcrypt.hash(pw, config.auth.salt);
     if (pw.length < config.auth.pw.length)
         return Promise.reject(
-            `Not long enough, should be at least ${config.auth.pw.length} characters`,
+            `Not long enough, should be at least ${
+                config.auth.pw.length
+            } character${config.auth.pw.length > 1 ? "s" : ""}`,
         );
 
     if (
@@ -18,7 +20,9 @@ async function validateAndHashPassword(pw: string): Promise<string> {
         config.auth.pw.num_count
     )
         return Promise.reject(
-            `No numbers supplied, there should be ${config.auth.pw.num_count} numbers`,
+            `No numbers supplied, there should be at least ${
+                config.auth.pw.num_count
+            } number${config.auth.pw.num_count > 1 ? "s" : ""}`,
         );
 
     if (
@@ -26,7 +30,9 @@ async function validateAndHashPassword(pw: string): Promise<string> {
         config.auth.pw.special_count
     )
         return Promise.reject(
-            `No special characters, there should be ${config.auth.pw.special_count} special characters`,
+            `No special characters, there should be at least ${
+                config.auth.pw.special_count
+            } special character${config.auth.pw.special_count > 1 ? "s" : ""}`,
         );
 
     return await pass;
@@ -55,10 +61,10 @@ export default class AuthController {
                             (_) => err(500, "Internal error"),
                         );
                 } catch (e) {
-                    return err(301, "Username does not exist");
+                    return err(401, "User does not exist");
                 }
             },
-            (e) => err(301, `Password not valid: ${e}`),
+            (e) => err(406, `Password not valid: ${e}`),
         );
     };
 
@@ -84,7 +90,7 @@ export default class AuthController {
                     return generateJWTToken({ userId, username });
                 }
             },
-            (e) => err(301, `Password not valid: ${e}`),
+            (e) => err(406, `Password not valid: ${e}`),
         );
     };
 }

@@ -15,26 +15,73 @@ describe("AuthController testing", function () {
 
     afterEach("Remove all elements from DB", async () => await exhaust());
 
-    it("New User", async function () {
+    it("Signup New User", async function () {
         let res = await AuthController.signUp("user3", "password3@");
         assert.equal(typeof res, "string");
         let jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
         assert.equal(jwtPayload.username, "user3");
         try {
-            await prisma.user.findFirstOrThrow({
-                where: {
-                    username: "user3",
-                },
-            }).catch(() => assert.notEqual(true, true));
+            await prisma.user
+                .findFirstOrThrow({
+                    where: {
+                        username: "user3",
+                    },
+                })
+                .catch(() => assert.notEqual(true, true));
         } catch (e) {
             assert.notEqual(true, true);
         }
     });
-    it("Existing User", async function () {
+    it("Signup Existing User", async function () {
         let res = await AuthController.signUp("user1", "password1@");
         assert.equal(typeof jwt, typeof Error);
         const { code, msg } = <Error>res;
         assert.equal(code, 409);
         assert.equal(msg, "Username exists");
+    });
+    it("Signup invalid password", async function () {
+        let res = await AuthController.signUp("user3", "password3");
+        assert.equal(typeof jwt, typeof Error);
+        const { code, msg } = <Error>res;
+        assert.equal(code, 406);
+        assert.equal(
+            msg,
+            `Password not valid: No special characters, there should be at least 1 special character`,
+        );
+    });
+
+    it("Login Existing User", async function () {
+        let res = await AuthController.login("user1", "password1@");
+        assert.equal(typeof res, "string");
+        let jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
+        assert.equal(jwtPayload.username, "user3");
+        try {
+            await prisma.user
+                .findFirstOrThrow({
+                    where: {
+                        username: "user3",
+                    },
+                })
+                .catch(() => assert.notEqual(true, true));
+        } catch (e) {
+            assert.notEqual(true, true);
+        }
+    });
+    it("Login New User", async function () {
+        let res = await AuthController.login("user3", "password3@");
+        assert.equal(typeof jwt, typeof Error);
+        const { code, msg } = <Error>res;
+        assert.equal(code, 401);
+        assert.equal(msg, "User does not exist");
+    });
+    it("Login invalid password", async function () {
+        let res = await AuthController.login("user1", "password1");
+        assert.equal(typeof jwt, typeof Error);
+        const { code, msg } = <Error>res;
+        assert.equal(code, 406);
+        assert.equal(
+            msg,
+            `Password not valid: No special characters, there should be at least 1 special character`,
+        );
     });
 });
