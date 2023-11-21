@@ -29,5 +29,5 @@ DATABASE_URL="postgresql://username:password@host:port/database_name"
 ```
 To create mock data run:
 ```
-npx prisma db seed
+npx prisma seed seed
 ``` 

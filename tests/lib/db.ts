@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export default async function seed() {
+export async function seed() {
     // Create sample users
     const user1 = await prisma.user.create({
         data: {
@@ -116,3 +116,19 @@ seed().catch((error) => {
     console.error("Error seeding data:", error);
 });
  */
+
+export async function exhaust() {
+    prisma.user.deleteMany();
+    prisma.enrollment.deleteMany();
+
+    prisma.course.deleteMany();
+    prisma.session.deleteMany();
+
+    prisma.exercise.deleteMany();
+    prisma.exerciseSolution.deleteMany();
+    prisma.hint.deleteMany();
+    prisma.testCase.deleteMany();
+
+    prisma.assignment.deleteMany();
+    prisma.assignmentSolution.deleteMany();
+}
