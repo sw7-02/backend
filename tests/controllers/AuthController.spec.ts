@@ -6,7 +6,7 @@ import { afterEach } from "mocha";
 import prisma from "../../src/prisma";
 import { exhaust, seed } from "../lib/db";
 import { Error } from "../../src/lib";
-import {validateAndHashPassword} from "../../src/controllers/AuthController"
+import { validateAndHashPassword } from "../../src/controllers/AuthController";
 
 describe("AuthController testing", function () {
     beforeEach("Insert data into DB", seed);
@@ -83,22 +83,38 @@ describe("AuthController testing", function () {
         );
     });
 
-    it("Password: Too short", async() => {
-        await validateAndHashPassword("pass1&").then((_) => assert.notEqual(true, true), (e) => {
-            assert.equal(e, "Not long enough, should be at least 8 characters")
-        })
+    it("Password: Too short", async () => {
+        await validateAndHashPassword("pass1&").then(
+            (_) => assert.notEqual(true, true),
+            (e) => {
+                assert.equal(
+                    e,
+                    "Not long enough, should be at least 8 characters",
+                );
+            },
+        );
     });
-    it("Password: Too few special characters", async() => {
-        await validateAndHashPassword("password1").then((_) => assert.notEqual(true, true), (e) => {
-            assert.equal(e, "Not enough special character supplied, there should be at least 1 special character")
-        })
+    it("Password: Too few special characters", async () => {
+        await validateAndHashPassword("password1").then(
+            (_) => assert.notEqual(true, true),
+            (e) => {
+                assert.equal(
+                    e,
+                    "Not enough special character supplied, there should be at least 1 special character",
+                );
+            },
+        );
     });
-    it("Password: Too few numbers", async() => {
-        await validateAndHashPassword("password$").then((_) => assert.notEqual(true, true), (e) => {
-            assert.equal(e, "No numbers supplied, there should be at least 1 number")
-        })
+    it("Password: Too few numbers", async () => {
+        await validateAndHashPassword("password$").then(
+            (_) => assert.notEqual(true, true),
+            (e) => {
+                assert.equal(
+                    e,
+                    "No numbers supplied, there should be at least 1 number",
+                );
+            },
+        );
     });
-    it("Correct Password", async() => {
-
-    });
+    it("Correct Password", async () => {});
 });
