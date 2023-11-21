@@ -5,6 +5,9 @@ import course from "./course";
 
 const routes = Router();
 
+// For healthchecking
+routes.get("/status", (_, res) => res.send("Service is running!"));
+
 // enables passing json bodies.
 routes.use(Router.json());
 

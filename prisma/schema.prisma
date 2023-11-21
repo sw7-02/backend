@@ -24,8 +24,8 @@ model Enrollment {
 }
 
 model User {
-  user_id       Int    @id @default(autoincrement())
-  username      String @unique
+  user_id       Int     @id @default(autoincrement())
+  username      String  @unique
   user_password String
   is_teacher    Boolean @default(false)
 
