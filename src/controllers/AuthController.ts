@@ -9,19 +9,25 @@ const numberRegEx = new RegExp("^[0-9]+$");
 async function validateAndHashPassword(pw: string): Promise<string> {
     let pass = bcrypt.hash(pw, config.auth.salt);
     if (pw.length < config.auth.pw.length)
-        return Promise.reject("Not long enough");
+        return Promise.reject(
+            `Not long enough, should be at least ${config.auth.pw.length} characters`,
+        );
 
     if (
         (pw.match(numberRegEx)?.length || Number.NEGATIVE_INFINITY) <=
         config.auth.pw.num_count
     )
-        return Promise.reject("No numbers supplied");
+        return Promise.reject(
+            `No numbers supplied, there should be ${config.auth.pw.num_count} numbers`,
+        );
 
     if (
         (pw.match(specialCharRegEx)?.length || Number.NEGATIVE_INFINITY) <=
         config.auth.pw.special_count
     )
-        return Promise.reject("No special characters");
+        return Promise.reject(
+            `No special characters, there should be ${config.auth.pw.special_count} special characters`,
+        );
 
     return await pass;
 }
