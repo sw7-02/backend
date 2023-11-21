@@ -17,7 +17,7 @@ describe("AuthController testing", function () {
 
     it("Signup New User", async function () {
         let res = await AuthController.signUp("user3", "password3@");
-        assert.equal(typeof res, "string");
+        assert.equal(typeof res, "string"); 
         let jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
         assert.equal(jwtPayload.username, "user3");
         try {
