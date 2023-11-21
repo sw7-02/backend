@@ -7,6 +7,7 @@ import prisma from "../../src/prisma";
 import { exhaust, seed } from "../lib/db";
 import { Error } from "../../src/lib";
 import { validateAndHashPassword } from "../../src/controllers/AuthController";
+import * as bcrypt from "bcryptjs";
 
 describe("AuthController testing", function () {
     beforeEach("Insert data into DB", seed);
@@ -116,5 +117,12 @@ describe("AuthController testing", function () {
             },
         );
     });
-    it("Correct Password", async () => {});
+    it("Correct Password", async () => {
+        await validateAndHashPassword("password$").then(
+            (s) => assert.equal(config.auth.salt, bcrypt.getSalt(s)),
+            (e) => {
+                assert.equal(e, "no error should happen");
+            },
+        );
+    });
 });
