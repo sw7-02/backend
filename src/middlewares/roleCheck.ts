@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import prisma from "../prisma";
 
-export default function roleCheck (roles: number[]) {
+export default function roleCheck(roles: number[]) {
     return async (req: Request, res: Response, next: NextFunction) => {
         const userId = res.locals.jwtPayload.userId;
         const courseId = parseInt(req.params.course_id);
@@ -23,7 +23,7 @@ export default function roleCheck (roles: number[]) {
     };
 }
 
-    /*async function isTeacher(req: Request, res: Response, next: NextFunction) {
+/*async function isTeacher(req: Request, res: Response, next: NextFunction) {
         const userId = res.locals.jwtPayload.userId;
         let user = await prisma.user.findUniqueOrThrow({
             where: { user_id: userId },
