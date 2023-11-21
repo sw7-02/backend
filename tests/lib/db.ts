@@ -7,13 +7,13 @@ export async function seed() {
     const user1 = await prisma.user.create({
         data: {
             username: "user1",
-            user_password: "password1",
+            user_password: "password1@",
         },
     });
     const user2 = await prisma.user.create({
         data: {
             username: "user2",
-            user_password: "password2",
+            user_password: "password2@",
         },
     });
 

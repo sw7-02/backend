@@ -4,7 +4,7 @@ import config from "../config";
 import { err, Result } from "../lib";
 import { generateJWTToken } from "../lib";
 
-const specialCharRegEx = new RegExp("^[a-zA-Z\\s/!@#$%^&*()]+$");
+const specialCharRegEx = new RegExp("^[!@#$%^&*()]+$");
 const numberRegEx = new RegExp("^[0-9]+$");
 async function validateAndHashPassword(pw: string): Promise<string> {
     let pass = bcrypt.hash(pw, config.auth.salt);
