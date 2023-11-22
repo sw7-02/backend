@@ -44,7 +44,7 @@ routes.get("/prismatest", async (_, res) => {
             `User count from Prisma: ${await prisma.user.count()}`,
         );
     } catch (e) {
-        console.error("Error when getting Prisma: " + e);
+        console.error("Err when getting Prisma: " + e);
         res.status(401).send(`Error: ${e}`);
     }
 });

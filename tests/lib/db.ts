@@ -1,19 +1,26 @@
 import { PrismaClient } from "@prisma/client";
+import * as bcrypt from "bcryptjs";
+import config from "../../src/config";
 
 const prisma = new PrismaClient();
 
 export async function seed() {
     // Create sample users
+    let salt = bcrypt.genSaltSync(5);
     const user1 = await prisma.user.create({
         data: {
             username: "user1",
-            user_password: "password1@",
+            user_password: await bcrypt.hash("password1@", salt),
+            pw_salt: salt,
         },
     });
+
+    salt = bcrypt.genSaltSync(5);
     const user2 = await prisma.user.create({
         data: {
             username: "user2",
-            user_password: "password2@",
+            user_password: await bcrypt.hash("password2@", salt),
+            pw_salt: salt,
         },
     });
 
@@ -113,7 +120,7 @@ export async function seed() {
 
 /*
 seed().catch((error) => {
-    console.error("Error seeding data:", error);
+    console.error("Err seeding data:", error);
 });
  */
 
