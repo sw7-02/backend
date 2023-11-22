@@ -52,7 +52,7 @@ describe("AuthController testing", function () {
         assert.equal(code, 406);
         assert.equal(
             msg,
-            `Password not valid: No special characters, there should be at least 1 special character`,
+            `Password not valid: Not enough special characters, there should be at least 1 special character`,
         );
     });
 
@@ -108,7 +108,7 @@ describe("AuthController testing", function () {
             (e) => {
                 assert.equal(
                     e,
-                    "Not enough special characters supplied, there should be at least 1 special character",
+                    "Not enough special characters, there should be at least 1 special character",
                 );
             },
         );
