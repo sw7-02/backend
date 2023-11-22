@@ -62,7 +62,7 @@ export default class AuthController {
                             );
                             return new Err(
                                 401,
-                                `User ${username} does not exist`,
+                                `Username does not exist`,
                             );
                         },
                     );

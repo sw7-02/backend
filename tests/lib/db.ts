@@ -1,4 +1,6 @@
 import { PrismaClient } from "@prisma/client";
+import * as bcrypt from "bcryptjs";
+import config from "../../src/config";
 
 const prisma = new PrismaClient();
 
@@ -7,13 +9,13 @@ export async function seed() {
     const user1 = await prisma.user.create({
         data: {
             username: "user1",
-            user_password: "password1@",
+            user_password: await bcrypt.hash("password1@", config.auth.salt),
         },
     });
     const user2 = await prisma.user.create({
         data: {
             username: "user2",
-            user_password: "password2@",
+            user_password: await bcrypt.hash("password2@", config.auth.salt),
         },
     });
 

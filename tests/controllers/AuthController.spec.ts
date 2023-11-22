@@ -73,7 +73,7 @@ describe("AuthController testing", function () {
         assert.equal(res instanceof Err, true);
         const { code, msg } = <Err>res;
         assert.equal(code, 401);
-        assert.equal(msg, "User user4 does not exist");
+        assert.equal(msg, "Username does not exist");
     });
     it("Login invalid password", async function () {
         const res = await AuthController.login("user1", "password1");
@@ -83,6 +83,16 @@ describe("AuthController testing", function () {
         assert.equal(
             msg,
             `Password not valid: Not enough special characters, there should be at least 1 special character`,
+        );
+    });
+    it("Login wrong password", async function () {
+        const res = await AuthController.login("user1", "password2@");
+        assert.equal(res instanceof Err, true);
+        const { code, msg } = <Err>res;
+        assert.equal(code, 401);
+        assert.equal(
+            msg,
+            `Wrong password`,
         );
     });
 
