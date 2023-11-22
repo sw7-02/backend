@@ -7,19 +7,9 @@ const routes = Router();
 // enables passing json bodies.
 routes.use(Router.json());
 
-// No middleware needed on auth-stuff
-routes.post("/login", async (req: Request, res: Response) => {
-    genericHandler(AuthController.login);
-});
-
-routes.post("/sign-up", async (req: Request, res: Response) => {
-    genericHandler(AuthController.signUp);
-});
-
-function genericHandler(
-    func: (username: string, password: string) => Promise<Result<string>>,
-): (req: Request, res: Response) => Promise<void> {
-    return async (req, res) => {
+const genericAuthHandler =
+    (func: (username: string, password: string) => Promise<Result<string>>) =>
+    async (req: Request, res: Response) => {
         const { username, password } = req.body;
         if (!(username && password))
             res.status(400).send("No username or password provided");
@@ -31,6 +21,10 @@ function genericHandler(
             res.status(code).send(msg);
         } else res.send(result);
     };
-}
+
+// No middleware needed on auth-stuff
+routes.post("/login", genericAuthHandler(AuthController.login));
+
+routes.post("/sign-up", genericAuthHandler(AuthController.signUp));
 
 export default routes;
