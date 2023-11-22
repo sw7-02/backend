@@ -43,15 +43,19 @@ export default class AuthController {
             async (encrypt) => {
                 return prisma.user
                     .findUniqueOrThrow({
-                        where: { username, user_password: encrypt },
-                        select: { user_id: true, username: true },
+                        where: { username },
+                        select: { user_id: true, username: true, user_password: true },
                     })
                     .then(
-                        (res: { user_id: number; username: string }) =>
-                            generateJWTToken({
+                        (res: { user_id: number; username: string, user_password: string }) => {
+                            if (res.user_password != encrypt) {
+                                console.error(`Attempt login on user ${username} (wrong password)`)
+                                return new Err(401, "Wrong password");
+                            }
+                            return generateJWTToken({
                                 userId: res.user_id,
                                 username: res.username,
-                            }),
+                            })},
                         (e) => {
                             console.error(
                                 `Fail logging in user ${username}: ${e}`,
