@@ -14,7 +14,6 @@ const specialCharRegEx = new RegExp(
 );
 const numberRegEx = new RegExp(`([0-9].*){${config.auth.pw.num_count}}`);
 
-
 describe("AuthController testing", function () {
     before("Seed DB", seed);
     after("Purge DB", exhaust);
@@ -24,9 +23,6 @@ describe("AuthController testing", function () {
 
     it("Signup New User", async function () {
         let res = await AuthController.signUp("user3", "password3@");
-        console.log(numberRegEx.test("password3@"));
-        console.log(specialCharRegEx.test("password3@"));
-        console.log(numberRegEx.exec("password3@"))
         assert.notEqual(res instanceof Err, true);
         let jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
         assert.equal(jwtPayload.username, "user3");
@@ -44,7 +40,6 @@ describe("AuthController testing", function () {
     });
     it("Signup Existing User", async function () {
         let res = await AuthController.signUp("user1", "password1@");
-        console.log(res);
         assert.equal(res instanceof Err, true);
         const { code, msg } = <Err>res;
         assert.equal(code, 409);
@@ -52,7 +47,6 @@ describe("AuthController testing", function () {
     });
     it("Signup invalid password", async function () {
         let res = await AuthController.signUp("user4", "password4");
-        console.log(res);
         assert.equal(res instanceof Err, true);
         const { code, msg } = <Err>res;
         assert.equal(code, 406);
@@ -64,7 +58,6 @@ describe("AuthController testing", function () {
 
     it("Login Existing User", async function () {
         let res = await AuthController.login("user1", "password1@");
-        console.log(res);
         assert.notEqual(res instanceof Err, true);
         let jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
         assert.equal(jwtPayload.username, "user1");

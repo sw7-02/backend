@@ -17,14 +17,14 @@ export async function validateAndHashPassword(pw: string): Promise<string> {
             } character${config.auth.pw.length > 1 ? "s" : ""}`,
         );
 
-    if (numberRegEx.test(pw))
+    if (!numberRegEx.test(pw))
         return Promise.reject(
             `Not enough numbers supplied, there should be at least ${
                 config.auth.pw.num_count
             } number${config.auth.pw.num_count > 1 ? "s" : ""}`,
         );
 
-    if (specialCharRegEx.test(pw))
+    if (!specialCharRegEx.test(pw))
         return Promise.reject(
             `Not enough special characters, there should be at least ${
                 config.auth.pw.special_count
