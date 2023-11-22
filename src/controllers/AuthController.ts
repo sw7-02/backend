@@ -43,7 +43,7 @@ export default class AuthController {
             async (encrypt) => {
                 try {
                     return await prisma.user
-                        .findFirstOrThrow({
+                        .findUniqueOrThrow({
                             where: { username, user_password: encrypt },
                             select: { user_id: true, username: true },
                         })
@@ -52,8 +52,7 @@ export default class AuthController {
                                 generateJWTToken({
                                     userId: res.user_id,
                                     username: res.username,
-                                }),
-                            (e) => new Err(500, "Internal error: " + e),
+                                })
                         );
                 } catch (e) {
                     return new Err(401, "User does not exist");
