@@ -132,7 +132,9 @@ export default class ExerciseController {
                     };
                 },
                 (r) => {
-                    console.error(`Failure getting exercise ${exerciseId}: ${r}`);
+                    console.error(
+                        `Failure getting exercise ${exerciseId}: ${r}`,
+                    );
                     return new Err(404, "Exercise does not exist");
                 },
             );
@@ -205,7 +207,9 @@ export default class ExerciseController {
                         };
                     }),
                 (r) => {
-                    console.error(`Failure getting exercise ${exerciseId}: ${r}`);
+                    console.error(
+                        `Failure getting exercise ${exerciseId}: ${r}`,
+                    );
                     return new Err(401, "Exercise does not exist");
                 },
             );
@@ -264,7 +268,9 @@ export default class ExerciseController {
             .then(
                 () => {},
                 (r) => {
-                    console.error(`Failure deleting exercise ${exerciseId}: ${r}`);
+                    console.error(
+                        `Failure deleting exercise ${exerciseId}: ${r}`,
+                    );
                     return new Err(404, "Exercise does not exist");
                 },
             );

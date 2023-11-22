@@ -31,4 +31,4 @@ enum Role {
     TA = 2,
 }
 
-export { Err, Result, generateJWTToken, Role, };
+export { Err, Result, generateJWTToken, Role };
