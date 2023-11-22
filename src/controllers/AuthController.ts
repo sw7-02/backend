@@ -38,7 +38,8 @@ export function validatePassword(pw: string): Result<void> {
 
 async function genPass(pw: string, username: string): Promise<string> {
     const salt = bcrypt.hashSync(username, config.auth.salt);
-    return bcrypt.hash(pw, username);
+
+    return bcrypt.hash(pw, bcrypt.decodeBase64(username, username.length).toString());
 }
 
 export default class AuthController {
