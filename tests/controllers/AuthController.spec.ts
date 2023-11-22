@@ -10,7 +10,7 @@ import { exhaust, seed } from "../lib/db";
 import { Err } from "../../src/lib";
 
 describe("AuthController testing", function () {
-    before("Seed DB", async function() {
+    before("Seed DB", async function () {
         this.timeout(10000);
         await seed();
     });

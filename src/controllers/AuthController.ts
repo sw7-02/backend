@@ -49,10 +49,7 @@ export default class AuthController {
     ): Promise<Result<string>> => {
         const valid = validatePassword(password);
         if (valid instanceof Err)
-            return {
-                code: valid.code,
-                msg: `Password not valid: ${valid.msg}`,
-            };
+            return new Err(valid.code, `Password not valid: ${valid.msg}`);
 
         return prisma.user
             .findUniqueOrThrow({
@@ -104,10 +101,10 @@ export default class AuthController {
                 async () => {
                     const valid = validatePassword(password);
                     if (valid instanceof Err)
-                        return {
-                            code: valid.code,
-                            msg: `Password not valid: ${valid.msg}`,
-                        };
+                        return new Err(
+                            valid.code,
+                            `Password not valid: ${valid.msg}`,
+                        );
                     const { hash, salt } = genPass(password, username);
                     let { user_id: userId } = await prisma.user.create({
                         data: {
