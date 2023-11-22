@@ -53,7 +53,6 @@ describe("AuthController testing", function () {
 
     it("Login Existing User", async function () {
         const res = await AuthController.login("user1", "password1@");
-        console.log(res);
         assert.notEqual(res instanceof Err, true);
         const jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
         assert.equal(jwtPayload.username, "user1");

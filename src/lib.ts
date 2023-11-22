@@ -1,6 +1,5 @@
 import * as jwt from "jsonwebtoken";
 import config from "./config";
-import {Response} from "express";
 
 class Err {
     code: number;
