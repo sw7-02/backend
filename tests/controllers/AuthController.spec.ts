@@ -10,15 +10,14 @@ import { validateAndHashPassword } from "../../src/controllers/AuthController";
 import * as bcrypt from "bcryptjs";
 
 describe("AuthController testing", function () {
-    before(seed);
-    after(exhaust);
+    before("Seed DB", seed);
+    after("Purge DB", exhaust);
     //beforeEach("Insert data into DB", seed);
 
     //afterEach("Remove all elements from DB", exhaust);
 
     it("Signup New User", async function () {
         let res = await AuthController.signUp("user3", "password3@");
-        console.log(res);
         assert.equal(typeof res, "string");
         let jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
         assert.equal(jwtPayload.username, "user3");
@@ -54,7 +53,6 @@ describe("AuthController testing", function () {
 
     it("Login Existing User", async function () {
         let res = await AuthController.login("user1", "password1@");
-        console.log(res);
         assert.equal(typeof res, "string");
         let jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
         assert.equal(jwtPayload.username, "user1");
