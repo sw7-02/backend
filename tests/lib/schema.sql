@@ -417,7 +417,7 @@ CREATE TABLE improved_schema.users (
     user_id integer NOT NULL,
     username character varying(255),
     user_password character varying(255),
-    is_teacher boolean
+    is_teacher boolean,
     pw_salt character varying(255)
 );
 
