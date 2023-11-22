@@ -55,12 +55,11 @@ describe("AuthController testing", function () {
         let jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
         assert.equal(jwtPayload.username, "user1");
         try {
-            await prisma.user
-                .findFirstOrThrow({
-                    where: {
-                        username: "user3",
-                    },
-                });
+            await prisma.user.findFirstOrThrow({
+                where: {
+                    username: "user3",
+                },
+            });
         } catch (e) {
             assert.notEqual(true, true);
         }
