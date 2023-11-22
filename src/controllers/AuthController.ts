@@ -48,7 +48,7 @@ export default class AuthController {
                             select: { user_id: true, username: true },
                         })
                         .then(
-                            (res) =>
+                            (res: {user_id: number, username: string}) =>
                                 generateJWTToken({
                                     userId: res.user_id,
                                     username: res.username,
