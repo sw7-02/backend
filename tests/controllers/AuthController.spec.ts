@@ -37,9 +37,9 @@ describe("AuthController testing", function () {
         }
     });
     it("Signup Existing User", async function () {
-        console.log(prisma.user.findMany({where: {}, select: {username:true}}));
+        console.log(await prisma.user.findMany({where: {}, select: {username:true}}));
         const res = await AuthController.signUp("user1", "password1@");
-        console.log(prisma.user.findMany({where: {}, select: {username:true}}));
+        console.log(await prisma.user.findMany({where: {}, select: {username:true}}));
         assert.equal(res instanceof Err, true);
         const { code, msg } = <Err>res;
         assert.equal(code, 409);
@@ -59,7 +59,7 @@ describe("AuthController testing", function () {
     it("Login Existing User", async function () {
         const res = await AuthController.login("user1", "password1@");
         console.log(res);
-        console.log(prisma.user.findMany({where: {}, select: {username:true}}));
+        console.log(await prisma.user.findMany({where: {}, select: {username:true}}));
         assert.notEqual(res instanceof Err, true);
         const jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
         assert.equal(jwtPayload.username, "user1");
