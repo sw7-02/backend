@@ -114,7 +114,7 @@ describe("AuthController testing", function () {
             (e) => {
                 assert.equal(
                     e,
-                    "No numbers supplied, there should be at least 1 number",
+                    "Not enough numbers supplied, there should be at least 1 number",
                 );
             },
         );

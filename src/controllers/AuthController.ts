@@ -4,8 +4,10 @@ import config from "../config";
 import { err, Result } from "../lib";
 import { generateJWTToken } from "../lib";
 
-const specialCharRegEx = new RegExp("^[!@#$%^&*()]+$");
-const numberRegEx = new RegExp("^[0-9]+$");
+const specialCharRegEx = new RegExp(
+    `[!@#$%^&*()]{${config.auth.pw.special_count}}`,
+);
+const numberRegEx = new RegExp(`([0-9].*){${config.auth.pw.num_count}}`);
 export async function validateAndHashPassword(pw: string): Promise<string> {
     let pass = bcrypt.hash(pw, config.auth.salt);
     if (pw.length < config.auth.pw.length)
@@ -15,20 +17,14 @@ export async function validateAndHashPassword(pw: string): Promise<string> {
             } character${config.auth.pw.length > 1 ? "s" : ""}`,
         );
 
-    if (
-        (pw.match(numberRegEx)?.length || Number.NEGATIVE_INFINITY) <=
-        config.auth.pw.num_count
-    )
+    if (numberRegEx.test(pw))
         return Promise.reject(
             `Not enough numbers supplied, there should be at least ${
                 config.auth.pw.num_count
             } number${config.auth.pw.num_count > 1 ? "s" : ""}`,
         );
 
-    if (
-        (pw.match(specialCharRegEx)?.length || Number.NEGATIVE_INFINITY) <=
-        config.auth.pw.special_count
-    )
+    if (specialCharRegEx.test(pw))
         return Promise.reject(
             `Not enough special characters, there should be at least ${
                 config.auth.pw.special_count
