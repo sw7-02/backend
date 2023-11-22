@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as jwt from "jsonwebtoken";
 import config from "../config";
+import { generateJWTToken } from "../lib";
 
 /// Checks given JWT in the header of the requests, serves a new with a deadline of the provided config
 export const validateJWT = (
@@ -23,13 +24,7 @@ export const validateJWT = (
     }
 
     //We want to send a new token on every request
-    const { userId, username } = jwtPayload;
-    res.setHeader(
-        config.jwt.header,
-        jwt.sign({ userId, username }, config.jwt.secret, {
-            expiresIn: config.jwt.deadline,
-        }),
-    );
+    res.setHeader(config.jwt.header, generateJWTToken(jwtPayload));
 
     //Call the next middleware or controller
     next();

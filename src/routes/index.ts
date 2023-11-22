@@ -1,7 +1,6 @@
 import Router, { Request, Response } from "express";
 import prisma from "../prisma";
 import auth from "./auth";
-import signup from "./signup";
 import course from "./course";
 
 const routes = Router();
@@ -13,8 +12,7 @@ routes.get("/status", (_, res) => res.send("Service is running!"));
 routes.use(Router.json());
 
 routes.use("/course", course);
-routes.use("/login", auth);
-routes.use("/sign-up", signup);
+routes.use("/", auth); //TODO: `/auth` path?
 
 // CRUD for Courses
 routes
@@ -46,7 +44,7 @@ routes.get("/prismatest", async (_, res) => {
             `User count from Prisma: ${await prisma.user.count()}`,
         );
     } catch (e) {
-        console.error("Error when getting Prisma: " + e);
+        console.error("Err when getting Prisma: " + e);
         res.status(401).send(`Error: ${e}`);
     }
 });
