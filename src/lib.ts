@@ -1,16 +1,17 @@
 import * as jwt from "jsonwebtoken";
 import config from "./config";
 
-type Error = {
+class Err {
     code: number;
     msg: string;
-};
 
-function err(code: number, msg: string): Error {
-    return { code, msg };
+    constructor(code: number, msg: string) {
+        this.code = code;
+        this.msg = msg;
+    }
 }
 
-type Result<T> = T | Error;
+type Result<T> = T | Err;
 
 type JWTPayload = {
     userId: number;
@@ -30,4 +31,4 @@ enum Role {
     TA = 2,
 }
 
-export { err, Error, Result, generateJWTToken, Role };
+export { Err, Result, generateJWTToken, Role };

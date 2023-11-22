@@ -1,6 +1,6 @@
 import Router, { Request, Response } from "express";
 import AuthController from "../controllers/AuthController";
-import { Error, Result } from "../lib";
+import { Err, Result } from "../lib";
 
 const routes = Router();
 
@@ -16,8 +16,8 @@ const genericAuthHandler =
 
         const result = await func(username, password);
 
-        if (typeof result === typeof Error) {
-            const { code, msg } = <Error>result;
+        if (typeof result === typeof Err) {
+            const { code, msg } = <Err>result;
             res.status(code).send(msg);
         } else res.send(result);
     };

@@ -1,7 +1,7 @@
 import prisma from "../prisma";
 import * as bcrypt from "bcryptjs";
 import config from "../config";
-import { err, Result } from "../lib";
+import { Err, Result } from "../lib";
 import { generateJWTToken } from "../lib";
 
 const specialCharRegEx = new RegExp(
@@ -50,14 +50,17 @@ export default class AuthController {
                         })
                         .then(
                             (res) =>
-                                generateJWTToken({ userId: res.user_id, username: res.username }),
-                            () => err(500, "Internal error"),
+                                generateJWTToken({
+                                    userId: res.user_id,
+                                    username: res.username,
+                                }),
+                            () => new Err(500, "Internal error"),
                         );
                 } catch (e) {
-                    return err(401, "User does not exist");
+                    return new Err(401, "User does not exist");
                 }
             },
-            (e) => err(406, `Password not valid: ${e}`),
+            (e) => new Err(406, `Password not valid: ${e}`),
         );
     };
 
@@ -71,7 +74,7 @@ export default class AuthController {
                     await prisma.user.findFirstOrThrow({
                         where: { username },
                     });
-                    return err(409, "Username exists");
+                    return new Err(409, "Username exists");
                 } catch (e) {
                     // Add user
                     let { user_id: userId } = await prisma.user.create({
@@ -83,7 +86,7 @@ export default class AuthController {
                     return generateJWTToken({ userId, username });
                 }
             },
-            (e) => err(406, `Password not valid: ${e}`),
+            (e) => new Err(406, `Password not valid: ${e}`),
         );
     };
 }

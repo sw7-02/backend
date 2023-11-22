@@ -5,7 +5,7 @@ import config from "../../src/config";
 import { after, afterEach, before } from "mocha";
 import prisma from "../../src/prisma";
 import { exhaust, seed } from "../lib/db";
-import { Error } from "../../src/lib";
+import { Err } from "../../src/lib";
 import { validateAndHashPassword } from "../../src/controllers/AuthController";
 import * as bcrypt from "bcryptjs";
 
@@ -18,7 +18,8 @@ describe("AuthController testing", function () {
 
     it("Signup New User", async function () {
         let res = await AuthController.signUp("user3", "password3@");
-        assert.equal(typeof res, "string");
+        console.log(res);
+        assert.notEqual(res instanceof Err, true);
         let jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
         assert.equal(jwtPayload.username, "user3");
         try {
@@ -30,20 +31,22 @@ describe("AuthController testing", function () {
                 })
                 .catch(() => assert.equal(true, true));
         } catch (e) {
-            assert.notEqual(true, true);
+            assert.fail("unreachable");
         }
     });
     it("Signup Existing User", async function () {
         let res = await AuthController.signUp("user1", "password1@");
-        assert.equal(typeof res, typeof Error);
-        const { code, msg } = <Error>res;
+        console.log(res);
+        assert.equal(res instanceof Err, true);
+        const { code, msg } = <Err>res;
         assert.equal(code, 409);
         assert.equal(msg, "Username exists");
     });
     it("Signup invalid password", async function () {
         let res = await AuthController.signUp("user4", "password4");
-        assert.equal(typeof res, typeof Error);
-        const { code, msg } = <Error>res;
+        console.log(res);
+        assert.equal(res instanceof Err, true);
+        const { code, msg } = <Err>res;
         assert.equal(code, 406);
         assert.equal(
             msg,
@@ -53,7 +56,8 @@ describe("AuthController testing", function () {
 
     it("Login Existing User", async function () {
         let res = await AuthController.login("user1", "password1@");
-        assert.equal(typeof res, "string");
+        console.log(res);
+        assert.notEqual(res instanceof Err, true);
         let jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
         assert.equal(jwtPayload.username, "user1");
         try {
@@ -63,20 +67,20 @@ describe("AuthController testing", function () {
                 },
             });
         } catch (e) {
-            assert.notEqual(true, true);
+            assert.fail("unreachable");
         }
     });
     it("Login New User", async function () {
         let res = await AuthController.login("user4", "password4@");
-        assert.equal(typeof res, typeof Error);
-        const { code, msg } = <Error>res;
+        assert.equal(typeof res, "object");
+        const { code, msg } = <Err>res;
         assert.equal(code, 401);
         assert.equal(msg, "User does not exist");
     });
     it("Login invalid password", async function () {
         let res = await AuthController.login("user1", "password1");
-        assert.equal(typeof res, typeof Error);
-        const { code, msg } = <Error>res;
+        assert.equal(res instanceof Err, true);
+        const { code, msg } = <Err>res;
         assert.equal(code, 406);
         assert.equal(
             msg,
@@ -86,7 +90,7 @@ describe("AuthController testing", function () {
 
     it("Password: Too short", async () => {
         await validateAndHashPassword("pass1&").then(
-            (_) => assert.notEqual(true, true),
+            (_) => assert.fail("unreachable"),
             (e) => {
                 assert.equal(
                     e,
@@ -97,7 +101,7 @@ describe("AuthController testing", function () {
     });
     it("Password: Too few special characters", async () => {
         await validateAndHashPassword("password1").then(
-            (_) => assert.notEqual(true, true),
+            (_) => assert.fail("unreachable"),
             (e) => {
                 assert.equal(
                     e,
@@ -108,7 +112,7 @@ describe("AuthController testing", function () {
     });
     it("Password: Too few numbers", async () => {
         await validateAndHashPassword("password$").then(
-            (_) => assert.notEqual(true, true),
+            (_) => assert.fail("unreachable"),
             (e) => {
                 assert.equal(
                     e,

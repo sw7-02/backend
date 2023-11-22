@@ -113,7 +113,7 @@ export async function seed() {
 
 /*
 seed().catch((error) => {
-    console.error("Error seeding data:", error);
+    console.error("Err seeding data:", error);
 });
  */
 
