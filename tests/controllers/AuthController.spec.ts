@@ -14,8 +14,8 @@ const specialCharRegEx = new RegExp(
 const numberRegEx = new RegExp(`([0-9].*){${config.auth.pw.num_count}}`);
 
 before("Seed DB", () => {
-    exhaust();
-    seed();
+    exhaust().then();
+    seed().then();
 });
 //after("Purge DB", exhaust);
 describe("AuthController testing", function () {
@@ -37,7 +37,9 @@ describe("AuthController testing", function () {
         }
     });
     it("Signup Existing User", async function () {
+        console.log(prisma.user.findMany());
         const res = await AuthController.signUp("user1", "password1@");
+        console.log(prisma.user.findMany());
         assert.equal(res instanceof Err, true);
         const { code, msg } = <Err>res;
         assert.equal(code, 409);
@@ -57,6 +59,7 @@ describe("AuthController testing", function () {
     it("Login Existing User", async function () {
         const res = await AuthController.login("user1", "password1@");
         console.log(res);
+        console.log(prisma.user.findMany());
         assert.notEqual(res instanceof Err, true);
         const jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
         assert.equal(jwtPayload.username, "user1");
