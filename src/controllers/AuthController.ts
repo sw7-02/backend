@@ -49,9 +49,9 @@ export default class AuthController {
                             select: { user_id: true, username: true },
                         })
                         .then(
-                            ({ user_id: userId, username }) =>
-                                generateJWTToken({ userId, username }),
-                            (_) => err(500, "Internal error"),
+                            ({ user_id: number, username: string }) =>
+                                generateJWTToken({ userId: user_id, username }),
+                            () => err(500, "Internal error"),
                         );
                 } catch (e) {
                     return err(401, "User does not exist");
