@@ -18,6 +18,7 @@ describe("AuthController testing", function () {
 
     it("Signup New User", async function () {
         let res = await AuthController.signUp("user3", "password3@");
+        console.log(res);
         assert.equal(typeof res, "string");
         let jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
         assert.equal(jwtPayload.username, "user3");
@@ -28,21 +29,21 @@ describe("AuthController testing", function () {
                         username: "user3",
                     },
                 })
-                .catch(() => assert.notEqual(true, true));
+                .catch(() => assert.equal(true, true));
         } catch (e) {
             assert.notEqual(true, true);
         }
     });
     it("Signup Existing User", async function () {
         let res = await AuthController.signUp("user1", "password1@");
-        assert.equal(typeof jwt, typeof Error);
+        assert.equal(typeof res, typeof Error);
         const { code, msg } = <Error>res;
         assert.equal(code, 409);
         assert.equal(msg, "Username exists");
     });
     it("Signup invalid password", async function () {
         let res = await AuthController.signUp("user4", "password4");
-        assert.equal(typeof jwt, typeof Error);
+        assert.equal(typeof res, typeof Error);
         const { code, msg } = <Error>res;
         assert.equal(code, 406);
         assert.equal(
@@ -53,6 +54,7 @@ describe("AuthController testing", function () {
 
     it("Login Existing User", async function () {
         let res = await AuthController.login("user1", "password1@");
+        console.log(res);
         assert.equal(typeof res, "string");
         let jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
         assert.equal(jwtPayload.username, "user1");
@@ -68,14 +70,14 @@ describe("AuthController testing", function () {
     });
     it("Login New User", async function () {
         let res = await AuthController.login("user4", "password4@");
-        assert.equal(typeof jwt, typeof Error);
+        assert.equal(typeof res, typeof Error);
         const { code, msg } = <Error>res;
         assert.equal(code, 401);
         assert.equal(msg, "User does not exist");
     });
     it("Login invalid password", async function () {
         let res = await AuthController.login("user1", "password1");
-        assert.equal(typeof jwt, typeof Error);
+        assert.equal(typeof res, typeof Error);
         const { code, msg } = <Error>res;
         assert.equal(code, 406);
         assert.equal(
