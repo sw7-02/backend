@@ -8,7 +8,7 @@ const specialCharRegEx = new RegExp(
     `[!@#$%^&*()]{${config.auth.pw.special_count}}`,
 );
 const numberRegEx = new RegExp(`([0-9].*){${config.auth.pw.num_count}}`);
-export async function validateAndHashPassword(
+async function validateAndHashPassword(
     pw: string,
     username: string,
 ): Promise<string> {

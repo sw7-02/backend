@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import * as jwt from "jsonwebtoken";
-import AuthController from "../../src/controllers/AuthController";
+import AuthController, { validatePassword } from "../../src/controllers/AuthController";
 import config from "../../src/config";
 import { after, afterEach, before } from "mocha";
 import prisma from "../../src/prisma";
@@ -94,44 +94,28 @@ describe("AuthController testing", function () {
     });
 
     it("Password: Too short", async () => {
-        await validateAndHashPassword("pass1&").then(
-            (_) => assert.fail("unreachable"),
-            (e) => {
-                assert.equal(
-                    e,
-                    "Not long enough, should be at least 8 characters",
-                );
-            },
-        );
+        const res = validatePassword("pass1&");
+        assert.equal(res instanceof Err, true);
+        const { code, msg } = <Err>res;
+        assert.equal(code, 406);
+        assert.equal(msg, "Not long enough, should be at least 8 characters");
     });
     it("Password: Too few special characters", async () => {
-        await validateAndHashPassword("password1").then(
-            (_) => assert.fail("unreachable"),
-            (e) => {
-                assert.equal(
-                    e,
-                    "Not enough special characters, there should be at least 1 special character",
-                );
-            },
-        );
+        const res = validatePassword("password1");
+        assert.equal(res instanceof Err, true);
+        const { code, msg } = <Err>res;
+        assert.equal(code, 406);
+        assert.equal(msg, "Not enough special characters, there should be at least 1 special character");
     });
     it("Password: Too few numbers", async () => {
-        await validateAndHashPassword("password$").then(
-            (_) => assert.fail("unreachable"),
-            (e) => {
-                assert.equal(
-                    e,
-                    "Not enough numbers supplied, there should be at least 1 number",
-                );
-            },
-        );
+        const res = validatePassword("password$");
+        assert.equal(res instanceof Err, true);
+        const { code, msg } = <Err>res;
+        assert.equal(code, 406);
+        assert.equal(msg, "Not enough numbers supplied, there should be at least 1 number");
     });
     it("Correct Password", async () => {
-        await validateAndHashPassword("password1$").then(
-            (s) => assert.equal(true, true),
-            (e) => {
-                assert.equal(e, "no error should happen");
-            },
-        );
+        const res = validatePassword("password1@");
+        assert.notEqual(res instanceof Err, true);
     });
 });
