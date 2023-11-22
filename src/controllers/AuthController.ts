@@ -36,9 +36,9 @@ export function validatePassword(pw: string): Result<void> {
         );
 }
 
-function genPass(pw: string, username: string): string {
+async function genPass(pw: string, username: string): Promise<string> {
     const salt = bcrypt.hashSync(username, config.auth.salt);
-    return bcrypt.hashSync(pw, username);
+    return bcrypt.hash(pw, username);
 }
 
 export default class AuthController {
@@ -63,15 +63,15 @@ export default class AuthController {
                 },
             })
             .then(
-                ({ user_id, username, user_password }) => {
+                async ({ user_id, username, user_password }) => {
                     if (
                         !bcrypt.compareSync(
-                            genPass(password, username),
+                            await genPass(password, username),
                             user_password,
                         )
                     ) {
                         console.log(password);
-                        console.log(genPass(password, username));
+                        console.log(await genPass(password, username));
                         console.log(user_password);
                         console.error(
                             `Attempt login on user ${username} (wrong password)`,
@@ -94,12 +94,6 @@ export default class AuthController {
         username: string,
         password: string,
     ): Promise<Result<string>> => {
-        const valid = validatePassword(password);
-        if (valid instanceof Err)
-            return {
-                code: valid.code,
-                msg: `Password not valid: ${valid.msg}`,
-            };
         return prisma.user
             .findFirstOrThrow({
                 where: { username },
@@ -107,10 +101,16 @@ export default class AuthController {
             .then(
                 () => new Err(409, "Username exists"),
                 async () => {
+                    const valid = validatePassword(password);
+                    if (valid instanceof Err)
+                        return {
+                            code: valid.code,
+                            msg: `Password not valid: ${valid.msg}`,
+                        };
                     let { user_id: userId } = await prisma.user.create({
                         data: {
                             username,
-                            user_password: genPass(password, username),
+                            user_password: await genPass(password, username),
                         },
                     });
                     return generateJWTToken({ userId, username });
