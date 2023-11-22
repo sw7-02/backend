@@ -7,15 +7,17 @@ import prisma from "../../src/prisma";
 import { exhaust, seed } from "../lib/db";
 import { Err } from "../../src/lib";
 import { validateAndHashPassword } from "../../src/controllers/AuthController";
-import * as bcrypt from "bcryptjs";
 
 const specialCharRegEx = new RegExp(
     `[!@#$%^&*()]{${config.auth.pw.special_count}}`,
 );
 const numberRegEx = new RegExp(`([0-9].*){${config.auth.pw.num_count}}`);
 
-before("Seed DB", seed);
-after("Purge DB", exhaust);
+before("Seed DB", () => {
+    exhaust();
+    seed();
+});
+//after("Purge DB", exhaust);
 describe("AuthController testing", function () {
     it("Signup New User", async function () {
         const res = await AuthController.signUp("user3", "password3@");
@@ -73,7 +75,7 @@ describe("AuthController testing", function () {
         assert.equal(res instanceof Err, true);
         const { code, msg } = <Err>res;
         assert.equal(code, 401);
-        assert.equal(msg, "User does not exist");
+        assert.equal(msg, "User user4 does not exist");
     });
     it("Login invalid password", async function () {
         const res = await AuthController.login("user1", "password1");
