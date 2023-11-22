@@ -47,15 +47,15 @@ export default class AuthController {
                             where: { username, user_password: encrypt },
                             select: { user_id: true, username: true },
                         })
-                        .then(
-                            (res: { user_id: number; username: string }) =>
-                                generateJWTToken({
-                                    userId: res.user_id,
-                                    username: res.username,
-                                })
+                        .then((res: { user_id: number; username: string }) =>
+                            generateJWTToken({
+                                userId: res.user_id,
+                                username: res.username,
+                            }),
                         );
                 } catch (e) {
-                    return new Err(401, "User does not exist");
+                    console.error(`Fail logging in user ${username}: ${e}`);
+                    return new Err(401, `User ${username} does not exist`);
                 }
             },
             (e) => new Err(406, `Password not valid: ${e}`),

@@ -14,13 +14,9 @@ const specialCharRegEx = new RegExp(
 );
 const numberRegEx = new RegExp(`([0-9].*){${config.auth.pw.num_count}}`);
 
+before("Seed DB", seed);
+after("Purge DB", exhaust);
 describe("AuthController testing", function () {
-    before("Seed DB", seed);
-    after("Purge DB", exhaust);
-    //beforeEach("Insert data into DB", seed);
-
-    //afterEach("Remove all elements from DB", exhaust);
-
     it("Signup New User", async function () {
         const res = await AuthController.signUp("user3", "password3@");
         assert.notEqual(res instanceof Err, true);
@@ -74,7 +70,6 @@ describe("AuthController testing", function () {
     });
     it("Login New User", async function () {
         const res = await AuthController.login("user4", "password4@");
-        console.log(res);
         assert.equal(res instanceof Err, true);
         const { code, msg } = <Err>res;
         assert.equal(code, 401);
