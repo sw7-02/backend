@@ -51,23 +51,19 @@ export default class AuthController {
                         },
                     })
                     .then(
-                        (res: {
-                            user_id: number;
-                            username: string;
-                            user_password: string;
-                        }) => {
-                            if (res.user_password != encrypt) {
+                        ({ user_id, username, user_password }) => {
+                            if (!bcrypt.compareSync(password, user_password)) {
                                 console.log(password);
                                 console.log(encrypt);
-                                console.log(res.user_password);
+                                console.log(user_password);
                                 console.error(
                                     `Attempt login on user ${username} (wrong password)`,
                                 );
                                 return new Err(401, "Wrong password");
                             }
                             return generateJWTToken({
-                                userId: res.user_id,
-                                username: res.username,
+                                userId: user_id,
+                                username,
                             });
                         },
                         (e) => {
