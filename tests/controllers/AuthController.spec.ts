@@ -10,8 +10,8 @@ import { validateAndHashPassword } from "../../src/controllers/AuthController";
 import * as bcrypt from "bcryptjs";
 
 describe("AuthController testing", function () {
-    before(seed)
-    after(exhaust)
+    before(seed);
+    after(exhaust);
     //beforeEach("Insert data into DB", seed);
 
     //afterEach("Remove all elements from DB", exhaust);
