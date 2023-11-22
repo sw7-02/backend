@@ -9,6 +9,12 @@ import { Err } from "../../src/lib";
 import { validateAndHashPassword } from "../../src/controllers/AuthController";
 import * as bcrypt from "bcryptjs";
 
+const specialCharRegEx = new RegExp(
+    `[!@#$%^&*()]{${config.auth.pw.special_count}}`,
+);
+const numberRegEx = new RegExp(`([0-9].*){${config.auth.pw.num_count}}`);
+
+
 describe("AuthController testing", function () {
     before("Seed DB", seed);
     after("Purge DB", exhaust);
@@ -18,7 +24,9 @@ describe("AuthController testing", function () {
 
     it("Signup New User", async function () {
         let res = await AuthController.signUp("user3", "password3@");
-        console.log(res);
+        console.log(numberRegEx.test("password3@"));
+        console.log(specialCharRegEx.test("password3@"));
+        console.log(numberRegEx.exec("password3@"))
         assert.notEqual(res instanceof Err, true);
         let jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
         assert.equal(jwtPayload.username, "user3");

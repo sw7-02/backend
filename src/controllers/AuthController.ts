@@ -10,7 +10,6 @@ const specialCharRegEx = new RegExp(
 const numberRegEx = new RegExp(`([0-9].*){${config.auth.pw.num_count}}`);
 export async function validateAndHashPassword(pw: string): Promise<string> {
     let pass = bcrypt.hash(pw, config.auth.salt);
-    console.log(numberRegEx);
     if (pw.length < config.auth.pw.length)
         return Promise.reject(
             `Not long enough, should be at least ${
