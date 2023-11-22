@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 
 //Set all routes from routes folder
 app.use("/", routes);
-console.log(typeof "string");
+
 app.listen(config.server.port, () => {
     console.log(`Server started on port ${config.server.port}!`);
 });
