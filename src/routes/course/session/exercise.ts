@@ -9,9 +9,14 @@ routes.use(Router.json());
 
 //TODO: Adding hints and/or test cases?
 
-routes.get("/", (req: Request, res: Response) => {
-    res.send("You just retrieved all exercises within the specific session");
-    return res.sendStatus(201);
+routes.get("/", async (req: Request, res: Response) => {
+    const result = await ExerciseController.retrieveAllExercise(
+        res.locals.sessionId,
+    );
+    if (result instanceof Err) {
+        const { code, msg } = result;
+        res.status(code).send(msg);
+    } else res.send(result);
 });
 
 //TODO: Role middleware
@@ -64,9 +69,17 @@ routes.get("/:exercise_id", async (req: Request, res: Response) => {
 });
 
 //TODO: Role middleware
-routes.delete("/:exercise_id", (req: Request, res: Response) => {
-    res.send("You deleted a exercise to a specific course");
-    return res.sendStatus(201);
+routes.delete("/:exercise_id", async (req: Request, res: Response) => {
+    const id: number = +req.params.exercise_id;
+    if (Number.isNaN(id)) {
+        res.status(400).send("ID not a number");
+        return;
+    }
+    const result = await ExerciseController.deleteExercise(id);
+    if (result instanceof Err) {
+        const { code, msg } = result;
+        res.status(code).send(msg);
+    } else res.send();
 });
 
 // submit exercise solution

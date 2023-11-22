@@ -15,7 +15,7 @@ export default class ExerciseController {
     static retrieveAllExercise = async (
         sessionId: number,
     ): Promise<Result<Exercise[]>> =>
-        await prisma.exercise
+        prisma.exercise
             .findMany({
                 where: {
                     session_id: sessionId,
@@ -127,7 +127,7 @@ export default class ExerciseController {
                 },
                 () => {
                     console.error(`Failure getting exercise ${exerciseId}`);
-                    return new Err(401, "Exercise does not exist");
+                    return new Err(404, "Exercise does not exist");
                 },
             );
 
@@ -136,8 +136,8 @@ export default class ExerciseController {
         userId: number,
         solution: string,
         isAnon: boolean = false,
-    ): Promise<Result<void>> => {
-        await prisma.exerciseSolution
+    ): Promise<Result<void>> =>
+        prisma.exerciseSolution
             .upsert({
                 where: {
                     user_id_exercise_id: {
@@ -153,13 +153,16 @@ export default class ExerciseController {
                     is_anonymous: isAnon,
                 },
             })
-            .catch((r) => {
-                console.error(
-                    `Failure submitting exercise ${exerciseId}: ${r}`,
-                );
-                return new Err(500, "Internal error"); //TODO: What happens?
-            });
-    };
+            .then(
+                () => {},
+                (r) => {
+                    console.error(
+                        `Failure submitting exercise ${exerciseId}: ${r}`,
+                    );
+                    return new Err(500, "Internal error"); //TODO: What happens?
+                },
+            );
+
     static addExercise = async (
         sessionId: number,
         title: string,
@@ -203,4 +206,19 @@ export default class ExerciseController {
                 },
             );
     };
+
+    static deleteExercise = async (exerciseId: number): Promise<Result<void>> =>
+        prisma.exercise
+            .delete({
+                where: {
+                    exercise_id: exerciseId,
+                },
+            })
+            .then(
+                () => {},
+                () => {
+                    console.error(`Failure deleting exercise ${exerciseId}`);
+                    return new Err(404, "Exercise does not exist");
+                },
+            );
 }
