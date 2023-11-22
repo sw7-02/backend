@@ -1,7 +1,7 @@
 import prisma from "../prisma";
 import { Err, Result } from "../lib";
 
-type Exercise = {
+type _Exercise = {
     exercise_id: number;
     title: string;
     description: string;
@@ -11,10 +11,16 @@ type Exercise = {
     test_case: string[];
 };
 
+type _ExerciseSolution = {
+    solution: string;
+    is_pinned: boolean;
+    username: string;
+};
+
 export default class ExerciseController {
-    static retrieveAllExercise = async (
+    static retrieveAllExercises = async (
         sessionId: number,
-    ): Promise<Result<Exercise[]>> =>
+    ): Promise<Result<_Exercise[]>> =>
         prisma.exercise
             .findMany({
                 where: {
@@ -74,7 +80,7 @@ export default class ExerciseController {
 
     static retrieveExercise = async (
         exerciseId: number,
-    ): Promise<Result<Exercise>> =>
+    ): Promise<Result<_Exercise>> =>
         prisma.exercise
             .findUniqueOrThrow({
                 where: {
@@ -160,6 +166,47 @@ export default class ExerciseController {
                         `Failure submitting exercise ${exerciseId}: ${r}`,
                     );
                     return new Err(500, "Internal error"); //TODO: What happens?
+                },
+            );
+
+    static retrieveAllExerciseSolutions = async (
+        exerciseId: number,
+    ): Promise<Result<_ExerciseSolution[]>> =>
+        prisma.exerciseSolution
+            .findMany({
+                where: {
+                    exercise_id: exerciseId,
+                },
+                select: {
+                    solution: true,
+                    is_anonymous: true,
+                    is_pinned: true,
+                    user: {
+                        select: {
+                            username: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    is_pinned: "asc",
+                },
+            })
+            .then(
+                (res) =>
+                    res.map((r) => {
+                        const { solution, is_pinned } = r;
+                        const username = r.is_anonymous
+                            ? "Anonymous"
+                            : r.user.username;
+                        return {
+                            solution,
+                            is_pinned,
+                            username,
+                        };
+                    }),
+                () => {
+                    console.error(`Failure getting exercise ${exerciseId}`);
+                    return new Err(401, "Exercise does not exist");
                 },
             );
 

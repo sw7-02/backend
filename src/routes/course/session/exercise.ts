@@ -7,10 +7,8 @@ const routes = Router();
 // enables passing json bodies.
 routes.use(Router.json());
 
-//TODO: Adding hints and/or test cases?
-
 routes.get("/", async (req: Request, res: Response) => {
-    const result = await ExerciseController.retrieveAllExercise(
+    const result = await ExerciseController.retrieveAllExercises(
         res.locals.sessionId,
     );
     if (result instanceof Err) {
@@ -21,6 +19,7 @@ routes.get("/", async (req: Request, res: Response) => {
 
 //TODO: Role middleware
 routes.post("/", async (req: Request, res: Response) => {
+    //TODO: Adding hints and/or test cases?
     const {
         title,
         description,
@@ -111,9 +110,22 @@ routes.put("/:exercise_id", (req: Request, res: Response) => {
 
 // exercise solutions
 // TODO: Role check middleware
-routes.get("exercise_id/exercise-solutions", (req: Request, res: Response) => {
-    res.send("This is the exercise solutions for a specific exercise");
-    return res.sendStatus(201);
-});
+routes.get(
+    ":exercise_id/exercise-solutions",
+    async (req: Request, res: Response) => {
+        const exerciseId: number = +req.params.exercise_id;
+        if (Number.isNaN(exerciseId)) {
+            res.status(400).send("ID not a number");
+            return;
+        }
+
+        const result =
+            await ExerciseController.retrieveAllExerciseSolutions(exerciseId);
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send(result);
+    },
+);
 
 export default routes;
