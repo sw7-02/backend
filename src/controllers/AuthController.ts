@@ -64,7 +64,7 @@ export default class AuthController {
                 ({ user_id, username, user_password }) => {
                     if (
                         !bcrypt.compareSync(
-                            genPass(password, username).hash,
+                            password,
                             user_password,
                         )
                     ) {
