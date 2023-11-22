@@ -1,11 +1,5 @@
 import prisma from "../prisma";
-import * as bcrypt from "bcryptjs";
-import config from "../config";
-import { err, Result } from "../lib";
-import { generateJWTToken } from "../lib";
-
-const specialCharRegEx = new RegExp("^[!@#$%^&*()]+$");
-const numberRegEx = new RegExp("^[0-9]+$");
+import { Err, Result } from "../lib";
 
 type Exercise = {
     exercise_id: number;
@@ -18,41 +12,41 @@ type Exercise = {
 };
 
 export default class ExerciseController {
-    static retrieveExercise = async (
-        exerciseId: number,
-    ): Promise<Result<Exercise>> => {
-        try {
-            return await prisma.exercise
-                .findUniqueOrThrow({
-                    where: {
-                        exercise_id: exerciseId,
-                    },
-                    select: {
-                        exercise_id: true,
-                        title: true,
-                        description: true,
-                        code_template: true,
-                        hints: {
-                            select: {
-                                description: true,
-                            },
-                            orderBy: {
-                                order: "asc",
-                            },
+    static retrieveAllExercise = async (
+        sessionId: number,
+    ): Promise<Result<Exercise[]>> =>
+        await prisma.exercise
+            .findMany({
+                where: {
+                    session_id: sessionId,
+                },
+                select: {
+                    exercise_id: true,
+                    title: true,
+                    description: true,
+                    code_template: true,
+                    hints: {
+                        select: {
+                            description: true,
                         },
-                        points: true,
-                        test_case: {
-                            where: {
-                                is_visible: true,
-                            },
-                            select: {
-                                code: true,
-                            },
+                        orderBy: {
+                            order: "asc",
                         },
                     },
-                })
-                .then(
-                    (res) => {
+                    points: true,
+                    test_case: {
+                        where: {
+                            is_visible: true,
+                        },
+                        select: {
+                            code: true,
+                        },
+                    },
+                },
+            })
+            .then(
+                (res) =>
+                    res.map((r) => {
                         const {
                             exercise_id,
                             title,
@@ -61,7 +55,7 @@ export default class ExerciseController {
                             code_template,
                             points,
                             test_case,
-                        } = res;
+                        } = r;
                         return {
                             exercise_id,
                             title,
@@ -71,13 +65,71 @@ export default class ExerciseController {
                             hints: hints.map((h) => h.description),
                             test_case: test_case.map((t) => t.code),
                         };
+                    }),
+                () => {
+                    console.error(`Failure getting session ${sessionId}`);
+                    return new Err(401, "Session does not exist");
+                },
+            );
+
+    static retrieveExercise = async (
+        exerciseId: number,
+    ): Promise<Result<Exercise>> =>
+        prisma.exercise
+            .findUniqueOrThrow({
+                where: {
+                    exercise_id: exerciseId,
+                },
+                select: {
+                    exercise_id: true,
+                    title: true,
+                    description: true,
+                    code_template: true,
+                    hints: {
+                        select: {
+                            description: true,
+                        },
+                        orderBy: {
+                            order: "asc",
+                        },
                     },
-                    () => err(500, "Internal error"),
-                );
-        } catch {
-            return err(401, "Exercise does not exist");
-        }
-    };
+                    points: true,
+                    test_case: {
+                        where: {
+                            is_visible: true,
+                        },
+                        select: {
+                            code: true,
+                        },
+                    },
+                },
+            })
+            .then(
+                (res) => {
+                    const {
+                        exercise_id,
+                        title,
+                        description,
+                        hints,
+                        code_template,
+                        points,
+                        test_case,
+                    } = res;
+                    return {
+                        exercise_id,
+                        title,
+                        description,
+                        code_template,
+                        points,
+                        hints: hints.map((h) => h.description),
+                        test_case: test_case.map((t) => t.code),
+                    };
+                },
+                () => {
+                    console.error(`Failure getting exercise ${exerciseId}`);
+                    return new Err(401, "Exercise does not exist");
+                },
+            );
 
     static submitExerciseSolution = async (
         exerciseId: number,
@@ -85,8 +137,8 @@ export default class ExerciseController {
         solution: string,
         isAnon: boolean = false,
     ): Promise<Result<void>> => {
-        try {
-            await prisma.exerciseSolution.upsert({
+        await prisma.exerciseSolution
+            .upsert({
                 where: {
                     user_id_exercise_id: {
                         user_id: userId,
@@ -100,10 +152,13 @@ export default class ExerciseController {
                     solution,
                     is_anonymous: isAnon,
                 },
+            })
+            .catch((r) => {
+                console.error(
+                    `Failure submitting exercise ${exerciseId}: ${r}`,
+                );
+                return new Err(500, "Internal error"); //TODO: What happens?
             });
-        } catch {
-            return err(500, "Internal error"); //TODO: What happens?
-        }
     };
     static addExercise = async (
         sessionId: number,
@@ -114,36 +169,38 @@ export default class ExerciseController {
         codeTemplate: string,
         hints: string[] = [],
     ): Promise<Result<number>> => {
-        try {
-            let order = 1; //TODO: zero-index?
-            return (
-                await prisma.exercise.create({
-                    data: {
-                        session: {
-                            connect: {
-                                session_id: sessionId,
-                            },
-                        },
-                        title,
-                        description,
-                        points,
-                        programming_language: programmingLanguage,
-                        code_template: codeTemplate,
-                        hints: {
-                            createMany: {
-                                data: hints.map((h) => {
-                                    return { description: h, order: order++ };
-                                }),
-                            },
+        let order = 1; //TODO: zero-index?
+        return prisma.exercise
+            .create({
+                data: {
+                    session: {
+                        connect: {
+                            session_id: sessionId,
                         },
                     },
-                    select: {
-                        exercise_id: true,
+                    title,
+                    description,
+                    points,
+                    programming_language: programmingLanguage,
+                    code_template: codeTemplate,
+                    hints: {
+                        createMany: {
+                            data: hints.map((h) => {
+                                return { description: h, order: order++ };
+                            }),
+                        },
                     },
-                })
-            ).exercise_id;
-        } catch {
-            return err(401, "Session does not exist");
-        }
+                },
+                select: {
+                    exercise_id: true,
+                },
+            })
+            .then(
+                (e) => e.exercise_id,
+                (r) => {
+                    console.error(`Failure trying to add exercise: ${r}`);
+                    return new Err(401, "Session does not exist");
+                },
+            );
     };
 }

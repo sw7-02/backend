@@ -1,6 +1,6 @@
 import Router, { Request, Response } from "express";
 import ExerciseController from "../../../controllers/ExerciseController";
-import { Error } from "../../../lib";
+import { Err } from "../../../lib";
 
 const routes = Router();
 
@@ -15,7 +15,7 @@ routes.get("/", (req: Request, res: Response) => {
 });
 
 //TODO: Role middleware
-routes.post("/", (req: Request, res: Response) => {
+routes.post("/", async (req: Request, res: Response) => {
     const {
         title,
         description,
@@ -35,8 +35,19 @@ routes.post("/", (req: Request, res: Response) => {
     ) {
         res.status(400).send("Not all necessary parameters was provided");
     }
-    res.send("You added a new exercise to a specific session");
-    return res.sendStatus(201);
+    const result = await ExerciseController.addExercise(
+        res.locals.sessionId,
+        title,
+        description,
+        points,
+        programming_language,
+        code_template,
+        hints,
+    );
+    if (result instanceof Err) {
+        const { code, msg } = result;
+        res.status(code).send(msg);
+    } else res.send(result);
 });
 
 routes.get("/:exercise_id", async (req: Request, res: Response) => {
@@ -46,8 +57,8 @@ routes.get("/:exercise_id", async (req: Request, res: Response) => {
         return;
     }
     const result = await ExerciseController.retrieveExercise(id);
-    if (typeof result === typeof Error) {
-        const { code, msg } = <Error>result;
+    if (result instanceof Err) {
+        const { code, msg } = result;
         res.status(code).send(msg);
     } else res.send(result);
 });
@@ -73,8 +84,8 @@ routes.post("/:exercise_id", async (req: Request, res: Response) => {
         userId,
         solution,
     );
-    if (typeof result === typeof Error) {
-        const { code, msg } = <Error>result;
+    if (result instanceof Err) {
+        const { code, msg } = result;
         res.status(code).send(msg);
     } else res.send(result);
 });
