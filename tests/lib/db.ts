@@ -6,16 +6,21 @@ const prisma = new PrismaClient();
 
 export async function seed() {
     // Create sample users
+    let salt = bcrypt.genSaltSync(5);
     const user1 = await prisma.user.create({
         data: {
             username: "user1",
-            user_password: await bcrypt.hash("password1@", config.auth.salt),
+            user_password: await bcrypt.hash("password1@", salt),
+            pw_salt: salt,
         },
     });
+
+    salt = bcrypt.genSaltSync(5);
     const user2 = await prisma.user.create({
         data: {
             username: "user2",
-            user_password: await bcrypt.hash("password2@", config.auth.salt),
+            user_password: await bcrypt.hash("password2@", salt),
+            pw_salt: salt,
         },
     });
 
