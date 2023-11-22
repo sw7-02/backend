@@ -72,8 +72,8 @@ export default class ExerciseController {
                             test_case: test_case.map((t) => t.code),
                         };
                     }),
-                () => {
-                    console.error(`Failure getting session ${sessionId}`);
+                (r) => {
+                    console.error(`Failure getting session ${sessionId}: ${r}`);
                     return new Err(401, "Session does not exist");
                 },
             );
@@ -131,8 +131,8 @@ export default class ExerciseController {
                         test_case: test_case.map((t) => t.code),
                     };
                 },
-                () => {
-                    console.error(`Failure getting exercise ${exerciseId}`);
+                (r) => {
+                    console.error(`Failure getting exercise ${exerciseId}: ${r}`);
                     return new Err(404, "Exercise does not exist");
                 },
             );
@@ -204,8 +204,8 @@ export default class ExerciseController {
                             username,
                         };
                     }),
-                () => {
-                    console.error(`Failure getting exercise ${exerciseId}`);
+                (r) => {
+                    console.error(`Failure getting exercise ${exerciseId}: ${r}`);
                     return new Err(401, "Exercise does not exist");
                 },
             );
@@ -263,8 +263,8 @@ export default class ExerciseController {
             })
             .then(
                 () => {},
-                () => {
-                    console.error(`Failure deleting exercise ${exerciseId}`);
+                (r) => {
+                    console.error(`Failure deleting exercise ${exerciseId}: ${r}`);
                     return new Err(404, "Exercise does not exist");
                 },
             );
