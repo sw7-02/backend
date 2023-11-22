@@ -1,17 +1,13 @@
 import * as assert from "assert";
 import * as jwt from "jsonwebtoken";
-import AuthController, { validatePassword } from "../../src/controllers/AuthController";
+import AuthController, {
+    validatePassword,
+} from "../../src/controllers/AuthController";
 import config from "../../src/config";
 import { after, afterEach, before } from "mocha";
 import prisma from "../../src/prisma";
 import { exhaust, seed } from "../lib/db";
 import { Err } from "../../src/lib";
-import { validateAndHashPassword } from "../../src/controllers/AuthController";
-
-const specialCharRegEx = new RegExp(
-    `[!@#$%^&*()]{${config.auth.pw.special_count}}`,
-);
-const numberRegEx = new RegExp(`([0-9].*){${config.auth.pw.num_count}}`);
 
 before("Seed DB", seed);
 after("Purge DB", exhaust);
@@ -105,14 +101,20 @@ describe("AuthController testing", function () {
         assert.equal(res instanceof Err, true);
         const { code, msg } = <Err>res;
         assert.equal(code, 406);
-        assert.equal(msg, "Not enough special characters, there should be at least 1 special character");
+        assert.equal(
+            msg,
+            "Not enough special characters, there should be at least 1 special character",
+        );
     });
     it("Password: Too few numbers", async () => {
         const res = validatePassword("password$");
         assert.equal(res instanceof Err, true);
         const { code, msg } = <Err>res;
         assert.equal(code, 406);
-        assert.equal(msg, "Not enough numbers supplied, there should be at least 1 number");
+        assert.equal(
+            msg,
+            "Not enough numbers supplied, there should be at least 1 number",
+        );
     });
     it("Correct Password", async () => {
         const res = validatePassword("password1@");
