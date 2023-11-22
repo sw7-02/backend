@@ -44,26 +44,37 @@ export default class AuthController {
                 return prisma.user
                     .findUniqueOrThrow({
                         where: { username },
-                        select: { user_id: true, username: true, user_password: true },
+                        select: {
+                            user_id: true,
+                            username: true,
+                            user_password: true,
+                        },
                     })
                     .then(
-                        (res: { user_id: number; username: string, user_password: string }) => {
+                        (res: {
+                            user_id: number;
+                            username: string;
+                            user_password: string;
+                        }) => {
                             if (res.user_password != encrypt) {
-                                console.error(`Attempt login on user ${username} (wrong password)`)
+                                console.log(password);
+                                console.log(encrypt);
+                                console.log(res.user_password);
+                                console.error(
+                                    `Attempt login on user ${username} (wrong password)`,
+                                );
                                 return new Err(401, "Wrong password");
                             }
                             return generateJWTToken({
                                 userId: res.user_id,
                                 username: res.username,
-                            })},
+                            });
+                        },
                         (e) => {
                             console.error(
                                 `Fail logging in user ${username}: ${e}`,
                             );
-                            return new Err(
-                                401,
-                                `Username does not exist`,
-                            );
+                            return new Err(401, `Username does not exist`);
                         },
                     );
             },

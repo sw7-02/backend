@@ -13,7 +13,7 @@ const specialCharRegEx = new RegExp(
 );
 const numberRegEx = new RegExp(`([0-9].*){${config.auth.pw.num_count}}`);
 
-before("Seed DB", seed)
+before("Seed DB", seed);
 after("Purge DB", exhaust);
 //TODO: Wrong pw login
 describe("AuthController testing", function () {
@@ -90,10 +90,7 @@ describe("AuthController testing", function () {
         assert.equal(res instanceof Err, true);
         const { code, msg } = <Err>res;
         assert.equal(code, 401);
-        assert.equal(
-            msg,
-            `Wrong password`,
-        );
+        assert.equal(msg, `Wrong password`);
     });
 
     it("Password: Too short", async () => {
