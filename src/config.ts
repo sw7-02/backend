@@ -20,7 +20,6 @@ export default {
             (":" + process.env["TEST_PORT"] || ":8081"),
     },
     auth: {
-        salt: +(process.env["PW_SALT"] || 8),
         pw: {
             length: +(process.env["PW_MIN_LENGTH"] || 8),
             num_count: +(process.env["PW_NUM_COUNT"] || 1),

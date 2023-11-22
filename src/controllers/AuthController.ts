@@ -62,15 +62,7 @@ export default class AuthController {
             })
             .then(
                 ({ user_id, username, user_password }) => {
-                    if (
-                        !bcrypt.compareSync(
-                            password,
-                            user_password,
-                        )
-                    ) {
-                        console.log(password);
-                        console.log(genPass(password, username));
-                        console.log(user_password);
+                    if (!bcrypt.compareSync(password, user_password)) {
                         console.error(
                             `Attempt login on user ${username} (wrong password)`,
                         );
