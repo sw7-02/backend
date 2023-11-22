@@ -1,5 +1,6 @@
 import * as jwt from "jsonwebtoken";
 import config from "./config";
+import {Response} from "express";
 
 class Err {
     code: number;
@@ -31,4 +32,4 @@ enum Role {
     TA = 2,
 }
 
-export { Err, Result, generateJWTToken, Role };
+export { Err, Result, generateJWTToken, Role, };

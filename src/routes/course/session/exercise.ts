@@ -56,7 +56,7 @@ routes.post("/", async (req: Request, res: Response) => {
 
 routes.get("/:exercise_id", async (req: Request, res: Response) => {
     const id: number = +req.params.exercise_id;
-    if (Number.isNaN(id)) {
+    if (!id) {
         res.status(400).send("ID not a number");
         return;
     }
@@ -70,7 +70,7 @@ routes.get("/:exercise_id", async (req: Request, res: Response) => {
 //TODO: Role middleware
 routes.delete("/:exercise_id", async (req: Request, res: Response) => {
     const id: number = +req.params.exercise_id;
-    if (Number.isNaN(id)) {
+    if (!id) {
         res.status(400).send("ID not a number");
         return;
     }
