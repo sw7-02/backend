@@ -64,7 +64,7 @@ export default class AuthController {
                 },
             })
             .then(
-                async ({ user_id, username, user_password }) => {
+                ({ user_id, username, user_password }) => {
                     if (
                         !bcrypt.compareSync(
                             genPass(password, username).hash,

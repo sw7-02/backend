@@ -9,10 +9,13 @@ import prisma from "../../src/prisma";
 import { exhaust, seed } from "../lib/db";
 import { Err } from "../../src/lib";
 
-before("Seed DB", seed);
-after("Purge DB", exhaust);
-
 describe("AuthController testing", function () {
+    before("Seed DB", async function() {
+        this.timeout(10000);
+        await seed();
+    });
+    after("Purge DB", exhaust);
+
     it("Signup New User", async function () {
         const res = await AuthController.signUp("user3", "password3@");
         assert.notEqual(res instanceof Err, true);
