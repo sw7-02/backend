@@ -418,6 +418,7 @@ CREATE TABLE improved_schema.users (
     username character varying(255),
     user_password character varying(255),
     is_teacher boolean
+
 );
 
 
