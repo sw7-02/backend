@@ -13,6 +13,7 @@ export const validateJWT = (
     const token = <string>req.headers["auth"];
     let jwtPayload;
 
+    console.log(req.params.course_id);
     //Validate the token and get data
     try {
         jwtPayload = <any>jwt.verify(token, config.jwt.secret);
@@ -20,6 +21,7 @@ export const validateJWT = (
     } catch (error) {
         //If token is not valid, 401 (unauthorized)
         res.status(401).send();
+        console.log("no jwt");
         return;
     }
 

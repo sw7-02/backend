@@ -137,5 +137,6 @@ model ExerciseSolution {
   exercise Exercise @relation(fields: [exercise_id], references: [exercise_id], map: "exercise_id")
   user     User     @relation(fields: [user_id], references: [user_id], map: "user_id")
 
+  @@unique([user_id, exercise_id])
   @@map("exercise_solutions")
 }

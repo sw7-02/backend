@@ -16,11 +16,12 @@ routes.get("/:assignment_id", (req: Request, res: Response) => {
 });
 
 // submit assignment solution
-routes.put("/:assignment_id", (req: Request, res: Response) => {
+routes.post("/:assignment_id", (req: Request, res: Response) => {
     res.send("You have submitted your assignment solution");
     return res.sendStatus(201);
 });
 
+//TODO: Role middleware
 routes.get(
     "/:assignment_id/assignment-solutions",
     (req: Request, res: Response) => {
