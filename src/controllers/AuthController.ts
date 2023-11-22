@@ -36,11 +36,10 @@ export function validatePassword(pw: string): Result<void> {
         );
 }
 
-async function genPass(pw: string, username: string): Promise<string> {
-    const salt = await bcrypt.genSalt(8);
-    console.log(salt);
-    console.log(await bcrypt.genSalt(8));
-    return bcrypt.hash(pw, salt);
+type PW = { hash: string; salt: string };
+async function genPass(pw: string, username: string): Promise<PW> {
+    const salt = await bcrypt.genSalt(username.length);
+    return { hash: await bcrypt.hash(pw, salt), salt };
 }
 
 export default class AuthController {
@@ -68,7 +67,7 @@ export default class AuthController {
                 async ({ user_id, username, user_password }) => {
                     if (
                         !bcrypt.compareSync(
-                            await genPass(password, username),
+                            (await genPass(password, username)).hash,
                             user_password,
                         )
                     ) {
@@ -109,10 +108,12 @@ export default class AuthController {
                             code: valid.code,
                             msg: `Password not valid: ${valid.msg}`,
                         };
+                    const { hash, salt } = await genPass(password, username);
                     let { user_id: userId } = await prisma.user.create({
                         data: {
                             username,
-                            user_password: await genPass(password, username),
+                            user_password: hash,
+                            pw_salt: salt,
                         },
                     });
                     return generateJWTToken({ userId, username });
