@@ -2,7 +2,7 @@ import * as assert from "assert";
 import * as jwt from "jsonwebtoken";
 import AuthController from "../../src/controllers/AuthController";
 import config from "../../src/config";
-import { afterEach } from "mocha";
+import { after, afterEach, before } from "mocha";
 import prisma from "../../src/prisma";
 import { exhaust, seed } from "../lib/db";
 import { Error } from "../../src/lib";
@@ -10,9 +10,11 @@ import { validateAndHashPassword } from "../../src/controllers/AuthController";
 import * as bcrypt from "bcryptjs";
 
 describe("AuthController testing", function () {
-    beforeEach("Insert data into DB", seed);
+    before(seed)
+    after(exhaust)
+    //beforeEach("Insert data into DB", seed);
 
-    afterEach("Remove all elements from DB", exhaust);
+    //afterEach("Remove all elements from DB", exhaust);
 
     it("Signup New User", async function () {
         let res = await AuthController.signUp("user3", "password3@");
@@ -39,7 +41,7 @@ describe("AuthController testing", function () {
         assert.equal(msg, "Username exists");
     });
     it("Signup invalid password", async function () {
-        let res = await AuthController.signUp("user3", "password3");
+        let res = await AuthController.signUp("user4", "password4");
         assert.equal(typeof jwt, typeof Error);
         const { code, msg } = <Error>res;
         assert.equal(code, 406);
@@ -65,7 +67,7 @@ describe("AuthController testing", function () {
         }
     });
     it("Login New User", async function () {
-        let res = await AuthController.login("user3", "password3@");
+        let res = await AuthController.login("user4", "password4@");
         assert.equal(typeof jwt, typeof Error);
         const { code, msg } = <Error>res;
         assert.equal(code, 401);
@@ -116,7 +118,7 @@ describe("AuthController testing", function () {
         );
     });
     it("Correct Password", async () => {
-        await validateAndHashPassword("password$").then(
+        await validateAndHashPassword("password1$").then(
             (s) => assert.equal(config.auth.salt, bcrypt.getSalt(s)),
             (e) => {
                 assert.equal(e, "no error should happen");
