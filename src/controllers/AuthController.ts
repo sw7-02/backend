@@ -8,8 +8,9 @@ const specialCharRegEx = new RegExp(
     `[!@#$%^&*()]{${config.auth.pw.special_count}}`,
 );
 const numberRegEx = new RegExp(`([0-9].*){${config.auth.pw.num_count}}`);
-export async function validateAndHashPassword(pw: string): Promise<string> {
-    let pass = bcrypt.hash(pw, config.auth.salt);
+export async function validateAndHashPassword(pw: string, username: string): Promise<string> {
+    const salt = bcrypt.hashSync(username, config.auth.salt);
+    let pass = bcrypt.hash(pw, salt);
     if (pw.length < config.auth.pw.length)
         return Promise.reject(
             `Not long enough, should be at least ${
@@ -39,7 +40,7 @@ export default class AuthController {
         username: string,
         password: string,
     ): Promise<Result<string>> => {
-        return await validateAndHashPassword(password).then(
+        return await validateAndHashPassword(password, username).then(
             async (encrypt) => {
                 return prisma.user
                     .findUniqueOrThrow({
@@ -82,7 +83,7 @@ export default class AuthController {
         username: string,
         password: string,
     ): Promise<Result<string>> => {
-        return await validateAndHashPassword(password).then(
+        return await validateAndHashPassword(password, username).then(
             async (encrypt) => {
                 return prisma.user
                     .findFirstOrThrow({
