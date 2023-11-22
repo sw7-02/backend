@@ -17,6 +17,13 @@ export default {
         test_runner:
             "http://" +
             (process.env["TEST_HOST"] || "test-runner") +
-            (process.env["TEST_PORT"] || "8081"),
+            (":" + process.env["TEST_PORT"] || ":8081"),
+    },
+    auth: {
+        pw: {
+            length: +(process.env["PW_MIN_LENGTH"] || 8),
+            num_count: +(process.env["PW_NUM_COUNT"] || 1),
+            special_count: +(process.env["PW_SPECIAL_COUNT"] || 1),
+        },
     },
 };

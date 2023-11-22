@@ -27,6 +27,7 @@ model User {
   user_id       Int     @id @default(autoincrement())
   username      String  @unique
   user_password String
+  pw_salt       String
   is_teacher    Boolean @default(false)
 
   enrollments           Enrollment[]
