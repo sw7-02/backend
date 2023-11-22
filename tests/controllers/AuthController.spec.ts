@@ -11,7 +11,7 @@ import { Err } from "../../src/lib";
 
 before("Seed DB", seed);
 after("Purge DB", exhaust);
-//TODO: Wrong pw login
+
 describe("AuthController testing", function () {
     it("Signup New User", async function () {
         const res = await AuthController.signUp("user3", "password3@");

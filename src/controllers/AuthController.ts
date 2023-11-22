@@ -38,7 +38,7 @@ export function validatePassword(pw: string): Result<void> {
 
 function genPass(pw: string, username: string): string {
     const salt = bcrypt.hashSync(username, config.auth.salt);
-    return bcrypt.hashSync(pw, salt);
+    return bcrypt.hashSync(pw, username);
 }
 
 export default class AuthController {
