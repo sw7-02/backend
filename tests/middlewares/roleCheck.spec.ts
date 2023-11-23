@@ -7,20 +7,21 @@ import { exhaust, seed } from "../lib/db";
 import * as jwt from "jsonwebtoken";
 import config from "../../src/config";
 import { validateJWT } from "../../src/middlewares/validateJWT";
+import { afterEach } from "mocha";
 
 const nxtFunc = () => {};
 let response: Response;
 let request: Request;
 
 describe("roleCheck testing", function () {
-    before("reset request and response, and seed DB", async function () {
+    beforeEach("reset request and response, and seed DB", async function () {
         request = httpMocks.createRequest();
         response = httpMocks.createResponse();
         this.timeout(10000);
         await seed();
     });
 
-    after("purge DB", exhaust);
+    afterEach("purge DB", exhaust);
 
     it("deny student access", async function () {
         let roles = [1, 2];
