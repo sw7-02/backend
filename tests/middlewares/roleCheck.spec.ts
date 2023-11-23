@@ -7,7 +7,7 @@ import { exhaust, seed } from "../lib/db";
 import * as jwt from "jsonwebtoken";
 import config from "../../src/config";
 import { validateJWT } from "../../src/middlewares/validateJWT";
-import {afterEach} from "mocha";
+import { afterEach } from "mocha";
 
 const nxtFunc = () => {};
 let response: Response;

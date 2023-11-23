@@ -4,7 +4,7 @@ import AuthController, {
     validatePassword,
 } from "../../src/controllers/AuthController";
 import config from "../../src/config";
-import {afterEach} from "mocha";
+import { afterEach } from "mocha";
 import prisma from "../../src/prisma";
 import { exhaust, seed } from "../lib/db";
 import { Err } from "../../src/lib";
