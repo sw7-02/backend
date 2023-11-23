@@ -133,17 +133,17 @@ seed().catch((error) => {
  */
 
 export async function exhaust() {
-    prisma.user.deleteMany();
-    prisma.enrollment.deleteMany();
+    prisma.user.deleteMany({});
+    prisma.enrollment.deleteMany({});
 
-    prisma.course.deleteMany();
-    prisma.session.deleteMany();
+    prisma.course.deleteMany({});
+    prisma.session.deleteMany({});
 
-    prisma.exercise.deleteMany();
-    prisma.exerciseSolution.deleteMany();
-    prisma.hint.deleteMany();
-    prisma.testCase.deleteMany();
+    prisma.exercise.deleteMany({});
+    prisma.exerciseSolution.deleteMany({});
+    prisma.hint.deleteMany({});
+    prisma.testCase.deleteMany({});
 
-    prisma.assignment.deleteMany();
-    prisma.assignmentSolution.deleteMany();
+    prisma.assignment.deleteMany({});
+    prisma.assignmentSolution.deleteMany({});
 }
