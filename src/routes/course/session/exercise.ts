@@ -1,6 +1,7 @@
 import Router, { Request, Response } from "express";
 import ExerciseController from "../../../controllers/ExerciseController";
 import { Err } from "../../../lib";
+import CourseController from "../../../controllers/CourseController";
 
 const routes = Router();
 
@@ -95,15 +96,32 @@ routes.post("/:exercise_id", async (req: Request, res: Response) => {
     const courseId = res.locals.courseId;
     const { solution, is_anonymous } = req.body;
 
-    //TODO: Give points - CourseController
-
-    const resultSubmission = await ExerciseController.submitExerciseSolution(
-        exerciseId,
+    let points;
+    const resultSubmission = await CourseController.updatePoints(
+        courseId,
         userId,
-        solution,
-        is_anonymous,
-    );
+        exerciseId,
+    ).then((result) => {
+        if (!(result instanceof Err)) {
+            points = result;
+            return ExerciseController.submitExerciseSolution(
+                exerciseId,
+                userId,
+                solution,
+                is_anonymous,
+            );
+        } else return result;
+    });
+
     if (resultSubmission instanceof Err) {
+        if (points)
+            // It found points, but failed in submitting => subtract the points
+            CourseController.decrementPoints(
+                courseId,
+                userId,
+                exerciseId,
+                points,
+            );
         const { code, msg } = resultSubmission;
         res.status(code).send(msg);
     } else res.send(resultSubmission);
