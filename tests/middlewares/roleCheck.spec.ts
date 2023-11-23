@@ -25,11 +25,13 @@ describe("roleCheck testing", function () {
     it("deny student access", async function () {
         let roles = [1, 2];
         let username = "user1";
-        let { user_id: userId } = await prisma.user.findFirstOrThrow({
-            where: {
-                username: username,
-            },
-        });
+        let { user_id: userId } = await prisma.user
+            .findFirstOrThrow({
+                where: {
+                    username: username,
+                },
+            })
+            .catch(() => assert.fail("unreachable"));
 
         request.headers.auth = jwt.sign(
             { userId, username },
@@ -53,11 +55,13 @@ describe("roleCheck testing", function () {
     it("Grant student access", async function () {
         let roles = [0];
         let username = "user1";
-        let { user_id: userId } = await prisma.user.findFirstOrThrow({
-            where: {
-                username: username,
-            },
-        });
+        let { user_id: userId } = await prisma.user
+            .findFirstOrThrow({
+                where: {
+                    username: username,
+                },
+            })
+            .catch(() => assert.fail("unreachable"));
 
         request.headers.auth = jwt.sign(
             { userId, username },
@@ -81,11 +85,13 @@ describe("roleCheck testing", function () {
     it("Grant teacher access", async function () {
         let roles = [1];
         let username = "user2";
-        let { user_id: userId } = await prisma.user.findFirstOrThrow({
-            where: {
-                username: username,
-            },
-        });
+        let { user_id: userId } = await prisma.user
+            .findFirstOrThrow({
+                where: {
+                    username: username,
+                },
+            })
+            .catch(() => assert.fail("unreachable"));
 
         request.headers.auth = jwt.sign(
             { userId, username },
@@ -109,11 +115,13 @@ describe("roleCheck testing", function () {
     it("Deny teacher access", async function () {
         let roles = [0, 2];
         let username = "user2";
-        let { user_id: userId } = await prisma.user.findFirstOrThrow({
-            where: {
-                username: username,
-            },
-        });
+        let { user_id: userId } = await prisma.user
+            .findFirstOrThrow({
+                where: {
+                    username: username,
+                },
+            })
+            .catch(() => assert.fail("unreachable"));
 
         request.headers.auth = jwt.sign(
             { userId, username },
