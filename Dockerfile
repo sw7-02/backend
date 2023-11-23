@@ -53,4 +53,4 @@ HEALTHCHECK --interval=10s --timeout=2s --start-period=15s \
     CMD PORT=$PORT STATUS_PATH=$STATUS_PATH node /app/healthcheck.js
 
 # Execute NodeJS (not NPM script) to handle SIGTERM and SIGINT signals.
-CMD ["node", "./build/src/index.js"]
+CMD ["node", "./build/index.js"]

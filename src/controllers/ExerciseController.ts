@@ -311,7 +311,6 @@ export default class ExerciseController {
 
         if (testCases instanceof Err) return testCases;
 
-        //TODO: EXEC TESTS
         const data: Test = {
             code: solution,
             language: testCases.programming_language,
@@ -363,16 +362,19 @@ async function executeTest(data: Test): Promise<Result<FailReason[], Err>> {
     return axios
         .post(config.server.test_runner, JSON.stringify(data), {
             timeout: 5000,
-            validateStatus: (s) => s in [200, 202],
+            validateStatus: (s) => [200, 202].includes(s),
             responseType: "json",
         })
         .then(
-            () => [],
             (r) => {
+                return [];
+            },
+            (r) => {
+                console.log("bad");
                 console.log(r);
                 console.log(r.data);
                 //TODO: Validate correct format, else return Err (Compile error, language not supported, other errors)
-                return r.data.toJSON;
+                return r.data.toJSON();
             },
         );
 }

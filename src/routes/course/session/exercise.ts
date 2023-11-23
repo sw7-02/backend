@@ -90,13 +90,15 @@ routes.post("/:exercise_id", async (req: Request, res: Response) => {
         return;
     }
     const { solution, is_anonymous } = req.body;
-    const userId: number = res.locals.jwtPayload.userId;
-    const courseId = res.locals.courseId;
+//    const userId: number = res.locals.jwtPayload.userId;
+    const userId: number = 1;
+    const courseId = 1//res.locals.courseId;
 
     let result = await ExerciseController.testExercise(exerciseId, solution);
     if (result instanceof Err) {
         const { code, msg } = result;
         res.status(code).send(msg);
+        return;
     }
 
     let points;
