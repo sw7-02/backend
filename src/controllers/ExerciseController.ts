@@ -74,7 +74,7 @@ export default class ExerciseController {
                     }),
                 (r) => {
                     console.error(`Failure getting session ${sessionId}: ${r}`);
-                    return new Err(401, "Session does not exist");
+                    return new Err(404, "Session does not exist");
                 },
             );
 
@@ -210,7 +210,7 @@ export default class ExerciseController {
                     console.error(
                         `Failure getting exercise ${exerciseId}: ${r}`,
                     );
-                    return new Err(401, "Exercise does not exist");
+                    return new Err(404, "Exercise does not exist");
                 },
             );
 
@@ -253,7 +253,7 @@ export default class ExerciseController {
                 (e) => e.exercise_id,
                 (r) => {
                     console.error(`Failure trying to add exercise: ${r}`);
-                    return new Err(401, "Session does not exist");
+                    return new Err(404, "Session does not exist");
                 },
             );
     };
