@@ -84,22 +84,29 @@ routes.delete("/:exercise_id", async (req: Request, res: Response) => {
 // submit exercise solution
 routes.post("/:exercise_id", async (req: Request, res: Response) => {
     const exerciseId: number = +req.params.exercise_id;
-    if (Number.isNaN(exerciseId)) {
+    if (!exerciseId) {
         res.status(400).send("ID not a number");
         return;
     }
+
+    // TODO: test the solution beforehand
+
     const userId: number = res.locals.jwtPayload.userId;
+    const courseId = res.locals.courseId;
     const { solution, is_anonymous } = req.body;
 
-    const result = await ExerciseController.submitExerciseSolution(
+    //TODO: Give points - CourseController
+
+    const resultSubmission = await ExerciseController.submitExerciseSolution(
         exerciseId,
         userId,
         solution,
+        is_anonymous,
     );
-    if (result instanceof Err) {
-        const { code, msg } = result;
+    if (resultSubmission instanceof Err) {
+        const { code, msg } = resultSubmission;
         res.status(code).send(msg);
-    } else res.send(result);
+    } else res.send(resultSubmission);
 });
 
 routes.put("/:exercise_id", (req: Request, res: Response) => {
@@ -114,7 +121,7 @@ routes.get(
     ":exercise_id/exercise-solutions",
     async (req: Request, res: Response) => {
         const exerciseId: number = +req.params.exercise_id;
-        if (Number.isNaN(exerciseId)) {
+        if (!exerciseId) {
             res.status(400).send("ID not a number");
             return;
         }
