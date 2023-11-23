@@ -1,5 +1,6 @@
 import * as jwt from "jsonwebtoken";
 import config from "./config";
+import axios from "axios";
 
 class Err {
     code: number;
@@ -11,7 +12,9 @@ class Err {
     }
 }
 
-type Result<T> = T | Err;
+type Result<T, E> = T | E;
+
+type ResponseResult<T> = Result<T, Err>;
 
 type JWTPayload = {
     userId: number;
@@ -31,4 +34,16 @@ enum Role {
     TA = 2,
 }
 
-export { Err, Result, generateJWTToken, Role };
+async function executeTest(): Promise<Result<void, any>> {
+    // TODO: test-runner api
+    return axios.get(config.server.test_runner, {
+        //timeout: 2000,
+    }).then(function (r) {
+            if (r.status in [200, 201])
+                return;
+            else
+                return new Err(r.status, r.data)
+        }).catch(r => new Err(500, r.data));
+}
+
+export { Err, ResponseResult, Result, generateJWTToken, Role };

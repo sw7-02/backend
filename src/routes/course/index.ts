@@ -3,7 +3,7 @@ import session from "./session";
 import assignment from "./assignment";
 import { validateJWT } from "../../middlewares/validateJWT";
 import CourseController from "../../controllers/CourseController";
-import { Err, Result } from "../../lib";
+import { Err, ResponseResult } from "../../lib";
 
 const routes = Router();
 
@@ -18,7 +18,7 @@ routes.use("/:course_id/session", session);
 //routes.use("/:course_id/session", [ENROLLMENT], session);
 
 const genericCourseIdHandler =
-    (func: (courseId: number) => Promise<Result<Object>>) =>
+    (func: (courseId: number) => Promise<ResponseResult<Object>>) =>
     async (req: Request, res: Response) => {
         const courseId = +res.locals.courseId;
         const result = await func(courseId);

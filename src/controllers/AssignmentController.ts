@@ -1,5 +1,5 @@
 import prisma from "../prisma";
-import { Err, Result } from "../lib";
+import { Err, ResponseResult } from "../lib";
 import CourseController from "./CourseController";
 
 type _AssignmentIdentifier = {
@@ -25,7 +25,7 @@ type _AssignmentSolution = {
 export default class AssignmentController {
     static retrieveAllAssignments = async (
         courseId: number,
-    ): Promise<Result<_AssignmentIdentifier[]>> => // TODO: Identifier?
+    ): Promise<ResponseResult<_AssignmentIdentifier[]>> => // TODO: Identifier?
         prisma.assignment
             .findMany({
                 where: {
@@ -49,7 +49,7 @@ export default class AssignmentController {
 
     static retrieveAssignment = async (
         assignmentId: number,
-    ): Promise<Result<_Assignment>> =>
+    ): Promise<ResponseResult<_Assignment>> =>
         prisma.assignment
             .findUniqueOrThrow({
                 where: {
@@ -77,7 +77,7 @@ export default class AssignmentController {
         assignmentId: number,
         userId: number,
         solution: string,
-    ): Promise<Result<void>> =>
+    ): Promise<ResponseResult<void>> =>
         prisma.assignmentSolution
             .upsert({
                 where: {
@@ -106,7 +106,7 @@ export default class AssignmentController {
 
     static retrieveAllAssignmentSolutions = async (
         assignmentId: number,
-    ): Promise<Result<_AssignmentSolution[]>> =>
+    ): Promise<ResponseResult<_AssignmentSolution[]>> =>
         prisma.assignmentSolution
             .findMany({
                 where: {
@@ -142,7 +142,7 @@ export default class AssignmentController {
     static retrieveAssignmentFeedback = async (
         assignmentId: number,
         username: string,
-    ): Promise<Result<string>> =>
+    ): Promise<ResponseResult<string>> =>
         prisma.assignmentSolution
             .findFirstOrThrow({
                 where: {
@@ -172,7 +172,7 @@ export default class AssignmentController {
         courseId: number,
         username: string,
         feedback: string,
-    ): Promise<Result<void>> => {
+    ): Promise<ResponseResult<void>> => {
         let userId = await CourseController.getUserId(courseId, username);
         if (userId instanceof Err) {
             console.error(`User ${username} not in course ${courseId}`);

@@ -1,5 +1,5 @@
 import prisma from "../prisma";
-import { Err, Result } from "../lib";
+import { Err, ResponseResult } from "../lib";
 
 type _Exercise = {
     exercise_id: number;
@@ -20,7 +20,7 @@ type _ExerciseSolution = {
 export default class ExerciseController {
     static retrieveAllExercises = async (
         sessionId: number,
-    ): Promise<Result<_Exercise[]>> =>
+    ): Promise<ResponseResult<_Exercise[]>> =>
         prisma.exercise
             .findMany({
                 where: {
@@ -80,7 +80,7 @@ export default class ExerciseController {
 
     static retrieveExercise = async (
         exerciseId: number,
-    ): Promise<Result<_Exercise>> =>
+    ): Promise<ResponseResult<_Exercise>> =>
         prisma.exercise
             .findUniqueOrThrow({
                 where: {
@@ -144,7 +144,7 @@ export default class ExerciseController {
         userId: number,
         solution: string,
         isAnon: boolean = false,
-    ): Promise<Result<void>> =>
+    ): Promise<ResponseResult<void>> =>
         prisma.exerciseSolution
             .upsert({
                 where: {
@@ -173,7 +173,7 @@ export default class ExerciseController {
 
     static retrieveAllExerciseSolutions = async (
         exerciseId: number,
-    ): Promise<Result<_ExerciseSolution[]>> =>
+    ): Promise<ResponseResult<_ExerciseSolution[]>> =>
         prisma.exerciseSolution
             .findMany({
                 where: {
@@ -222,7 +222,7 @@ export default class ExerciseController {
         programmingLanguage: string,
         codeTemplate: string,
         hints: string[] = [],
-    ): Promise<Result<number>> => {
+    ): Promise<ResponseResult<number>> => {
         let order = 1; //TODO: zero-index?
         return prisma.exercise
             .create({
@@ -258,7 +258,7 @@ export default class ExerciseController {
             );
     };
 
-    static deleteExercise = async (exerciseId: number): Promise<Result<void>> =>
+    static deleteExercise = async (exerciseId: number): Promise<ResponseResult<void>> =>
         prisma.exercise
             .delete({
                 where: {
