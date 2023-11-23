@@ -34,5 +34,4 @@ enum Role {
     TA = 2,
 }
 
-
 export { Err, ResponseResult, Result, generateJWTToken, Role };

@@ -52,7 +52,7 @@ routes.post("/", async (req: Request, res: Response) => {
     if (result instanceof Err) {
         const { code, msg } = result;
         res.status(code).send(msg);
-    } else res.send(result);
+    } else res.status(201).send(result);
 });
 
 routes.get("/:exercise_id", async (req: Request, res: Response) => {

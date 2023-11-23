@@ -289,6 +289,7 @@ export default class ExerciseController {
                     exercise_id: exerciseId,
                 },
                 select: {
+                    programming_language: true,
                     test_case: {
                         select: {
                             code: true,
@@ -299,7 +300,7 @@ export default class ExerciseController {
                 },
             })
             .then(
-                (res) => res.test_case,
+                (res) => res,
                 (r) => {
                     console.error(
                         `Failure getting test cases from exercise ${exerciseId}: ${r}`,
@@ -311,18 +312,31 @@ export default class ExerciseController {
         if (testCases instanceof Err) return testCases;
 
         //TODO: EXEC TESTS
-        const result = await executeTest(testCases.map(tc => {
-            const {test_case_id, code} = tc;
-            return {test_case_id, code};
-        }))
+        const data: Test = {
+            code: solution,
+            language: testCases.programming_language,
+            test_cases: testCases.test_case.map((tc) => {
+                const { test_case_id, code } = tc;
+                return { test_case_id, code };
+            }),
+        };
+        const result = await executeTest(data);
 
-        if (result instanceof Boolean) //OK
-            return;
+        if (result instanceof Err)
+            //OK
+            return result;
+
+        if (result.length === 0) return;
 
         const fails = {
             count: result.length,
-            failed_visible_tests: result.filter(r => testCases.find(v => v.test_case_id == r.test_case_id)?.is_visible)
-        }
+            failed_visible_tests: result.filter(
+                (r) =>
+                    testCases.test_case.find(
+                        (v) => v.test_case_id == r.test_case_id,
+                    )?.is_visible,
+            ),
+        };
         return new Err(69, fails);
 
         // TODO: object to return should be total num of errors, and the ID's for the visible ones
@@ -330,25 +344,35 @@ export default class ExerciseController {
 }
 
 type TestCase = {
-    test_case_id: number,
-    code: string,
-}
+    test_case_id: number;
+    code: string;
+};
+
+type Test = {
+    language: string;
+    code: string;
+    test_cases: TestCase[];
+};
 
 type FailReason = {
-    test_case_id: number,
-    reason: string,
-}
+    test_case_id: number;
+    reason: string;
+};
 
-async function executeTest(cases: TestCase[]): Promise<Result<Boolean, FailReason[]>> {
-    axios
-        .get(config.server.test_runner, {
-            //timeout: 2000,
+async function executeTest(data: Test): Promise<Result<FailReason[], Err>> {
+    return axios
+        .post(config.server.test_runner, JSON.stringify(data), {
+            timeout: 5000,
+            validateStatus: (s) => s in [200, 202],
+            responseType: "json",
         })
-        .then(function (r) {
-            if (r.status in [200, 201]) return;
-            else return new Err(r.status, r.data);
-        })
-        .catch((r) => new Err(500, r.data))
-
-    return true;
+        .then(
+            () => [],
+            (r) => {
+                console.log(r);
+                console.log(r.data);
+                //TODO: Validate correct format, else return Err (Compile error, language not supported, other errors)
+                return r.data.toJSON;
+            },
+        );
 }
