@@ -1,5 +1,7 @@
 import prisma from "../prisma";
-import { Err, ResponseResult } from "../lib";
+import { Err, ResponseResult, Result } from "../lib";
+import axios from "axios";
+import config from "../config";
 
 type _Exercise = {
     exercise_id: number;
@@ -258,7 +260,9 @@ export default class ExerciseController {
             );
     };
 
-    static deleteExercise = async (exerciseId: number): Promise<ResponseResult<void>> =>
+    static deleteExercise = async (
+        exerciseId: number,
+    ): Promise<ResponseResult<void>> =>
         prisma.exercise
             .delete({
                 where: {
@@ -274,4 +278,77 @@ export default class ExerciseController {
                     return new Err(404, "Exercise does not exist");
                 },
             );
+
+    static testExercise = async (
+        exerciseId: number,
+        solution: string,
+    ): Promise<ResponseResult<void>> => {
+        const testCases = await prisma.exercise
+            .findUniqueOrThrow({
+                where: {
+                    exercise_id: exerciseId,
+                },
+                select: {
+                    test_case: {
+                        select: {
+                            code: true,
+                            test_case_id: true,
+                            is_visible: true,
+                        },
+                    },
+                },
+            })
+            .then(
+                (res) => res.test_case,
+                (r) => {
+                    console.error(
+                        `Failure getting test cases from exercise ${exerciseId}: ${r}`,
+                    );
+                    return new Err(404, "Exercise does not exist");
+                },
+            );
+
+        if (testCases instanceof Err) return testCases;
+
+        //TODO: EXEC TESTS
+        const result = await executeTest(testCases.map(tc => {
+            const {test_case_id, code} = tc;
+            return {test_case_id, code};
+        }))
+
+        if (result instanceof Boolean) //OK
+            return;
+
+        const fails = {
+            count: result.length,
+            failed_visible_tests: result.filter(r => testCases.find(v => v.test_case_id == r.test_case_id)?.is_visible)
+        }
+        return new Err(69, fails);
+
+        // TODO: object to return should be total num of errors, and the ID's for the visible ones
+    };
+}
+
+type TestCase = {
+    test_case_id: number,
+    code: string,
+}
+
+type FailReason = {
+    test_case_id: number,
+    reason: string,
+}
+
+async function executeTest(cases: TestCase[]): Promise<Result<Boolean, FailReason[]>> {
+    axios
+        .get(config.server.test_runner, {
+            //timeout: 2000,
+        })
+        .then(function (r) {
+            if (r.status in [200, 201]) return;
+            else return new Err(r.status, r.data);
+        })
+        .catch((r) => new Err(500, r.data))
+
+    return true;
 }

@@ -89,15 +89,18 @@ routes.post("/:exercise_id", async (req: Request, res: Response) => {
         res.status(400).send("ID not a number");
         return;
     }
-
-    // TODO: test the solution beforehand
-
+    const { solution, is_anonymous } = req.body;
     const userId: number = res.locals.jwtPayload.userId;
     const courseId = res.locals.courseId;
-    const { solution, is_anonymous } = req.body;
+
+    let result = await ExerciseController.testExercise(exerciseId, solution);
+    if (result instanceof Err) {
+        const { code, msg } = result;
+        res.status(code).send(msg);
+    }
 
     let points;
-    const resultSubmission = await CourseController.updatePoints(
+    result = await CourseController.updatePoints(
         courseId,
         userId,
         exerciseId,
@@ -113,7 +116,7 @@ routes.post("/:exercise_id", async (req: Request, res: Response) => {
         } else return result;
     });
 
-    if (resultSubmission instanceof Err) {
+    if (result instanceof Err) {
         if (points)
             // It found points, but failed in submitting => subtract the points
             CourseController.decrementPoints(
@@ -122,9 +125,9 @@ routes.post("/:exercise_id", async (req: Request, res: Response) => {
                 exerciseId,
                 points,
             );
-        const { code, msg } = resultSubmission;
+        const { code, msg } = result;
         res.status(code).send(msg);
-    } else res.send(resultSubmission);
+    } else res.send(result);
 });
 
 routes.put("/:exercise_id", (req: Request, res: Response) => {

@@ -4,9 +4,9 @@ import axios from "axios";
 
 class Err {
     code: number;
-    msg: string;
+    msg: string | object;
 
-    constructor(code: number, msg: string) {
+    constructor(code: number, msg: string | object) {
         this.code = code;
         this.msg = msg;
     }
@@ -34,16 +34,5 @@ enum Role {
     TA = 2,
 }
 
-async function executeTest(): Promise<Result<void, any>> {
-    // TODO: test-runner api
-    return axios.get(config.server.test_runner, {
-        //timeout: 2000,
-    }).then(function (r) {
-            if (r.status in [200, 201])
-                return;
-            else
-                return new Err(r.status, r.data)
-        }).catch(r => new Err(500, r.data));
-}
 
 export { Err, ResponseResult, Result, generateJWTToken, Role };
