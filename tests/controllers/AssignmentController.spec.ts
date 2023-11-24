@@ -2,6 +2,7 @@ import * as assert from "assert";
 import ExerciseController from "../../src/controllers/ExerciseController";
 import AssignmentController from "../../src/controllers/AssignmentController";
 import { Err } from "../../src/lib";
+import prisma from "../../src/prisma";
 
 describe("AssignmentController testing", function () {
     it("Retrieve all assignments: Valid session", async function () {
@@ -85,9 +86,7 @@ describe("AssignmentController testing", function () {
         const result =
             await AssignmentController.retrieveAllAssignmentSolutions(1);
         assert.notEqual(result instanceof Err, true);
-        console.log(result);
         const res = result instanceof Err ? assert.fail("unreachable") : result;
-        console.log(res);
         assert.equal(res.length, 2);
         let temp = res[0];
         assert.equal(temp.assignment_solution_id, 1);
@@ -117,6 +116,7 @@ describe("AssignmentController testing", function () {
             "feedback for user1000",
         );
         console.log(result);
+        console.log(await prisma.assignmentSolution.findMany());
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "Assignment solution does not exist");

@@ -135,7 +135,7 @@ export default class AssignmentController {
                             solution: true,
                         },
                         orderBy: {
-                            assignment_solution_id: "desc",
+                            assignment_solution_id: "asc",
                         },
                     },
                 },
