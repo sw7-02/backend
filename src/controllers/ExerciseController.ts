@@ -6,7 +6,7 @@ type _Exercise = {
     title: string;
     description: string;
     code_template: string;
-    programming_language: string,
+    programming_language: string;
     points: number;
     hints: string[];
     test_case: string[];

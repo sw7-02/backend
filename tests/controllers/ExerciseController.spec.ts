@@ -39,8 +39,23 @@ describe("ExerciseController testing", function () {
         assert.equal((<Err>result).msg, "Exercise does not exist");
     });
 
-    it("Submit exercise: Valid", async function () {
-        const result = await ExerciseController.submitExerciseSolution(1, 1, "solution", false);
+    it("Submit exercise: New", async function () {
+        const result = await ExerciseController.submitExerciseSolution(
+            1,
+            2,
+            "solution",
+            false,
+        );
+        console.log(result);
+        assert.notEqual(result instanceof Err, true);
+    });
+    it("Submit exercise: Override", async function () {
+        const result = await ExerciseController.submitExerciseSolution(
+            1,
+            1,
+            "solution from user1",
+            true,
+        );
         console.log(result);
         assert.notEqual(result instanceof Err, true);
     });
@@ -48,15 +63,15 @@ describe("ExerciseController testing", function () {
     it("Retrieve submitted exercises: Valid ID", async function () {
         const result = await ExerciseController.retrieveAllExerciseSolutions(1);
         assert.notEqual(result instanceof Err, true);
-        console.log(result);
         const res = <any[]>result;
         assert.equal(res.length, 2);
     });
     it("Retrieve submitted exercises: Invalid ID", async function () {
-        const result = await ExerciseController.retrieveAllExerciseSolutions(1000);
+        const result =
+            await ExerciseController.retrieveAllExerciseSolutions(1000);
+        console.log(result);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "Exercise does not exist");
     });
-
 });
