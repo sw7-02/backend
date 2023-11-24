@@ -21,6 +21,7 @@ describe("ExerciseController testing", function () {
             "Failed getting sessions: Invalid course ID",
         );
     });
+
     it("Retrieve full course: Valid ID", async function () {
         const result = await CourseController.retrieveFullCourse(1);
         assert.notEqual(result instanceof Err, true);
@@ -40,6 +41,34 @@ describe("ExerciseController testing", function () {
         assert.equal(
             (<Err>result).msg,
             "Failed getting sessions: Invalid course ID",
+        );
+    });
+
+    it("Update points: Valid", async function () {
+        const result = await CourseController.updatePoints(1, 1, 1);
+        assert.notEqual(result instanceof Err, true);
+        assert.equal(result, 15);
+    });
+    it("Update points: Invalid exercise", async function () {
+        const result = await CourseController.updatePoints(1, 1, 1000);
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "Invalid exercise ID");
+    });
+    it("Update points: Invalid enrollment", async function () {
+        let result = await CourseController.updatePoints(1000, 1, 1);
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal(
+            (<Err>result).msg,
+            "Failed finding enrollment: User not enrolled, or bad ID provided",
+        );
+        result = await CourseController.updatePoints(1, 1000, 1);
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal(
+            (<Err>result).msg,
+            "Failed finding enrollment: User not enrolled, or bad ID provided",
         );
     });
 });
