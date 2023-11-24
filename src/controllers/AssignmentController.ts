@@ -18,9 +18,8 @@ type _Assignment = {
 };
 
 type _AssignmentSolution = {
-    assignment_id: number;
+    assignment_solution_id: number;
     solution: string;
-    username: string;
 };
 
 export default class AssignmentController {
@@ -124,31 +123,25 @@ export default class AssignmentController {
     static retrieveAllAssignmentSolutions = async (
         assignmentId: number,
     ): Promise<Result<_AssignmentSolution[]>> =>
-        prisma.assignmentSolution
-            .findMany({
+        prisma.assignment
+            .findUniqueOrThrow({
                 where: {
                     assignment_id: assignmentId,
                 },
                 select: {
-                    assignment_id: true,
-                    solution: true,
-                    user: {
+                    solutions: {
                         select: {
-                            username: true,
+                            assignment_solution_id: true,
+                            solution: true,
+                        },
+                        orderBy: {
+                            assignment_solution_id: "desc",
                         },
                     },
                 },
             })
             .then(
-                (res) =>
-                    res.map((r) => {
-                        const { solution, assignment_id } = r;
-                        return {
-                            assignment_id,
-                            solution,
-                            username: r.user.username,
-                        };
-                    }),
+                (res) => res.solutions,
                 (r) => {
                     console.error(
                         `Failure getting assignment ${assignmentId}: ${r}`,

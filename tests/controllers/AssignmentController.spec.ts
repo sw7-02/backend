@@ -54,12 +54,16 @@ describe("AssignmentController testing", function () {
             "solution from user1",
         );
         assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "User or Assignment doesn't exist");
         result = await AssignmentController.submitAssignementSolution(
             1,
             1000,
             "solution from user1000",
         );
         assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "User or Assignment doesn't exist");
     });
     it("Submit assignment: Override", async function () {
         const result = await AssignmentController.submitAssignementSolution(
@@ -71,26 +75,23 @@ describe("AssignmentController testing", function () {
     });
 
     it("Retrieve submitted assignment: Valid ID", async function () {
-        const result = await ExerciseController.retrieveAllExerciseSolutions(1);
+        const result =
+            await AssignmentController.retrieveAllAssignmentSolutions(1);
         assert.notEqual(result instanceof Err, true);
         const res = <any[]>result;
         assert.equal(res.length, 2);
         let temp = res[0];
+        assert.equal(temp.assignment_solution_id, 1);
         assert.equal(temp.solution, "solution from user1");
-        assert.equal(temp.is_pinned, false);
-        assert.equal(temp.username, "Anonymous");
         temp = res[1];
+        assert.equal(temp.assignment_solution_id, 2);
         assert.equal(temp.solution, "solution from user2");
-        assert.equal(temp.is_pinned, false);
-        assert.equal(temp.username, "user2");
     });
     it("Retrieve submitted assignment: Invalid ID", async function () {
         const result =
-            await ExerciseController.retrieveAllExerciseSolutions(1000);
+            await AssignmentController.retrieveAllAssignmentSolutions(1000);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
-        assert.equal((<Err>result).msg, "Exercise does not exist");
+        assert.equal((<Err>result).msg, "Assignment does not exist");
     });
-
-    // TODO: Add/Remove exercise (not in routes, ignored for now in testing)
 });
