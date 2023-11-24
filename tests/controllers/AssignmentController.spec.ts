@@ -47,8 +47,8 @@ describe("AssignmentController testing", function () {
         );
         assert.notEqual(result instanceof Err, true);
     });
-    it("Submit assignment: Invalid id", async function () {
-        let result = await AssignmentController.submitAssignementSolution(
+    it("Submit assignment: Invalid Assignment id", async function () {
+        const result = await AssignmentController.submitAssignementSolution(
             1000,
             1,
             "solution from user1",
@@ -56,7 +56,9 @@ describe("AssignmentController testing", function () {
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "User or Assignment doesn't exist");
-        result = await AssignmentController.submitAssignementSolution(
+    });
+    it("Submit assignment: Invalid User id", async function () {
+        const result = await AssignmentController.submitAssignementSolution(
             1,
             1000,
             "solution from user1000",
@@ -93,5 +95,58 @@ describe("AssignmentController testing", function () {
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "Assignment does not exist");
+    });
+
+    it("Post feedback: Valid ID", async function () {
+        const result = await AssignmentController.postAssignmentFeedback(
+            1,
+            "feedback for user1",
+        );
+        assert.notEqual(result instanceof Err, true);
+    });
+    it("Post feedback: Invalid ID", async function () {
+        const result = await AssignmentController.postAssignmentFeedback(
+            1000,
+            "feedback for user1000",
+        );
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "Assignment does not exist");
+    });
+
+    it("Retrieve feedback: Valid", async function () {
+        const result = await AssignmentController.retrieveAssignmentFeedback(
+            1,
+            1,
+        );
+        assert.notEqual(result instanceof Err, true);
+        assert.equal(result, "feedback for user1");
+    });
+    it("Retrieve feedback: No feedback", async function () {
+        const result = await AssignmentController.retrieveAssignmentFeedback(
+            1,
+            2,
+        );
+        assert.notEqual(result instanceof Err, true);
+        assert.equal((<Err>result).code, 204);
+        assert.equal((<Err>result).msg, "Feedback has not been provided yet");
+    });
+    it("Retrieve feedback: Invalid Assignment ID", async function () {
+        const result = await AssignmentController.retrieveAssignmentFeedback(
+            1000,
+            1,
+        );
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "Assignment solution does not exist");
+    });
+    it("Retrieve feedback: Invalid User ID", async function () {
+        const result = await AssignmentController.retrieveAssignmentFeedback(
+            1,
+            1000,
+        );
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "Assignment solution does not exist");
     });
 });

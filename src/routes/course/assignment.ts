@@ -75,21 +75,22 @@ routes.get(
     },
 );
 routes
-    .route("/:assignment_id/assignment-solution/:username")
+    .route("/:assignment_id/assignment-solution/:assignment_solution_id")
     .get(async (req: Request, res: Response) => {
+        //TODO: correct user check
         const id: number = +req.params.assignment_id;
         if (!id) {
-            res.status(400).send("ID not a number");
+            res.status(400).send("Assignment ID not a number");
             return;
         }
-        const username: string = req.params.username;
-        if (!username) {
-            res.status(400).send("Username invalid");
+        const solId: number = +req.params.assignment_solution_id;
+        if (!solId) {
+            res.status(400).send("Assignment solution ID not a number");
             return;
         }
         const result = await AssignmentController.retrieveAssignmentFeedback(
             id,
-            username,
+            res.locals.jwtPayload.userId,
         );
         if (result instanceof Err) {
             const { code, msg } = result;
@@ -98,21 +99,14 @@ routes
     })
     //TODO: Role middleware
     .post(async (req: Request, res: Response) => {
-        const id: number = +req.params.assignment_id;
-        if (!id) {
-            res.status(400).send("ID not a number");
-            return;
-        }
-        const username: string = req.params.username;
-        if (!username) {
-            res.status(400).send("Username invalid");
+        const solId: number = +req.params.assignment_solution_id;
+        if (!solId) {
+            res.status(400).send("Assignment solution ID not a number");
             return;
         }
         const feedback: string = req.body.feedback;
         const result = await AssignmentController.postAssignmentFeedback(
-            id,
-            res.locals.courseId,
-            username,
+            solId,
             feedback,
         );
         if (result instanceof Err) {

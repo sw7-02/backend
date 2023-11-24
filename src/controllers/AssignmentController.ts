@@ -151,15 +151,13 @@ export default class AssignmentController {
             );
     static retrieveAssignmentFeedback = async (
         assignmentId: number,
-        username: string,
+        userId: number,
     ): Promise<Result<string>> =>
         prisma.assignmentSolution
             .findFirstOrThrow({
                 where: {
                     assignment_id: assignmentId,
-                    user: {
-                        username,
-                    },
+                    user_id: userId,
                 },
                 select: {
                     feedback: true,
@@ -171,30 +169,18 @@ export default class AssignmentController {
                         ? res.feedback
                         : new Err(204, "Feedback has not been provided yet"),
                 (r) => {
-                    console.error(
-                        `Failure getting assignment solution from ${username} for assignment ${assignmentId}: ${r}`,
-                    );
+                    console.error(`Failure getting assignment solution: ${r}`);
                     return new Err(404, "Assignment solution does not exist");
                 },
             );
     static postAssignmentFeedback = async (
-        assignmentId: number,
-        courseId: number,
-        username: string,
+        assignmentSolutionId: number,
         feedback: string,
     ): Promise<Result<void>> => {
-        let userId = await CourseController.getUserId(courseId, username);
-        if (userId instanceof Err) {
-            console.error(`User ${username} not in course ${courseId}`);
-            return userId;
-        }
         prisma.assignmentSolution
             .update({
                 where: {
-                    user_id_assignment_id: {
-                        assignment_id: assignmentId,
-                        user_id: userId,
-                    },
+                    assignment_solution_id: assignmentSolutionId,
                 },
                 data: {
                     feedback,
@@ -203,9 +189,7 @@ export default class AssignmentController {
             .then(
                 (res) => res,
                 (r) => {
-                    console.error(
-                        `Failure getting assignment solution from ${username} for assignment ${assignmentId}: ${r}`,
-                    );
+                    console.error(`Failure getting assignment solution: ${r}`);
                     return new Err(404, "Assignment solution does not exist");
                 },
             );
