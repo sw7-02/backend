@@ -15,7 +15,7 @@ let request: Request;
 let courseId = 1;
 
 describe("roleCheck testing", function () {
-    beforeEach("reset request and response, and seed DB", async function () {
+    beforeEach("reset request and response", async function () {
         request = httpMocks.createRequest();
         response = httpMocks.createResponse();
     });
