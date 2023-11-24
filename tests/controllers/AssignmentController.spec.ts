@@ -115,8 +115,6 @@ describe("AssignmentController testing", function () {
             1000,
             "feedback for user1000",
         );
-        console.log(result);
-        console.log(await prisma.assignmentSolution.findMany());
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "Assignment solution does not exist");

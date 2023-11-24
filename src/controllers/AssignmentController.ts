@@ -176,7 +176,7 @@ export default class AssignmentController {
     static postAssignmentFeedback = async (
         assignmentSolutionId: number,
         feedback: string,
-    ): Promise<Result<void>> => {
+    ): Promise<Result<void>> =>
         prisma.assignmentSolution
             .update({
                 where: {
@@ -187,11 +187,10 @@ export default class AssignmentController {
                 },
             })
             .then(
-                (res) => res,
+                () => {},
                 (r) => {
                     console.error(`Failure getting assignment solution: ${r}`);
                     return new Err(404, "Assignment solution does not exist");
                 },
             );
-    };
 }
