@@ -41,14 +41,22 @@ describe("ExerciseController testing", function () {
 
     it("Submit exercise: Valid", async function () {
         const result = await ExerciseController.submitExerciseSolution(1, 1, "solution", false);
+        console.log(result);
         assert.notEqual(result instanceof Err, true);
     });
 
-    it("Submit exercise: Valid", async function () {
+    it("Retrieve submitted exercises: Valid ID", async function () {
         const result = await ExerciseController.retrieveAllExerciseSolutions(1);
         assert.notEqual(result instanceof Err, true);
+        console.log(result);
         const res = <any[]>result;
         assert.equal(res.length, 2);
+    });
+    it("Retrieve submitted exercises: Invalid ID", async function () {
+        const result = await ExerciseController.retrieveAllExerciseSolutions(1000);
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "Exercise does not exist");
     });
 
 });
