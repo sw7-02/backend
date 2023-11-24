@@ -249,7 +249,7 @@ export default class CourseController {
                 },
                 (reason) => {
                     console.error(`Failed getting leaderboards: ${reason}`);
-                    return new Err(404, "Bad Course ID");
+                    return new Err(404, "Course does not exist");
                 },
             );
 

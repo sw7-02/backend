@@ -54,6 +54,14 @@ export async function seed() {
             total_points: 5,
         },
     });
+    await prisma.enrollment.create({
+        data: {
+            user_id: user2.user_id,
+            course_id: course1.course_id,
+            user_role: 0,
+            total_points: 2,
+        },
+    });
 
     // Example for creating assignments:
     const assignment1 = await prisma.assignment.create({

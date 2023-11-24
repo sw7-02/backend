@@ -12,7 +12,7 @@ describe("ExerciseController testing", function () {
         assert.equal(res.sessions[0].title, "Session 1");
         assert.equal(res.sessions[0].session_id, 1);
     });
-    it("Retrieve course: Valid ID", async function () {
+    it("Retrieve course: Invalid ID", async function () {
         const result = await CourseController.retrieveCourse(1000);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
@@ -34,7 +34,7 @@ describe("ExerciseController testing", function () {
         assert.equal(res.sessions[0].exercises[0].title, "Exercise 1");
         assert.equal(res.sessions[0].exercises[0].exercise_id, 1);
     });
-    it("Retrieve full course: Valid ID", async function () {
+    it("Retrieve full course: Invalid ID", async function () {
         const result = await CourseController.retrieveFullCourse(1000);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
@@ -77,7 +77,6 @@ describe("ExerciseController testing", function () {
         assert.notEqual(result instanceof Err, true);
         assert.equal(result, 5);
     });
-
     it("Decrement points: Invalid enrollment", async function () {
         let result = await CourseController.decrementPoints(1000, 1, 10);
         assert.equal(result instanceof Err, true);
@@ -93,5 +92,24 @@ describe("ExerciseController testing", function () {
             (<Err>result).msg,
             "Failed finding enrollment: User not enrolled, or bad ID provided",
         );
+    });
+
+    it("Retrieve leaderboard: Valid ID", async function () {
+        const result = await CourseController.retrieveLeaderboard(1);
+        assert.notEqual(result instanceof Err, true);
+        const res = <any[]>result;
+        assert.equal(res.length, 2);
+        let user = res[0];
+        assert.equal(user.username, "user1");
+        assert.equal(user.total_points, 5);
+        user = res[1];
+        assert.equal(user.username, "user2");
+        assert.equal(user.total_points, 2);
+    });
+    it("Retrieve leaderboard: Invalid ID", async function () {
+        const result = await CourseController.retrieveFullCourse(1000);
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "Course does not exist");
     });
 });
