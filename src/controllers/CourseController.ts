@@ -256,24 +256,28 @@ export default class CourseController {
     static retrieveEnrolledCourses = async (
         userId: number,
     ): Promise<Result<_CourseOverview>> =>
-        prisma.enrollment
-            .findMany({
+        prisma.user
+            .findUniqueOrThrow({
                 where: {
                     user_id: userId,
                 },
                 select: {
-                    user_role: true,
-                    course: {
+                    enrollments: {
                         select: {
-                            course_id: true,
-                            title: true,
+                            user_role: true,
+                            course: {
+                                select: {
+                                    course_id: true,
+                                    title: true,
+                                },
+                            },
                         },
                     },
                 },
             })
             .then(
                 (res) =>
-                    res.map((r) => {
+                    res.enrollments.map((r) => {
                         const { course_id, title } = r.course;
                         return { course_id, title, user_role: r.user_role };
                     }),
