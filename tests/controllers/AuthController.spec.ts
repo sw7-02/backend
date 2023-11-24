@@ -50,15 +50,13 @@ describe("AuthController testing", function () {
         assert.notEqual(res instanceof Err, true);
         const jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
         assert.equal(jwtPayload.username, "user1");
-        try {
-            await prisma.user.findFirstOrThrow({
+        await prisma.user
+            .findFirstOrThrow({
                 where: {
-                    username: "user3",
+                    username: "user1",
                 },
-            });
-        } catch (e) {
-            assert.fail("unreachable");
-        }
+            })
+            .catch(() => assert.fail("unreachable"));
     });
     it("Login New User", async function () {
         const res = await AuthController.login("user4", "password4@");
