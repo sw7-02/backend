@@ -125,7 +125,7 @@ seed().catch((error) => {
  */
 
 export async function exhaust() {
-    prisma.user.deleteMany({});
+    await prisma.$executeRaw(`TRUNCATE TABLE users RESTART IDENTITY CASCADE;`)
     prisma.enrollment.deleteMany({});
 
     prisma.course.deleteMany({});
