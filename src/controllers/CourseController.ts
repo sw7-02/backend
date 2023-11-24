@@ -173,7 +173,6 @@ export default class CourseController {
     static decrementPoints = async function (
         courseId: number,
         userId: number,
-        exerciseId: number,
         points: number,
     ): Promise<Result<number>> {
         return prisma.enrollment

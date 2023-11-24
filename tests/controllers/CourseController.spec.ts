@@ -71,4 +71,27 @@ describe("ExerciseController testing", function () {
             "Failed finding enrollment: User not enrolled, or bad ID provided",
         );
     });
+
+    it("Decrement points: Valid", async function () {
+        const result = await CourseController.decrementPoints(1, 1, 10);
+        assert.notEqual(result instanceof Err, true);
+        assert.equal(result, 5);
+    });
+
+    it("Decrement points: Invalid enrollment", async function () {
+        let result = await CourseController.decrementPoints(1000, 1, 10);
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal(
+            (<Err>result).msg,
+            "Failed finding enrollment: User not enrolled, or bad ID provided",
+        );
+        result = await CourseController.decrementPoints(1, 1000, 10);
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal(
+            (<Err>result).msg,
+            "Failed finding enrollment: User not enrolled, or bad ID provided",
+        );
+    });
 });
