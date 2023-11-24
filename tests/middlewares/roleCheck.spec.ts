@@ -18,12 +18,7 @@ describe("roleCheck testing", function () {
     beforeEach("reset request and response, and seed DB", async function () {
         request = httpMocks.createRequest();
         response = httpMocks.createResponse();
-        this.timeout(10000);
-        await seed();
     });
-
-    afterEach("Purge DB", async () => await exhaust());
-
 
     it("deny student access", async function () {
         let roles = [1, 2];
