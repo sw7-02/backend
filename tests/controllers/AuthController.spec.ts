@@ -14,7 +14,7 @@ describe("AuthController testing", function () {
         this.timeout(10000);
         await seed();
     });
-    afterEach("Purge DB", exhaust);
+    afterEach("Purge DB", async () => await exhaust());
 
     it("Signup New User", async function () {
         const res = await AuthController.signUp("user3", "password3@");

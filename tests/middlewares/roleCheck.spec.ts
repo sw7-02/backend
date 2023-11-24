@@ -21,7 +21,8 @@ describe("roleCheck testing", function () {
         await seed();
     });
 
-    afterEach("purge DB", exhaust);
+    afterEach("Purge DB", async () => await exhaust());
+
 
     it("deny student access", async function () {
         let roles = [1, 2];
