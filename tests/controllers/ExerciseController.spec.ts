@@ -14,10 +14,9 @@ describe("AuthController testing", function () {
     });
     after("Purge DB", async () => await exhaust());
 
-    it("Retrieve all exercises: Valid session", async function() {
+    it("Retrieve all exercises: Valid session", async function () {
         const result = await ExerciseController.retrieveAllExercises(1);
         assert.notEqual(result instanceof Err, true);
-        assert.equal(result.length, 1);
+        assert.equal((<[]>result).length, 1);
     });
-
 });
