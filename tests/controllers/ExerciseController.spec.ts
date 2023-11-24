@@ -63,7 +63,7 @@ describe("ExerciseController testing", function () {
         assert.equal(temp.is_pinned, false);
         assert.equal(temp.username, "Anonymous");
         temp = res[1];
-        assert.equal(temp.solution, "solution from user 2");
+        assert.equal(temp.solution, "solution from user2");
         assert.equal(temp.is_pinned, false);
         assert.equal(temp.username, "user2");
     });
