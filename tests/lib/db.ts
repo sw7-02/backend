@@ -115,8 +115,6 @@ export async function seed() {
     });
 
     console.log("Sample data seeded successfully.");
-
-    await prisma.$disconnect();
 }
 
 /*
