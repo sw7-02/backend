@@ -116,12 +116,7 @@ routes.post("/:exercise_id", async (req: Request, res: Response) => {
     if (resultSubmission instanceof Err) {
         if (points)
             // It found points, but failed in submitting => subtract the points
-            CourseController.decrementPoints(
-                courseId,
-                userId,
-                exerciseId,
-                points,
-            );
+            await CourseController.decrementPoints(courseId, userId, points);
         const { code, msg } = resultSubmission;
         res.status(code).send(msg);
     } else res.send(resultSubmission);
