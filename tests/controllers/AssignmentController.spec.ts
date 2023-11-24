@@ -11,7 +11,7 @@ describe("AssignmentController testing", function () {
         assert.equal(res.length, 1);
         assert.equal(res[0].assignment_id, 1);
         assert.equal(res[0].title, "Assignment 1");
-        assert.equal(res[0].due_date, new Date("21/12/2023"));
+        assert.equal(res[0].due_date, new Date("2023-12-21"));
     });
     it("Retrieve all assignments: Invalid session", async function () {
         const result = await AssignmentController.retrieveAllAssignments(1000);
@@ -29,7 +29,7 @@ describe("AssignmentController testing", function () {
         assert.equal(res.description, "Description of Assignment 1");
         assert.equal(res.programming_language, "JavaScript");
         assert.equal(res.code_template, "Your code template here");
-        assert.equal(res.due_date, new Date("21/12/2023"));
+        assert.equal(res.due_date, new Date("2023-12-21"));
         //TODO: Hints and test_cases
     });
     it("Retrieve specific assignment: Invalid id", async function () {
@@ -47,6 +47,20 @@ describe("AssignmentController testing", function () {
         );
         assert.notEqual(result instanceof Err, true);
     });
+    it("Submit assignment: Invalid id", async function () {
+        let result = await AssignmentController.submitAssignementSolution(
+            1000,
+            1,
+            "solution from user1",
+        );
+        assert.equal(result instanceof Err, true);
+        result = await AssignmentController.submitAssignementSolution(
+            1,
+            1000,
+            "solution from user1000",
+        );
+        assert.equal(result instanceof Err, true);
+    });
     it("Submit assignment: Override", async function () {
         const result = await AssignmentController.submitAssignementSolution(
             1,
@@ -54,14 +68,6 @@ describe("AssignmentController testing", function () {
             "solution from user1",
         );
         assert.notEqual(result instanceof Err, true);
-    });
-    it("Submit assignment: Invalid id", async function () {
-        const result = await AssignmentController.submitAssignementSolution(
-            1000,
-            1,
-            "solution from user1",
-        );
-        assert.equal(result instanceof Err, true);
     });
 
     it("Retrieve submitted assignment: Valid ID", async function () {

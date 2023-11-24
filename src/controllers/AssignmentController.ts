@@ -90,8 +90,16 @@ export default class AssignmentController {
                 },
                 update: { solution, feedback: "" },
                 create: {
-                    assignment_id: assignmentId,
-                    user_id: userId,
+                    user: {
+                        connect: {
+                            user_id: userId,
+                        },
+                    },
+                    assignment: {
+                        connect: {
+                            assignment_id: assignmentId,
+                        },
+                    },
                     solution,
                     feedback: "",
                 },
