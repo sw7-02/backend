@@ -38,6 +38,7 @@ type _Leaderboard = {
 type _CourseOverview = {
     course_id: number;
     title: string;
+    user_role: Role,
 }[];
 
 export default class CourseController {
@@ -262,6 +263,7 @@ export default class CourseController {
                     user_id: userId,
                 },
                 select: {
+                    user_role: true,
                     course: {
                         select: {
                             course_id: true,
@@ -271,7 +273,11 @@ export default class CourseController {
                 },
             })
             .then(
-                (res) => res.map((r) => r.course),
+                (res) => res.map((r) => {
+                    const {course_id, title} = r.course;
+                    return {course_id, title, user_role: r.user_role};
+
+                }),
                 (reason) => {
                     console.error(`Failed getting courses: ${reason}`);
                     return new Err(404, "Invalid user");
