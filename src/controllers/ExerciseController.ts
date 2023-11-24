@@ -21,8 +21,11 @@ export default class ExerciseController {
     static retrieveAllExercises = async (
         sessionId: number,
     ): Promise<Result<_Exercise[]>> => {
-        if (! await prisma.session.findFirst({where: {session_id: sessionId}}))
-        {
+        if (
+            !(await prisma.session.findFirst({
+                where: { session_id: sessionId },
+            }))
+        ) {
             console.error(`Failure getting session ${sessionId}`);
             return new Err(401, "Session does not exist");
         }
@@ -79,7 +82,7 @@ export default class ExerciseController {
                                 points,
                                 hints: hints.map((h) => h.description),
                                 test_case: test_case.map((t) => t.code),
-                            }
+                            };
                         });
                 },
                 (r) => {
@@ -87,7 +90,7 @@ export default class ExerciseController {
                     return new Err(401, "Session does not exist");
                 },
             );
-    }
+    };
 
     static retrieveExercise = async (
         exerciseId: number,
