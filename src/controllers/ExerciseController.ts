@@ -58,7 +58,7 @@ export default class ExerciseController {
                 (res) => {
                     if (res.exercises.length === 0) {
                         console.error(`No exercises in session`);
-                        return new Err(401, "No exercises in session");
+                        return new Err(404, "No exercises in session");
                     } else
                         return res.exercises.map((r) => {
                             const {
@@ -85,7 +85,7 @@ export default class ExerciseController {
                 },
                 (r) => {
                     console.error(`Failure getting session ${sessionId}: ${r}`);
-                    return new Err(401, "Session does not exist");
+                    return new Err(404, "Session does not exist");
                 },
             );
 
@@ -167,9 +167,15 @@ export default class ExerciseController {
                         exercise_id: exerciseId,
                     },
                 },
-                update: { exercise_id: exerciseId, user_id: userId, solution, is_anonymous: isAnon, is_pinned: false },
+                update: {
+                    exercise_id: exerciseId,
+                    user_id: userId,
+                    solution,
+                    is_anonymous: isAnon,
+                    is_pinned: false,
+                },
                 create: {
-                    exercise : {
+                    exercise: {
                         connect: {
                             exercise_id: exerciseId,
                         },
@@ -234,7 +240,7 @@ export default class ExerciseController {
                     console.error(
                         `Failure getting exercise ${exerciseId}: ${r}`,
                     );
-                    return new Err(401, "Exercise does not exist");
+                    return new Err(404, "Exercise does not exist");
                 },
             );
 
@@ -277,7 +283,7 @@ export default class ExerciseController {
                 (e) => e.exercise_id,
                 (r) => {
                     console.error(`Failure trying to add exercise: ${r}`);
-                    return new Err(401, "Session does not exist");
+                    return new Err(404, "Session does not exist");
                 },
             );
     };

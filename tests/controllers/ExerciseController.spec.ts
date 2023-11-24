@@ -43,7 +43,7 @@ describe("ExerciseController testing", function () {
         const result = await ExerciseController.submitExerciseSolution(
             1,
             2,
-            "solution",
+            "solution from user2",
             false,
         );
         console.log(result);
@@ -56,7 +56,6 @@ describe("ExerciseController testing", function () {
             "solution from user1",
             true,
         );
-        console.log(result);
         assert.notEqual(result instanceof Err, true);
     });
 
@@ -65,11 +64,19 @@ describe("ExerciseController testing", function () {
         assert.notEqual(result instanceof Err, true);
         const res = <any[]>result;
         assert.equal(res.length, 2);
+        let temp = res[0];
+        assert.equal(temp.solution, "solution from user1");
+        assert.equal(temp.is_pinned, false);
+        assert.equal(temp.username, "Anonymous");
+        temp = res[1];
+        assert.equal(temp.solution, "solution from user 2");
+        assert.equal(temp.is_pinned, false);
+        assert.equal(temp.username, "user2");
+
     });
     it("Retrieve submitted exercises: Invalid ID", async function () {
         const result =
             await ExerciseController.retrieveAllExerciseSolutions(1000);
-        console.log(result);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "Exercise does not exist");
