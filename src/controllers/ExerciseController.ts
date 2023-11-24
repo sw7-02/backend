@@ -51,27 +51,31 @@ export default class ExerciseController {
                 },
             })
             .then(
-                (res) =>
-                    res.map((r) => {
-                        const {
-                            exercise_id,
-                            title,
-                            description,
-                            hints,
-                            code_template,
-                            points,
-                            test_case,
-                        } = r;
-                        return {
-                            exercise_id,
-                            title,
-                            description,
-                            code_template,
-                            points,
-                            hints: hints.map((h) => h.description),
-                            test_case: test_case.map((t) => t.code),
-                        };
-                    }),
+                (res) => {
+                    if (res.length === 0) {
+                        console.error(`Failure getting session ${sessionId}: ${r}`);
+                        return new Err(401, "Session does not exist");
+                    } else
+                        return  res.map((r) => {
+                            const {
+                                exercise_id,
+                                title,
+                                description,
+                                hints,
+                                code_template,
+                                points,
+                                test_case,
+                            } = r;
+                            return {
+                                exercise_id,
+                                title,
+                                description,
+                                code_template,
+                                points,
+                                hints: hints.map((h) => h.description),
+                                test_case: test_case.map((t) => t.code),
+                            }});
+                   },
                 (r) => {
                     console.error(`Failure getting session ${sessionId}: ${r}`);
                     return new Err(401, "Session does not exist");
