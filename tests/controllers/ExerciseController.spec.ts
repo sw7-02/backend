@@ -72,7 +72,6 @@ describe("ExerciseController testing", function () {
         assert.equal(temp.solution, "solution from user 2");
         assert.equal(temp.is_pinned, false);
         assert.equal(temp.username, "user2");
-
     });
     it("Retrieve submitted exercises: Invalid ID", async function () {
         const result =
@@ -81,4 +80,6 @@ describe("ExerciseController testing", function () {
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "Exercise does not exist");
     });
+
+    // TODO: Add/Remove exercise (not in routes, ignored for now in testing)
 });
