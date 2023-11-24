@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import ExerciseController from "../../src/controllers/ExerciseController";
 import { Err } from "../../src/lib";
+import prisma from "../../src/prisma";
 
 describe("ExerciseController testing", function () {
     it("Retrieve all exercises: Valid session", async function () {
@@ -50,6 +51,8 @@ describe("ExerciseController testing", function () {
             "solution from user1",
             true,
         );
+        console.log(result);
+        console.log(await prisma.exercise.findMany());
         assert.notEqual(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "User or Exercise does not exist");
