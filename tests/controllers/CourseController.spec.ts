@@ -107,9 +107,25 @@ describe("ExerciseController testing", function () {
         assert.equal(user.total_points, 2);
     });
     it("Retrieve leaderboard: Invalid ID", async function () {
-        const result = await CourseController.retrieveFullCourse(1000);
+        const result = await CourseController.retrieveLeaderboard(1000);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "Course does not exist");
+    });
+
+    it("Retrieve enrolled courses: Valid ID", async function () {
+        const result = await CourseController.retrieveEnrolledCourses(1);
+        assert.notEqual(result instanceof Err, true);
+        const res = <any[]>result;
+        assert.equal(res.length, 1);
+        assert.equal(res[0].course_id, 1);
+        assert.equal(res[0].title, "Course 1");
+        assert.equal(res[0].user_role, 0);
+    });
+    it("Retrieve enrolled courses: Invalid ID", async function () {
+        const result = await CourseController.retrieveEnrolledCourses(1000);
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "User does not exist");
     });
 });

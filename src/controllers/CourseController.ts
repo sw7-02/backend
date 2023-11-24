@@ -228,7 +228,7 @@ export default class CourseController {
                     },
                 },
                 orderBy: {
-                    total_points: "asc",
+                    total_points: "desc",
                 },
             })
             .then(
@@ -279,7 +279,7 @@ export default class CourseController {
                     }),
                 (reason) => {
                     console.error(`Failed getting courses: ${reason}`);
-                    return new Err(404, "Invalid user");
+                    return new Err(404, "User does not exist");
                 },
             );
 }
