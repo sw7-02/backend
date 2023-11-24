@@ -21,52 +21,46 @@ type _ExerciseSolution = {
 export default class ExerciseController {
     static retrieveAllExercises = async (
         sessionId: number,
-    ): Promise<Result<_Exercise[]>> => {
-        if (
-            !(await prisma.session.findFirst({
+    ): Promise<Result<_Exercise[]>> =>
+        prisma.session
+            .findUniqueOrThrow({
                 where: { session_id: sessionId },
-            }))
-        ) {
-            console.error(`Failure getting session ${sessionId}`);
-            return new Err(401, "Session does not exist");
-        }
-        return prisma.exercise
-            .findMany({
-                where: {
-                    session_id: sessionId,
-                },
                 select: {
-                    exercise_id: true,
-                    title: true,
-                    description: true,
-                    code_template: true,
-                    programming_language: true,
-                    hints: {
+                    exercises: {
                         select: {
+                            exercise_id: true,
+                            title: true,
                             description: true,
-                        },
-                        orderBy: {
-                            order: "asc",
-                        },
-                    },
-                    points: true,
-                    test_case: {
-                        where: {
-                            is_visible: true,
-                        },
-                        select: {
-                            code: true,
+                            code_template: true,
+                            programming_language: true,
+                            hints: {
+                                select: {
+                                    description: true,
+                                },
+                                orderBy: {
+                                    order: "asc",
+                                },
+                            },
+                            points: true,
+                            test_case: {
+                                where: {
+                                    is_visible: true,
+                                },
+                                select: {
+                                    code: true,
+                                },
+                            },
                         },
                     },
                 },
             })
             .then(
                 (res) => {
-                    if (res.length === 0) {
+                    if (res.exercises.length === 0) {
                         console.error(`No exercises in session`);
                         return new Err(401, "No exercises in session");
                     } else
-                        return res.map((r) => {
+                        return res.exercises.map((r) => {
                             const {
                                 exercise_id,
                                 title,
@@ -94,7 +88,6 @@ export default class ExerciseController {
                     return new Err(401, "Session does not exist");
                 },
             );
-    };
 
     static retrieveExercise = async (
         exerciseId: number,
@@ -195,28 +188,30 @@ export default class ExerciseController {
     static retrieveAllExerciseSolutions = async (
         exerciseId: number,
     ): Promise<Result<_ExerciseSolution[]>> =>
-        prisma.exerciseSolution
-            .findMany({
-                where: {
-                    exercise_id: exerciseId,
-                },
-                select: {
-                    solution: true,
-                    is_anonymous: true,
-                    is_pinned: true,
-                    user: {
+        prisma.exercise
+            .findUniqueOrThrow({
+                where: { exercise_id: exerciseId },
+                include: {
+                    solutions: {
                         select: {
-                            username: true,
+                            solution: true,
+                            is_anonymous: true,
+                            is_pinned: true,
+                            user: {
+                                select: {
+                                    username: true,
+                                },
+                            },
+                        },
+                        orderBy: {
+                            is_pinned: "asc",
                         },
                     },
-                },
-                orderBy: {
-                    is_pinned: "asc",
                 },
             })
             .then(
                 (res) =>
-                    res.map((r) => {
+                    res.solutions.map((r) => {
                         const { solution, is_pinned } = r;
                         const username = r.is_anonymous
                             ? "Anonymous"
