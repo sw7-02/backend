@@ -6,6 +6,7 @@ type _Exercise = {
     title: string;
     description: string;
     code_template: string;
+    programming_language: string;
     points: number;
     hints: string[];
     test_case: string[];
@@ -21,60 +22,70 @@ export default class ExerciseController {
     static retrieveAllExercises = async (
         sessionId: number,
     ): Promise<Result<_Exercise[]>> =>
-        prisma.exercise
-            .findMany({
-                where: {
-                    session_id: sessionId,
-                },
+        prisma.session
+            .findUniqueOrThrow({
+                where: { session_id: sessionId },
                 select: {
-                    exercise_id: true,
-                    title: true,
-                    description: true,
-                    code_template: true,
-                    hints: {
+                    exercises: {
                         select: {
+                            exercise_id: true,
+                            title: true,
                             description: true,
-                        },
-                        orderBy: {
-                            order: "asc",
-                        },
-                    },
-                    points: true,
-                    test_case: {
-                        where: {
-                            is_visible: true,
-                        },
-                        select: {
-                            code: true,
+                            code_template: true,
+                            programming_language: true,
+                            hints: {
+                                select: {
+                                    description: true,
+                                },
+                                orderBy: {
+                                    order: "asc",
+                                },
+                            },
+                            points: true,
+                            test_case: {
+                                where: {
+                                    is_visible: true,
+                                },
+                                select: {
+                                    code: true,
+                                },
+                            },
                         },
                     },
                 },
             })
             .then(
-                (res) =>
-                    res.map((r) => {
-                        const {
-                            exercise_id,
-                            title,
-                            description,
-                            hints,
-                            code_template,
-                            points,
-                            test_case,
-                        } = r;
-                        return {
-                            exercise_id,
-                            title,
-                            description,
-                            code_template,
-                            points,
-                            hints: hints.map((h) => h.description),
-                            test_case: test_case.map((t) => t.code),
-                        };
-                    }),
+                (res) => {
+                    if (res.exercises.length === 0) {
+                        console.error(`No exercises in session`);
+                        return new Err(404, "No exercises in session");
+                    } else
+                        return res.exercises.map((r) => {
+                            const {
+                                exercise_id,
+                                title,
+                                description,
+                                programming_language,
+                                hints,
+                                code_template,
+                                points,
+                                test_case,
+                            } = r;
+                            return {
+                                exercise_id,
+                                title,
+                                description,
+                                programming_language,
+                                code_template,
+                                points,
+                                hints: hints.map((h) => h.description),
+                                test_case: test_case.map((t) => t.code),
+                            };
+                        });
+                },
                 (r) => {
                     console.error(`Failure getting session ${sessionId}: ${r}`);
-                    return new Err(401, "Session does not exist");
+                    return new Err(404, "Session does not exist");
                 },
             );
 
@@ -90,6 +101,7 @@ export default class ExerciseController {
                     exercise_id: true,
                     title: true,
                     description: true,
+                    programming_language: true,
                     code_template: true,
                     hints: {
                         select: {
@@ -116,6 +128,7 @@ export default class ExerciseController {
                         exercise_id,
                         title,
                         description,
+                        programming_language,
                         hints,
                         code_template,
                         points,
@@ -125,6 +138,7 @@ export default class ExerciseController {
                         exercise_id,
                         title,
                         description,
+                        programming_language,
                         code_template,
                         points,
                         hints: hints.map((h) => h.description),
@@ -143,7 +157,7 @@ export default class ExerciseController {
         exerciseId: number,
         userId: number,
         solution: string,
-        isAnon: boolean = false,
+        isAnon: boolean = true,
     ): Promise<Result<void>> =>
         prisma.exerciseSolution
             .upsert({
@@ -153,10 +167,24 @@ export default class ExerciseController {
                         exercise_id: exerciseId,
                     },
                 },
-                update: { solution, is_anonymous: isAnon, is_pinned: false },
-                create: {
+                update: {
                     exercise_id: exerciseId,
                     user_id: userId,
+                    solution,
+                    is_anonymous: isAnon,
+                    is_pinned: false,
+                },
+                create: {
+                    exercise: {
+                        connect: {
+                            exercise_id: exerciseId,
+                        },
+                    },
+                    user: {
+                        connect: {
+                            user_id: userId,
+                        },
+                    },
                     solution,
                     is_anonymous: isAnon,
                 },
@@ -174,28 +202,31 @@ export default class ExerciseController {
     static retrieveAllExerciseSolutions = async (
         exerciseId: number,
     ): Promise<Result<_ExerciseSolution[]>> =>
-        prisma.exerciseSolution
-            .findMany({
-                where: {
-                    exercise_id: exerciseId,
-                },
-                select: {
-                    solution: true,
-                    is_anonymous: true,
-                    is_pinned: true,
-                    user: {
+        prisma.exercise
+            .findUniqueOrThrow({
+                where: { exercise_id: exerciseId },
+                include: {
+                    solutions: {
                         select: {
-                            username: true,
+                            solution: true,
+                            is_anonymous: true,
+                            is_pinned: true,
+                            user: {
+                                select: {
+                                    username: true,
+                                },
+                            },
                         },
+                        orderBy: [
+                            { exercise_solution_id: "asc" },
+                            { is_pinned: "desc" },
+                        ],
                     },
-                },
-                orderBy: {
-                    is_pinned: "asc",
                 },
             })
             .then(
                 (res) =>
-                    res.map((r) => {
+                    res.solutions.map((r) => {
                         const { solution, is_pinned } = r;
                         const username = r.is_anonymous
                             ? "Anonymous"
@@ -210,7 +241,7 @@ export default class ExerciseController {
                     console.error(
                         `Failure getting exercise ${exerciseId}: ${r}`,
                     );
-                    return new Err(401, "Exercise does not exist");
+                    return new Err(404, "Exercise does not exist");
                 },
             );
 
@@ -222,6 +253,7 @@ export default class ExerciseController {
         programmingLanguage: string,
         codeTemplate: string,
         hints: string[] = [],
+        testCases: string[] = [],
     ): Promise<Result<number>> => {
         let order = 1; //TODO: zero-index?
         return prisma.exercise
@@ -244,6 +276,13 @@ export default class ExerciseController {
                             }),
                         },
                     },
+                    test_case: {
+                        createMany: {
+                            data: testCases.map((c) => {
+                                return { code: c, is_visible: false }; // TODO: get if visible
+                            }),
+                        },
+                    },
                 },
                 select: {
                     exercise_id: true,
@@ -253,7 +292,7 @@ export default class ExerciseController {
                 (e) => e.exercise_id,
                 (r) => {
                     console.error(`Failure trying to add exercise: ${r}`);
-                    return new Err(401, "Session does not exist");
+                    return new Err(404, "Session does not exist");
                 },
             );
     };

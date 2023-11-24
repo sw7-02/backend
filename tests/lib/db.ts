@@ -1,8 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 import config from "../../src/config";
+import prisma from "../../src/prisma";
 
-const prisma = new PrismaClient();
+//const prisma = new PrismaClient();
 
 export async function seed() {
     // Create sample users
@@ -114,28 +115,17 @@ export async function seed() {
     });
 
     console.log("Sample data seeded successfully.");
-
-    await prisma.$disconnect();
 }
 
-/*
-seed().catch((error) => {
-    console.error("Err seeding data:", error);
-});
- */
-
 export async function exhaust() {
-    prisma.user.deleteMany();
-    prisma.enrollment.deleteMany();
-
-    prisma.course.deleteMany();
-    prisma.session.deleteMany();
-
-    prisma.exercise.deleteMany();
-    prisma.exerciseSolution.deleteMany();
-    prisma.hint.deleteMany();
-    prisma.testCase.deleteMany();
-
-    prisma.assignment.deleteMany();
-    prisma.assignmentSolution.deleteMany();
+    await prisma.assignmentSolution.deleteMany({});
+    await prisma.assignment.deleteMany({});
+    await prisma.enrollment.deleteMany({});
+    await prisma.exerciseSolution.deleteMany({});
+    await prisma.hint.deleteMany({});
+    await prisma.testCase.deleteMany({});
+    await prisma.exercise.deleteMany({});
+    await prisma.session.deleteMany({});
+    await prisma.course.deleteMany({});
+    await prisma.user.deleteMany({});
 }
