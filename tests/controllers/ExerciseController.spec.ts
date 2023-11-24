@@ -18,6 +18,8 @@ describe("ExerciseController testing", function () {
     it("Retrieve all exercises: Valid session", async function () {
         const result = await ExerciseController.retrieveAllExercises(0);
         console.log(result);
+        console.log(await prisma.exercise.findMany());
+        console.log(await prisma.session.findMany());
         assert.notEqual(result instanceof Err, true);
         assert.equal((<[]>result).length, 1);
     });
