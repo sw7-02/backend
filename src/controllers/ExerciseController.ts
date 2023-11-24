@@ -167,10 +167,18 @@ export default class ExerciseController {
                         exercise_id: exerciseId,
                     },
                 },
-                update: { solution, is_anonymous: isAnon, is_pinned: false },
+                update: { exercise_id: exerciseId, user_id: userId, solution, is_anonymous: isAnon, is_pinned: false },
                 create: {
-                    exercise_id: exerciseId,
-                    user_id: userId,
+                    exercise : {
+                        connect: {
+                            exercise_id: exerciseId,
+                        },
+                    },
+                    user: {
+                        connect: {
+                            user_id: userId,
+                        },
+                    },
                     solution,
                     is_anonymous: isAnon,
                 },
