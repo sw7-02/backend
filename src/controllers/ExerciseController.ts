@@ -217,10 +217,9 @@ export default class ExerciseController {
                                 },
                             },
                         },
-                        orderBy: {
-                            is_pinned: "asc",
-                            exercise_solution_id: "asc",
-                        },
+                        orderBy:
+                            [{is_pinned: "asc"},
+                                {exercise_solution_id: "asc"}],
                     },
                 },
             })
