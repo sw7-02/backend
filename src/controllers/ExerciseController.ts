@@ -195,7 +195,7 @@ export default class ExerciseController {
                     console.error(
                         `Failure submitting exercise ${exerciseId}: ${r}`,
                     );
-                    return new Err(500, "Internal error"); //TODO: What happens?
+                    return new Err(404, "User or Exercise does not exist");
                 },
             );
 
