@@ -218,7 +218,7 @@ export default class ExerciseController {
                             },
                         },
                         orderBy: [
-                            { exercise_solution_id: "desc" },
+                            { exercise_solution_id: "asc" },
                             { is_pinned: "desc" },
                         ],
                     },
