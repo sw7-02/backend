@@ -43,6 +43,26 @@ describe("ExerciseController testing", function () {
         );
         assert.notEqual(result instanceof Err, true);
     });
+    it("Submit exercise: Invalid IDs", async function () {
+        let result = await ExerciseController.submitExerciseSolution(
+            1000,
+            1,
+            "solution from user1",
+            true,
+        );
+        assert.notEqual(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "User or Exercise does not exist");
+        result = await ExerciseController.submitExerciseSolution(
+            1,
+            1000,
+            "solution from user1",
+            true,
+        );
+        assert.notEqual(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "User or Exercise does not exist");
+    });
     it("Submit exercise: Override", async function () {
         const result = await ExerciseController.submitExerciseSolution(
             1,
