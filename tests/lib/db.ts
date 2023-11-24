@@ -55,6 +55,14 @@ export async function seed() {
         },
     });
 
+    await prisma.enrollment.create({
+        data: {
+            user_id: user2.user_id,
+            course_id: course1.course_id,
+            user_role: 1,
+        },
+    });
+
     // Example for creating assignments:
     const assignment1 = await prisma.assignment.create({
         data: {

@@ -12,6 +12,7 @@ import { afterEach } from "mocha";
 const nxtFunc = () => {};
 let response: Response;
 let request: Request;
+let courseId = 1;
 
 describe("roleCheck testing", function () {
     beforeEach("reset request and response, and seed DB", async function () {
@@ -44,6 +45,8 @@ describe("roleCheck testing", function () {
         );
         validateJWT(request, response, nxtFunc);
 
+        request.params = {course_id: `${courseId}`};
+
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);
 
@@ -73,6 +76,8 @@ describe("roleCheck testing", function () {
             },
         );
         validateJWT(request, response, nxtFunc);
+
+        request.params = {course_id: `${courseId}`};
 
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);
@@ -104,6 +109,8 @@ describe("roleCheck testing", function () {
         );
         validateJWT(request, response, nxtFunc);
 
+        request.params = {course_id: `${courseId}`};
+
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);
 
@@ -133,6 +140,8 @@ describe("roleCheck testing", function () {
             },
         );
         validateJWT(request, response, nxtFunc);
+
+        request.params = {course_id: `${courseId}`};
 
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);
