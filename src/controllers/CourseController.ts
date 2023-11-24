@@ -212,35 +212,41 @@ export default class CourseController {
     static retrieveLeaderboard = async (
         courseId: number,
     ): Promise<Result<_Leaderboard>> =>
-        prisma.enrollment
-            .findMany({
+        prisma.course
+            .findUniqueOrThrow({
                 where: {
                     course_id: courseId,
-                    user_role: Role.STUDENT,
                 },
                 select: {
-                    total_points: true,
-                    user: {
+                    enrollments: {
+                        where: {
+                            user_role: Role.STUDENT,
+                        },
                         select: {
-                            username: true,
-                            //TODO: Anon?
+                            total_points: true,
+                            user: {
+                                select: {
+                                    username: true,
+                                    //TODO: Anon?
+                                },
+                            },
+                        },
+                        orderBy: {
+                            total_points: "desc",
                         },
                     },
-                },
-                orderBy: {
-                    total_points: "desc",
                 },
             })
             .then(
                 (res) => {
-                    const b = res.find((r) => !r.total_points);
+                    const b = res.enrollments.find((r) => !r.total_points);
                     if (b) {
                         console.error(
                             `User with null points: ${b.user.username}`,
                         );
                         return new Err(500, "Internal error");
                     }
-                    return res.map((r) => {
+                    return res.enrollments.map((r) => {
                         return {
                             total_points: r.total_points!!,
                             username: r.user.username,
