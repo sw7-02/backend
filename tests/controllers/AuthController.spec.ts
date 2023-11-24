@@ -10,11 +10,6 @@ import { exhaust, seed } from "../lib/db";
 import { Err } from "../../src/lib";
 
 describe("AuthController testing", function () {
-    beforeEach("Seed DB", async function () {
-        this.timeout(10000);
-        await seed();
-    });
-    afterEach("Purge DB", exhaust);
 
     it("Signup New User", async function () {
         const res = await AuthController.signUp("user3", "password3@");
