@@ -35,7 +35,7 @@ describe("roleCheck testing", function () {
                 },
             })
             .catch(() => assert.fail("unreachable"));
-
+        console.log(userId);
         request.headers.auth = jwt.sign(
             { userId, username },
             config.jwt.secret,
