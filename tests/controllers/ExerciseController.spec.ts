@@ -51,9 +51,7 @@ describe("ExerciseController testing", function () {
             "solution from user1",
             true,
         );
-        console.log(result);
-        console.log(await prisma.exercise.findMany());
-        assert.notEqual(result instanceof Err, true);
+        assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "User or Exercise does not exist");
         result = await ExerciseController.submitExerciseSolution(
@@ -62,7 +60,7 @@ describe("ExerciseController testing", function () {
             "solution from user1",
             true,
         );
-        assert.notEqual(result instanceof Err, true);
+        assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "User or Exercise does not exist");
     });
