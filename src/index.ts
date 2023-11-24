@@ -19,10 +19,13 @@ app.use(bodyParser.json());
 app.use("/", routes);
 
 if (process.env["NODE_ENV"] === "dev")
-    setTimeout(() =>
-    seed().then(async () => {
-        console.log(await prisma.user.findMany());
-    }), 3000);
+    setTimeout(
+        () =>
+            seed().then(async () => {
+                console.log(await prisma.user.findMany());
+            }),
+        3000,
+    );
 
 app.listen(config.server.port, () => {
     console.log(`Server started on port ${config.server.port}!`);

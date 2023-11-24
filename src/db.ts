@@ -2,7 +2,6 @@ import { PrismaClient } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 import prisma from "./prisma";
 
-
 export async function seed() {
     // Create sample users
     let salt = bcrypt.genSaltSync(5);

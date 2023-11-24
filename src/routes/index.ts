@@ -11,7 +11,7 @@ routes.get("/status", (_, res) => res.send("Service is running!"));
 // enables passing json bodies.
 routes.use(Router.json());
 
-routes.use("/course", course);
+routes.use("/course", course); //TODO: JWTVALIDATE
 routes.use("/", auth); //TODO: `/auth` path?
 
 // CRUD for Courses

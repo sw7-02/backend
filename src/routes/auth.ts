@@ -1,5 +1,5 @@
 import Router, { Request, Response } from "express";
-import AuthController from "../controllers/AuthController";
+import AuthController, { LoginResult } from "../controllers/AuthController";
 import { Err, ResponseResult } from "../lib";
 
 const routes = Router();
@@ -12,7 +12,7 @@ const genericAuthHandler =
         func: (
             username: string,
             password: string,
-        ) => Promise<ResponseResult<string>>,
+        ) => Promise<ResponseResult<LoginResult>>,
     ) =>
     async (req: Request, res: Response) => {
         const { username, password } = req.body;
