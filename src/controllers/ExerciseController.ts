@@ -219,6 +219,7 @@ export default class ExerciseController {
                         },
                         orderBy: {
                             is_pinned: "asc",
+                            exercise_solution_id: "asc",
                         },
                     },
                 },
@@ -252,6 +253,7 @@ export default class ExerciseController {
         programmingLanguage: string,
         codeTemplate: string,
         hints: string[] = [],
+        testCases: string[] = [],
     ): Promise<Result<number>> => {
         let order = 1; //TODO: zero-index?
         return prisma.exercise
@@ -271,6 +273,13 @@ export default class ExerciseController {
                         createMany: {
                             data: hints.map((h) => {
                                 return { description: h, order: order++ };
+                            }),
+                        },
+                    },
+                    test_case: {
+                        createMany: {
+                            data: testCases.map((c) => {
+                                return { code: c, is_visible: false }; // TODO: get if visible
                             }),
                         },
                     },
