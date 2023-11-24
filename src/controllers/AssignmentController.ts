@@ -27,19 +27,26 @@ export default class AssignmentController {
     static retrieveAllAssignments = async (
         courseId: number,
     ): Promise<Result<_AssignmentIdentifier[]>> => // TODO: Identifier?
-        prisma.assignment
-            .findMany({
+        prisma.course
+            .findUniqueOrThrow({
                 where: {
                     course_id: courseId,
                 },
                 select: {
-                    assignment_id: true,
-                    title: true,
-                    due_date: true,
+                    assignments: {
+                        select: {
+                            assignment_id: true,
+                            title: true,
+                            due_date: true,
+                        },
+                        orderBy: {
+                            due_date: "asc",
+                        },
+                    },
                 },
             })
             .then(
-                (res) => res,
+                (res) => res.assignments,
                 (r) => {
                     console.error(
                         `Failure getting Assignment in course ${courseId}: ${r}`,
@@ -110,7 +117,7 @@ export default class AssignmentController {
                     console.error(
                         `Failure submitting assignment ${assignmentId}: ${r}`,
                     );
-                    return new Err(500, "Internal error"); //TODO: What happens?
+                    return new Err(404, "User or Assignment doesn't exist"); //TODO: What happens?
                 },
             );
 

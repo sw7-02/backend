@@ -11,13 +11,13 @@ describe("AssignmentController testing", function () {
         assert.equal(res.length, 1);
         assert.equal(res[0].assignment_id, 1);
         assert.equal(res[0].title, "Assignment 1");
-        assert.equal(res[0].due_date, new Date("2023-12-21"));
+        assert.equal(res[0].due_date, Date.parse("2023-12-21"));
     });
     it("Retrieve all assignments: Invalid session", async function () {
         const result = await AssignmentController.retrieveAllAssignments(1000);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
-        assert.equal((<Err>result).msg, "Session does not exist");
+        assert.equal((<Err>result).msg, "Course does not exist");
     });
 
     it("Retrieve specific assignment: Valid id", async function () {
@@ -29,7 +29,7 @@ describe("AssignmentController testing", function () {
         assert.equal(res.description, "Description of Assignment 1");
         assert.equal(res.programming_language, "JavaScript");
         assert.equal(res.code_template, "Your code template here");
-        assert.equal(res.due_date, new Date("2023-12-21"));
+        assert.equal(res.due_date, Date.parse("2023-12-21"));
         //TODO: Hints and test_cases
     });
     it("Retrieve specific assignment: Invalid id", async function () {
