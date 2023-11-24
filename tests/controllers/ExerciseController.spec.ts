@@ -23,7 +23,7 @@ describe("ExerciseController testing", function () {
     it("Retrieve all exercises: Invalid session", async function () {
         const result = await ExerciseController.retrieveAllExercises(1000);
         assert.equal(result instanceof Err, true);
-        assert.equal(result.code, 401);
-        assert.equal(result.msg, "Session does not exist");
+        assert.equal((<Err>result).code, 401);
+        assert.equal((<Err>result).msg, "Session does not exist");
     });
 });
