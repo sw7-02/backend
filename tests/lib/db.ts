@@ -119,21 +119,14 @@ export async function seed() {
 
 
 export async function exhaust() {
-    await prisma.course.deleteMany({});
-    await prisma.user.deleteMany({});
-    await prisma.enrollment.deleteMany({});
-    await prisma.session.deleteMany({});
-    await prisma.exercise.deleteMany({});
-    await prisma.exerciseSolution.deleteMany({});
-
-    await prisma.assignment.deleteMany({});
     await prisma.assignmentSolution.deleteMany({});
-
+    await prisma.assignment.deleteMany({});
+    await prisma.enrollment.deleteMany({});
+    await prisma.exerciseSolution.deleteMany({});
     await prisma.hint.deleteMany({});
     await prisma.testCase.deleteMany({});
-
-
-
-
-
+    await prisma.exercise.deleteMany({});
+    await prisma.session.deleteMany({});
+    await prisma.course.deleteMany({});
+    await prisma.user.deleteMany({});
 }
