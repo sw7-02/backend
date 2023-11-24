@@ -69,7 +69,7 @@ export async function seed() {
             title: "Assignment 1",
             description: "Description of Assignment 1",
             code_template: "Your code template here",
-            due_date: new Date("21/12/2023"),
+            due_date: new Date("2023-12-21"),
             course_id: course1.course_id,
             programming_language: "JavaScript",
         },
