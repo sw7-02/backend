@@ -82,6 +82,13 @@ export async function seed() {
             feedback: "Feedback for solution 1",
         },
     });
+    const assignmentSolution2 = await prisma.assignmentSolution.create({
+        data: {
+            assignment_id: assignment1.assignment_id,
+            user_id: user2.user_id,
+            solution: "solution from user2",
+        },
+    });
 
     // Create sample exercises
     const exercise1 = await prisma.exercise.create({

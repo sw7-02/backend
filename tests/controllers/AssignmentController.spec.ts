@@ -29,7 +29,10 @@ describe("AssignmentController testing", function () {
         assert.equal(res.description, "Description of Assignment 1");
         assert.equal(res.programming_language, "JavaScript");
         assert.equal(res.code_template, "Your code template here");
-        assert.equal(res.due_date.toString(), new Date("2023-12-21").toString());
+        assert.equal(
+            res.due_date.toString(),
+            new Date("2023-12-21").toString(),
+        );
     });
     it("Retrieve specific assignment: Invalid id", async function () {
         const result = await AssignmentController.retrieveAssignment(1000);
@@ -110,7 +113,7 @@ describe("AssignmentController testing", function () {
         );
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
-        assert.equal((<Err>result).msg, "Assignment does not exist");
+        assert.equal((<Err>result).msg, "Assignment solution does not exist");
     });
 
     it("Retrieve feedback: Valid", async function () {
@@ -126,7 +129,7 @@ describe("AssignmentController testing", function () {
             1,
             2,
         );
-        assert.notEqual(result instanceof Err, true);
+        assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 204);
         assert.equal((<Err>result).msg, "Feedback has not been provided yet");
     });
