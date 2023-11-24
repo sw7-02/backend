@@ -38,7 +38,7 @@ describe("RoleCheck testing", function () {
         );
         validateJWT(request, response, nxtFunc);
 
-        request.params = {course_id: `${courseId}`};
+        request.params = { course_id: `${courseId}` };
 
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);
@@ -70,7 +70,7 @@ describe("RoleCheck testing", function () {
         );
         validateJWT(request, response, nxtFunc);
 
-        request.params = {course_id: `${courseId}`};
+        request.params = { course_id: `${courseId}` };
 
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);
@@ -102,7 +102,7 @@ describe("RoleCheck testing", function () {
         );
         validateJWT(request, response, nxtFunc);
 
-        request.params = {course_id: `${courseId}`};
+        request.params = { course_id: `${courseId}` };
 
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);
@@ -134,7 +134,7 @@ describe("RoleCheck testing", function () {
         );
         validateJWT(request, response, nxtFunc);
 
-        request.params = {course_id: `${courseId}`};
+        request.params = { course_id: `${courseId}` };
 
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);
@@ -147,7 +147,7 @@ describe("RoleCheck testing", function () {
     });
 
     it("Deny TA access", async function () {
-        let roles = [0,1];
+        let roles = [0, 1];
         let username = "user1";
         let { user_id: userId } = await prisma.user
             .findFirstOrThrow({
@@ -166,7 +166,7 @@ describe("RoleCheck testing", function () {
         );
         validateJWT(request, response, nxtFunc);
 
-        request.params = {course_id: `${courseId}`};
+        request.params = { course_id: `${courseId}` };
 
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);
@@ -198,7 +198,7 @@ describe("RoleCheck testing", function () {
         );
         validateJWT(request, response, nxtFunc);
 
-        request.params = {course_id: `${courseId}`};
+        request.params = { course_id: `${courseId}` };
 
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);

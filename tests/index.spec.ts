@@ -12,7 +12,7 @@ describe("Testing framework test (and prisma)", () => {
     });
 });
 
-before("Seed DB", async function() {
+before("Seed DB", async function () {
     this.timeout(5000);
     await seed();
-})
+});

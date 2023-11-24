@@ -133,7 +133,6 @@ export async function seed() {
     console.log("Sample data seeded successfully.");
 }
 
-
 export async function exhaust() {
     await prisma.assignmentSolution.deleteMany({});
     await prisma.assignment.deleteMany({});
