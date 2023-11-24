@@ -16,8 +16,14 @@ describe("ExerciseController testing", function () {
     afterEach("Purge DB", async () => await exhaust());
 
     it("Retrieve all exercises: Valid session", async function () {
-        const result = await ExerciseController.retrieveAllExercises(1);
+        const result = await ExerciseController.retrieveAllExercises(0);
         assert.notEqual(result instanceof Err, true);
         assert.equal((<[]>result).length, 1);
+    });
+    it("Retrieve all exercises: Invalid session", async function () {
+        const result = await ExerciseController.retrieveAllExercises(1000);
+        assert.equal(result instanceof Err, true);
+        assert.equal(result.code, 401);
+        assert.equal(result.msg, "Session does not exist");
     });
 });
