@@ -12,7 +12,7 @@ describe("AssignmentController testing", function () {
         assert.equal(res[0].assignment_id, 1);
         assert.equal(res[0].title, "Assignment 1");
         assert.equal(
-            res[0].res.due_date.toString(),
+            res[0].due_date.toString(),
             new Date("2023-12-21").toString(),
         );
     });
@@ -86,7 +86,8 @@ describe("AssignmentController testing", function () {
             await AssignmentController.retrieveAllAssignmentSolutions(1);
         assert.notEqual(result instanceof Err, true);
         console.log(result);
-        const res = <any[]>result;
+        const res = result instanceof Err ? assert.fail("unreachable") : result;
+        console.log(res);
         assert.equal(res.length, 2);
         let temp = res[0];
         assert.equal(temp.assignment_solution_id, 1);
