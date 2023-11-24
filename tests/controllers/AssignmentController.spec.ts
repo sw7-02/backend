@@ -11,7 +11,10 @@ describe("AssignmentController testing", function () {
         assert.equal(res.length, 1);
         assert.equal(res[0].assignment_id, 1);
         assert.equal(res[0].title, "Assignment 1");
-        assert.equal(res[0].due_date, Date.parse("2023-12-21"));
+        assert.equal(
+            res[0].res.due_date.toString(),
+            new Date("2023-12-21").toString(),
+        );
     });
     it("Retrieve all assignments: Invalid session", async function () {
         const result = await AssignmentController.retrieveAllAssignments(1000);
@@ -82,6 +85,7 @@ describe("AssignmentController testing", function () {
         const result =
             await AssignmentController.retrieveAllAssignmentSolutions(1);
         assert.notEqual(result instanceof Err, true);
+        console.log(result);
         const res = <any[]>result;
         assert.equal(res.length, 2);
         let temp = res[0];
@@ -111,6 +115,7 @@ describe("AssignmentController testing", function () {
             1000,
             "feedback for user1000",
         );
+        console.log(result);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "Assignment solution does not exist");
