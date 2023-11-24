@@ -36,6 +36,7 @@ describe("roleCheck testing", function () {
             })
             .catch(() => assert.fail("unreachable"));
         console.log(userId);
+        console.log(await prisma.user.findMany());
         request.headers.auth = jwt.sign(
             { userId, username },
             config.jwt.secret,
