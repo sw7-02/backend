@@ -20,8 +20,13 @@ type _ExerciseSolution = {
 export default class ExerciseController {
     static retrieveAllExercises = async (
         sessionId: number,
-    ): Promise<Result<_Exercise[]>> =>
-        prisma.exercise
+    ): Promise<Result<_Exercise[]>> => {
+        if (! await prisma.session.findFirst({where: {session_id: sessionId}}))
+        {
+            console.error(`Failure getting session ${sessionId}`);
+            return new Err(401, "Session does not exist");
+        }
+        return prisma.exercise
             .findMany({
                 where: {
                     session_id: sessionId,
@@ -53,10 +58,10 @@ export default class ExerciseController {
             .then(
                 (res) => {
                     if (res.length === 0) {
-                        console.error(`Failure getting session ${sessionId}: ${r}`);
-                        return new Err(401, "Session does not exist");
+                        console.error(`No exercises in session`);
+                        return new Err(401, "No exercises in session");
                     } else
-                        return  res.map((r) => {
+                        return res.map((r) => {
                             const {
                                 exercise_id,
                                 title,
@@ -74,13 +79,15 @@ export default class ExerciseController {
                                 points,
                                 hints: hints.map((h) => h.description),
                                 test_case: test_case.map((t) => t.code),
-                            }});
-                   },
+                            }
+                        });
+                },
                 (r) => {
                     console.error(`Failure getting session ${sessionId}: ${r}`);
                     return new Err(401, "Session does not exist");
                 },
             );
+    }
 
     static retrieveExercise = async (
         exerciseId: number,
