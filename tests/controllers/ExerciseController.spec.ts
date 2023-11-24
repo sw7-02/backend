@@ -46,7 +46,6 @@ describe("ExerciseController testing", function () {
             "solution from user2",
             false,
         );
-        console.log(result);
         assert.notEqual(result instanceof Err, true);
     });
     it("Submit exercise: Override", async function () {
@@ -61,7 +60,6 @@ describe("ExerciseController testing", function () {
 
     it("Retrieve submitted exercises: Valid ID", async function () {
         const result = await ExerciseController.retrieveAllExerciseSolutions(1);
-        console.log(await prisma.exerciseSolution.findMany());
         assert.notEqual(result instanceof Err, true);
         const res = <any[]>result;
         assert.equal(res.length, 2);
