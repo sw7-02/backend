@@ -6,6 +6,7 @@ type _Exercise = {
     title: string;
     description: string;
     code_template: string;
+    programming_language: string,
     points: number;
     hints: string[];
     test_case: string[];
@@ -39,6 +40,7 @@ export default class ExerciseController {
                     title: true,
                     description: true,
                     code_template: true,
+                    programming_language: true,
                     hints: {
                         select: {
                             description: true,
@@ -69,6 +71,7 @@ export default class ExerciseController {
                                 exercise_id,
                                 title,
                                 description,
+                                programming_language,
                                 hints,
                                 code_template,
                                 points,
@@ -78,6 +81,7 @@ export default class ExerciseController {
                                 exercise_id,
                                 title,
                                 description,
+                                programming_language,
                                 code_template,
                                 points,
                                 hints: hints.map((h) => h.description),
@@ -104,6 +108,7 @@ export default class ExerciseController {
                     exercise_id: true,
                     title: true,
                     description: true,
+                    programming_language: true,
                     code_template: true,
                     hints: {
                         select: {
@@ -130,6 +135,7 @@ export default class ExerciseController {
                         exercise_id,
                         title,
                         description,
+                        programming_language,
                         hints,
                         code_template,
                         points,
@@ -139,6 +145,7 @@ export default class ExerciseController {
                         exercise_id,
                         title,
                         description,
+                        programming_language,
                         code_template,
                         points,
                         hints: hints.map((h) => h.description),
@@ -157,7 +164,7 @@ export default class ExerciseController {
         exerciseId: number,
         userId: number,
         solution: string,
-        isAnon: boolean = false,
+        isAnon: boolean = true,
     ): Promise<Result<void>> =>
         prisma.exerciseSolution
             .upsert({

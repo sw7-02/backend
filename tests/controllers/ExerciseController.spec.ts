@@ -20,7 +20,7 @@ describe("ExerciseController testing", function () {
         assert.equal((<Err>result).msg, "Session does not exist");
     });
 
-    it("Retrieve specific exercises: Valid id", async function () {
+    it("Retrieve specific exercise: Valid id", async function () {
         const result = await ExerciseController.retrieveExercise(1);
         assert.notEqual(result instanceof Err, true);
         const res = <any>result;
@@ -32,10 +32,23 @@ describe("ExerciseController testing", function () {
         assert.equal(res.code_template, "Your code template here");
         //TODO: Hints and test_cases
     });
-    it("Retrieve specific exercises: Invalid id", async function () {
+    it("Retrieve specific exercise: Invalid id", async function () {
         const result = await ExerciseController.retrieveExercise(1000);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "Exercise does not exist");
     });
+
+    it("Submit exercise: Valid", async function () {
+        const result = await ExerciseController.submitExerciseSolution(1, 1, "solution", false);
+        assert.notEqual(result instanceof Err, true);
+    });
+
+    it("Submit exercise: Valid", async function () {
+        const result = await ExerciseController.retrieveAllExerciseSolutions(1);
+        assert.notEqual(result instanceof Err, true);
+        const res = <any[]>result;
+        assert.equal(res.length, 2);
+    });
+
 });
