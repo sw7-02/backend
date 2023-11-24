@@ -1,10 +1,5 @@
 import * as assert from "assert";
-import * as jwt from "jsonwebtoken";
 import ExerciseController from "../../src/controllers/ExerciseController";
-import config from "../../src/config";
-import { after, afterEach, before } from "mocha";
-import prisma from "../../src/prisma";
-import { exhaust, seed } from "../lib/db";
 import { Err } from "../../src/lib";
 
 describe("ExerciseController testing", function () {
