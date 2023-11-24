@@ -7,7 +7,7 @@ export default function roleCheck(roles: number[]) {
         const courseId = parseInt(req.params.course_id);
         const user = await prisma.enrollment.findFirstOrThrow({
             where: {
-                course_id: courseId,
+                course_id: 1,
                 user_id: userId,
             },
             select: {
