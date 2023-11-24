@@ -13,6 +13,7 @@ type _Assignment = {
     title: string;
     description: string;
     code_template: string;
+    programming_language: string;
     due_date: Date;
 };
 
@@ -61,6 +62,7 @@ export default class AssignmentController {
                     description: true,
                     code_template: true,
                     due_date: true,
+                    programming_language: true,
                 },
             })
             .then(
