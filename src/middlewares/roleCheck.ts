@@ -1,16 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import prisma from "../prisma";
-import { Err } from "../lib";
 
 export default function roleCheck(roles: number[]) {
     return async (req: Request, res: Response, next: NextFunction) => {
         const user_id = res.locals.jwtPayload.userId;
         const course_id = res.locals.jwtPayload.course_id;
-        const user = await prisma.enrollment
+        await prisma.enrollment
             .findUniqueOrThrow({
                 where: {
                     user_id_course_id: {
-                        course_id, user_id,
+                        course_id,
+                        user_id,
                     },
                 },
                 select: {
