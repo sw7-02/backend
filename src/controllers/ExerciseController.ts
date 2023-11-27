@@ -1,5 +1,7 @@
 import prisma from "../prisma";
-import { Err, ResponseResult } from "../lib";
+import { Err, ResponseResult, Result } from "../lib";
+import axios from "axios";
+import config from "../config";
 
 type _Exercise = {
     exercise_id: number;
@@ -315,4 +317,103 @@ export default class ExerciseController {
                     return new Err(404, "Exercise does not exist");
                 },
             );
+
+    static testExercise = async (
+        exerciseId: number,
+        solution: string,
+    ): Promise<ResponseResult<void>> => {
+        const testCases = await prisma.exercise
+            .findUniqueOrThrow({
+                where: {
+                    exercise_id: exerciseId,
+                },
+                select: {
+                    programming_language: true,
+                    test_case: {
+                        select: {
+                            code: true,
+                            test_case_id: true,
+                            is_visible: true,
+                        },
+                    },
+                },
+            })
+            .then(
+                (res) => res,
+                (r) => {
+                    console.error(
+                        `Failure getting test cases from exercise ${exerciseId}: ${r}`,
+                    );
+                    return new Err(404, "Exercise does not exist");
+                },
+            );
+
+        if (testCases instanceof Err) return testCases;
+
+        const data: Test = {
+            code: solution,
+            language: testCases.programming_language,
+            test_cases: testCases.test_case.map((tc) => {
+                const { test_case_id, code } = tc;
+                return { test_case_id, code };
+            }),
+        };
+        const result = await executeTest(data);
+
+        if (result instanceof Err)
+            //OK
+            return result;
+
+        if (result.length === 0) return;
+
+        const fails = {
+            count: result.length,
+            failed_visible_tests: result.filter(
+                (r) =>
+                    testCases.test_case.find(
+                        (v) => v.test_case_id == r.test_case_id,
+                    )?.is_visible,
+            ),
+        };
+        return new Err(69, fails);
+
+        // TODO: object to return should be total num of errors, and the ID's for the visible ones
+    };
+}
+
+type TestCase = {
+    test_case_id: number;
+    code: string;
+};
+
+type Test = {
+    language: string;
+    code: string;
+    test_cases: TestCase[];
+};
+
+type FailReason = {
+    test_case_id: number;
+    reason: string;
+};
+
+async function executeTest(data: Test): Promise<Result<FailReason[], Err>> {
+    return axios
+        .post(config.server.test_runner, JSON.stringify(data), {
+            timeout: 5000,
+            validateStatus: (s) => [200, 202].includes(s),
+            responseType: "json",
+        })
+        .then(
+            (r) => {
+                return [];
+            },
+            (r) => {
+                console.log("bad");
+                console.log(r);
+                console.log(r.data);
+                //TODO: Validate correct format, else return Err (Compile error, language not supported, other errors)
+                return r.data.toJSON();
+            },
+        );
 }
