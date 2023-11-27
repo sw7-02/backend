@@ -1,7 +1,9 @@
 import Router, { Request, Response } from "express";
 import ExerciseController from "../../../controllers/ExerciseController";
-import { Err } from "../../../lib";
+import { Err, Role } from "../../../lib";
 import CourseController from "../../../controllers/CourseController";
+import roleCheck from "../../../middlewares/roleCheck";
+import enrollmentCheck from "../../../middlewares/enrollmentCheck";
 
 const routes = Router();
 
@@ -18,42 +20,45 @@ routes.get("/", async (req: Request, res: Response) => {
     } else res.send(result);
 });
 
-//TODO: Role middleware
-routes.post("/", async (req: Request, res: Response) => {
-    //TODO: Adding hints and/or test cases?
-    const {
-        title,
-        description,
-        points,
-        programming_language,
-        code_template,
-        hints,
-    } = req.body;
-    if (
-        !(
-            title &&
-            description &&
-            points &&
-            programming_language &&
-            code_template
-        )
-    ) {
-        res.status(400).send("Not all necessary parameters was provided");
-    }
-    const result = await ExerciseController.addExercise(
-        res.locals.sessionId,
-        title,
-        description,
-        points,
-        programming_language,
-        code_template,
-        hints,
-    );
-    if (result instanceof Err) {
-        const { code, msg } = result;
-        res.status(code).send(msg);
-    } else res.send(result);
-});
+routes.post(
+    "/",
+    [roleCheck([Role.TEACHER])],
+    async (req: Request, res: Response) => {
+        //TODO: Adding hints and/or test cases?
+        const {
+            title,
+            description,
+            points,
+            programming_language,
+            code_template,
+            hints,
+        } = req.body;
+        if (
+            !(
+                title &&
+                description &&
+                points &&
+                programming_language &&
+                code_template
+            )
+        ) {
+            res.status(400).send("Not all necessary parameters was provided");
+        }
+        const result = await ExerciseController.addExercise(
+            res.locals.sessionId,
+            title,
+            description,
+            points,
+            programming_language,
+            code_template,
+            hints,
+        );
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send(result);
+    },
+);
 
 routes.get("/:exercise_id", async (req: Request, res: Response) => {
     const id: number = +req.params.exercise_id;
@@ -68,19 +73,22 @@ routes.get("/:exercise_id", async (req: Request, res: Response) => {
     } else res.send(result);
 });
 
-//TODO: Role middleware
-routes.delete("/:exercise_id", async (req: Request, res: Response) => {
-    const id: number = +req.params.exercise_id;
-    if (!id) {
-        res.status(400).send("ID not a number");
-        return;
-    }
-    const result = await ExerciseController.deleteExercise(id);
-    if (result instanceof Err) {
-        const { code, msg } = result;
-        res.status(code).send(msg);
-    } else res.send();
-});
+routes.delete(
+    "/:exercise_id",
+    [roleCheck([Role.TEACHER])],
+    async (req: Request, res: Response) => {
+        const id: number = +req.params.exercise_id;
+        if (!id) {
+            res.status(400).send("ID not a number");
+            return;
+        }
+        const result = await ExerciseController.deleteExercise(id);
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send();
+    },
+);
 
 // submit exercise solution
 routes.post("/:exercise_id", async (req: Request, res: Response) => {
@@ -123,7 +131,7 @@ routes.post("/:exercise_id", async (req: Request, res: Response) => {
 });
 
 // exercise solutions
-// TODO: Role check middleware
+// TODO: has submitted or is teacher/ta check
 routes.get(
     ":exercise_id/exercise-solutions",
     async (req: Request, res: Response) => {

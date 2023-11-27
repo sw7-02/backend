@@ -3,8 +3,9 @@ import session from "./session";
 import assignment from "./assignment";
 import validateJWT from "../../middlewares/validateJWT";
 import CourseController from "../../controllers/CourseController";
-import { Err, Result } from "../../lib";
+import { Err, Result, Role } from "../../lib";
 import enrollmentCheck from "../../middlewares/enrollmentCheck";
+import roleCheck from "../../middlewares/roleCheck";
 
 const routes = Router()
     .use(Router.json())
@@ -49,16 +50,13 @@ routes
     .use(enrollmentCheck)
     .route("/:course_id")
     .get(genericCourseIdHandler(CourseController.retrieveCourse))
-    .put((req: Request, res: Response) => {
-        // TODO: Role middleware
+    .put([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
         res.send("You have just updated a course (Unimplemented)");
     })
-    .post((req: Request, res: Response) => {
-        // TODO: Role middleware
+    .post([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
         res.send("You have just created a new session (Unimplemented)");
     })
-    .delete((req: Request, res: Response) => {
-        // TODO: Role middleware
+    .delete([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
         res.send("You have just updated a course (Unimplemented)");
     });
 
