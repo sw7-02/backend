@@ -99,11 +99,21 @@ model Exercise {
   code_template        String
 
   session   Session            @relation(fields: [session_id], references: [session_id])
+  examples  Example[]
   test_case TestCase[]
   hints     Hint[]
   solutions ExerciseSolution[]
 
   @@map("exercises")
+}
+
+model Example {
+  example_id Int @id @default(autoincrement())
+  exercise_id Int
+  input String
+  output String
+  exercise Exercise @relation(fields: [exercise_id], references: [exercise_id])
+  @@map("examples")
 }
 
 model TestCase {

@@ -3,9 +3,9 @@ import ExerciseController from "../../../controllers/ExerciseController";
 import { Err, Role } from "../../../lib";
 import CourseController from "../../../controllers/CourseController";
 import roleCheck from "../../../middlewares/roleCheck";
-import enrollmentCheck from "../../../middlewares/enrollmentCheck";
 import prisma from "../../../prisma";
-import validateJWT from "../../../middlewares/validateJWT";
+
+// TODO: (FW) get-hint endpoint and decrement potential point-gain for specific exercise
 
 const routes = Router();
 
