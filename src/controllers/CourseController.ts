@@ -295,30 +295,4 @@ export default class CourseController {
                     return new Err(404, "User does not exist");
                 },
             );
-
-    static getUserId = async (
-        courseId: number,
-        username: string,
-    ): Promise<Result<number>> =>
-        prisma.enrollment
-            .findFirstOrThrow({
-                where: {
-                    course_id: courseId,
-                    user: {
-                        username,
-                    },
-                },
-                select: {
-                    user_id: true,
-                },
-            })
-            .then(
-                (res) => res.user_id,
-                (reason) => {
-                    console.error(
-                        `Failed user not enrolled in course: ${reason}`,
-                    );
-                    return new Err(404, "User not enrolled in course");
-                },
-            );
 }
