@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
 import * as assert from "assert";
-import { validateJWT } from "../../src/middlewares/validateJWT";
+import validateJWT from "../../src/middlewares/validateJWT";
 import config from "../../src/config";
 import httpMocks from "node-mocks-http";
 
@@ -12,7 +12,7 @@ const username = "test";
 let response: Response;
 let request: Request;
 
-describe("Testing checkJWT", function () {
+describe("Testing validateJWT", function () {
     beforeEach("Reset request and response", () => {
         request = httpMocks.createRequest();
         response = httpMocks.createResponse();
