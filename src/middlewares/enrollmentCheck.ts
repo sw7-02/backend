@@ -12,7 +12,6 @@ export default async function enrollmentCheck(
 ) {
     //Get the jwt token from the header
     const userId = +res.locals.jwtPayload.userId;
-    //TODO: check
 
     const courseId = +req.params.course_id;
     if (!courseId && courseId > 0) {
@@ -28,6 +27,7 @@ export default async function enrollmentCheck(
             },
         },
     });
+    console.log(r);
 
     if (r) {
         res.locals.courseId = courseId;
