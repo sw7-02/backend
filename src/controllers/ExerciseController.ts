@@ -11,7 +11,7 @@ type _Exercise = {
     programming_language: string;
     points: number;
     hints: string[];
-    test_case: string[];
+    examples: _Example[];
 };
 
 type _ExerciseSolution = {
@@ -19,6 +19,11 @@ type _ExerciseSolution = {
     is_pinned: boolean;
     username: string;
 };
+
+type _Example = {
+    input: string,
+    output: string
+}
 
 export default class ExerciseController {
     static retrieveAllExercises = async (
@@ -44,12 +49,10 @@ export default class ExerciseController {
                                 },
                             },
                             points: true,
-                            test_case: {
-                                where: {
-                                    is_visible: true,
-                                },
+                            examples: {
                                 select: {
-                                    code: true,
+                                    input: true,
+                                    output: true,
                                 },
                             },
                         },
@@ -71,7 +74,7 @@ export default class ExerciseController {
                                 hints,
                                 code_template,
                                 points,
-                                test_case,
+                                examples,
                             } = r;
                             return {
                                 exercise_id,
@@ -81,7 +84,7 @@ export default class ExerciseController {
                                 code_template,
                                 points,
                                 hints: hints.map((h) => h.description),
-                                test_case: test_case.map((t) => t.code),
+                                examples,
                             };
                         });
                 },
@@ -114,12 +117,10 @@ export default class ExerciseController {
                         },
                     },
                     points: true,
-                    test_case: {
-                        where: {
-                            is_visible: true,
-                        },
+                    examples: {
                         select: {
-                            code: true,
+                            input: true,
+                            output: true,
                         },
                     },
                 },
@@ -134,7 +135,7 @@ export default class ExerciseController {
                         hints,
                         code_template,
                         points,
-                        test_case,
+                        examples,
                     } = res;
                     return {
                         exercise_id,
@@ -144,7 +145,7 @@ export default class ExerciseController {
                         code_template,
                         points,
                         hints: hints.map((h) => h.description),
-                        test_case: test_case.map((t) => t.code),
+                        examples,
                     };
                 },
                 (r) => {
@@ -256,6 +257,7 @@ export default class ExerciseController {
         codeTemplate: string,
         hints: string[] = [],
         testCases: string[] = [],
+        examples: _Example[] = [],
     ): Promise<ResponseResult<number>> => {
         let order = 1;
         return prisma.exercise
@@ -282,6 +284,13 @@ export default class ExerciseController {
                         createMany: {
                             data: testCases.map((c) => {
                                 return { code: c, is_visible: false }; // TODO: get if visible
+                            }),
+                        },
+                    },
+                    examples: {
+                        createMany: {
+                            data: examples.map(({input, output}) => {
+                                return { input, output }; // TODO: get if visible
                             }),
                         },
                     },
