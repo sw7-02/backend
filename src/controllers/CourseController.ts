@@ -278,6 +278,9 @@ export default class CourseController {
                                 },
                             },
                         },
+                        orderBy: {
+                            course_id: "asc",
+                        },
                     },
                 },
             })

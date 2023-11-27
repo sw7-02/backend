@@ -84,7 +84,7 @@ describe("RoleCheck testing", function () {
 
     it("Grant teacher access", async function () {
         let roles = [1];
-        let username = "user2";
+        let username = "teacher";
         let { user_id: userId } = await prisma.user
             .findFirstOrThrow({
                 where: {
@@ -116,7 +116,7 @@ describe("RoleCheck testing", function () {
 
     it("Deny teacher access", async function () {
         let roles = [0, 2];
-        let username = "user2";
+        let username = "user1";
         let { user_id: userId } = await prisma.user
             .findFirstOrThrow({
                 where: {
