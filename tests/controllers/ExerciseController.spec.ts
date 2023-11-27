@@ -30,7 +30,7 @@ describe("ExerciseController testing", function () {
         assert.equal(res.points, 10);
         assert.equal(res.programming_language, "JavaScript");
         assert.equal(res.code_template, "Your code template here");
-        //TODO: Hints and test_cases
+        //TODO: Hints, test_cases, and examples
     });
     it("Retrieve specific exercise: Invalid id", async function () {
         const result = await ExerciseController.retrieveExercise(1000);
