@@ -4,7 +4,7 @@ import prisma from "../prisma";
 export default function roleCheck(roles: number[]) {
     return async (req: Request, res: Response, next: NextFunction) => {
         const user_id = res.locals.jwtPayload.userId;
-        const course_id = res.locals.jwtPayload.course_id;
+        const course_id = res.locals.course_id;
         await prisma.enrollment
             .findUniqueOrThrow({
                 where: {
@@ -23,7 +23,7 @@ export default function roleCheck(roles: number[]) {
                         next();
                     } else {
                         res.status(401).send(
-                            "User does not have access to make this request",
+                            "You don't have the authorized role for this action",
                         );
                     }
                 },
