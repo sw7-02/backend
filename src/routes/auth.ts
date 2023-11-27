@@ -11,7 +11,7 @@ const genericAuthHandler =
     (func: (username: string, password: string) => Promise<Result<AuthRes>>) =>
     async (req: Request, res: Response) => {
         const { username, password } = req.body;
-        if (!(username && password))
+        if (!username || !password)
             res.status(400).send("No username or password provided");
 
         const result = await func(username, password);

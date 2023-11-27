@@ -11,7 +11,7 @@ describe("AuthController testing", function () {
     it("Signup New User", async function () {
         const res = await AuthController.signUp("user3", "password3@");
         assert.notEqual(res instanceof Err, true);
-        const jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
+        const jwtPayload = <any>jwt.verify((<any>res).jwt_token, config.jwt.secret);
         assert.equal(jwtPayload.username, "user3");
         try {
             await prisma.user
