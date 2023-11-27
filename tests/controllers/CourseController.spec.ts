@@ -121,7 +121,7 @@ describe("ExerciseController testing", function () {
         assert.equal(res[0].course_id, 1);
         assert.equal(res[0].title, "Course 1");
         assert.equal(res[0].user_role, Role.STUDENT);
-        assert.equal(res[1].course_id, 1);
+        assert.equal(res[1].course_id, 2);
         assert.equal(res[1].title, "Course 2");
         assert.equal(res[1].user_role, Role.TA);
     });
