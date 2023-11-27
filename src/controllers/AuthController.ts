@@ -42,11 +42,10 @@ function genPass(pw: string, username: string): PW {
     return { hash: bcrypt.hashSync(pw, salt), salt };
 }
 
-export
-type AuthRes = {
-    jwt_token: string,
-    is_teacher: boolean
-}
+export type AuthRes = {
+    jwt_token: string;
+    is_teacher: boolean;
+};
 
 export default class AuthController {
     static login = async (
@@ -75,10 +74,13 @@ export default class AuthController {
                         );
                         return new Err(401, "Wrong password");
                     }
-                    return {jwt_token: generateJWTToken({
-                        userId: user_id,
-                        username,
-                    }), is_teacher};
+                    return {
+                        jwt_token: generateJWTToken({
+                            userId: user_id,
+                            username,
+                        }),
+                        is_teacher,
+                    };
                 },
                 (e) => {
                     console.error(`Fail logging in user ${username}: ${e}`);
@@ -90,7 +92,7 @@ export default class AuthController {
     static signUp = async (
         username: string,
         password: string,
-    ): Promise<Result<string>> => {
+    ): Promise<Result<AuthRes>> => {
         return prisma.user
             .findFirstOrThrow({
                 where: { username },
@@ -113,7 +115,8 @@ export default class AuthController {
                         },
                     });
                     return {
-                        jwt_token: generateJWTToken({ userId, username }), is_teacher: false // TODO: Default val?
+                        jwt_token: generateJWTToken({ userId, username }),
+                        is_teacher: false, // TODO: Default val?
                     };
                 },
             );
