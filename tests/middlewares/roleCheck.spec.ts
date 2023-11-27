@@ -115,8 +115,8 @@ describe("RoleCheck testing", function () {
     });
 
     it("Deny teacher access", async function () {
-        let roles = [1];
-        let username = "user2";
+        let roles = [0, 2];
+        let username = "teacher";
         let { user_id: userId } = await prisma.user
             .findFirstOrThrow({
                 where: {
@@ -134,7 +134,7 @@ describe("RoleCheck testing", function () {
         );
         validateJWT(request, response, nxtFunc);
 
-        response.locals.course_id = 2;
+        response.locals.course_id = courseId;
 
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);
