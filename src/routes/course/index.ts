@@ -47,16 +47,15 @@ routes.get(
 );
 
 routes
-    .use(enrollmentCheck)
     .route("/:course_id")
-    .get(genericCourseIdHandler(CourseController.retrieveCourse))
-    .put([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
+    .get([enrollmentCheck], genericCourseIdHandler(CourseController.retrieveCourse))
+    .put([enrollmentCheck, roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
         res.send("You have just updated a course (Unimplemented)");
     })
-    .post([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
+    .post([enrollmentCheck, roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
         res.send("You have just created a new session (Unimplemented)");
     })
-    .delete([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
+    .delete([enrollmentCheck, roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
         res.send("You have just updated a course (Unimplemented)");
     });
 
