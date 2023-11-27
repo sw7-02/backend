@@ -1,5 +1,5 @@
 import prisma from "../prisma";
-import { Err, ResponseResult, Result } from "../lib";
+import { Err, Result } from "../lib";
 import axios from "axios";
 import config from "../config";
 
@@ -21,14 +21,14 @@ type _ExerciseSolution = {
 };
 
 type _Example = {
-    input: string,
-    output: string
-}
+    input: string;
+    output: string;
+};
 
 export default class ExerciseController {
     static retrieveAllExercises = async (
         sessionId: number,
-    ): Promise<ResponseResult<_Exercise[]>> =>
+    ): Promise<Result<_Exercise[]>> =>
         prisma.session
             .findUniqueOrThrow({
                 where: { session_id: sessionId },
@@ -96,7 +96,7 @@ export default class ExerciseController {
 
     static retrieveExercise = async (
         exerciseId: number,
-    ): Promise<ResponseResult<_Exercise>> =>
+    ): Promise<Result<_Exercise>> =>
         prisma.exercise
             .findUniqueOrThrow({
                 where: {
@@ -161,7 +161,7 @@ export default class ExerciseController {
         userId: number,
         solution: string,
         isAnon: boolean = true,
-    ): Promise<ResponseResult<void>> =>
+    ): Promise<Result<void>> =>
         prisma.exerciseSolution
             .upsert({
                 where: {
@@ -204,7 +204,7 @@ export default class ExerciseController {
 
     static retrieveAllExerciseSolutions = async (
         exerciseId: number,
-    ): Promise<ResponseResult<_ExerciseSolution[]>> =>
+    ): Promise<Result<_ExerciseSolution[]>> =>
         prisma.exercise
             .findUniqueOrThrow({
                 where: { exercise_id: exerciseId },
@@ -258,7 +258,7 @@ export default class ExerciseController {
         hints: string[] = [],
         testCases: string[] = [],
         examples: _Example[] = [],
-    ): Promise<ResponseResult<number>> => {
+    ): Promise<Result<number>> => {
         let order = 1;
         return prisma.exercise
             .create({
@@ -289,7 +289,7 @@ export default class ExerciseController {
                     },
                     examples: {
                         createMany: {
-                            data: examples.map(({input, output}) => {
+                            data: examples.map(({ input, output }) => {
                                 return { input, output }; // TODO: get if visible
                             }),
                         },
@@ -308,9 +308,7 @@ export default class ExerciseController {
             );
     };
 
-    static deleteExercise = async (
-        exerciseId: number,
-    ): Promise<ResponseResult<void>> =>
+    static deleteExercise = async (exerciseId: number): Promise<Result<void>> =>
         prisma.exercise
             .delete({
                 where: {
@@ -330,7 +328,7 @@ export default class ExerciseController {
     static testExercise = async (
         exerciseId: number,
         solution: string,
-    ): Promise<ResponseResult<void>> => {
+    ): Promise<Result<void>> => {
         const testCases = await prisma.exercise
             .findUniqueOrThrow({
                 where: {

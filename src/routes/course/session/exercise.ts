@@ -4,6 +4,7 @@ import { Err, Role } from "../../../lib";
 import CourseController from "../../../controllers/CourseController";
 import roleCheck from "../../../middlewares/roleCheck";
 import prisma from "../../../prisma";
+import { saveExerciseId } from "../../../middlewares/savings";
 
 // TODO: (FW) get-hint endpoint and decrement potential point-gain for specific exercise
 
@@ -26,7 +27,7 @@ routes.post(
     "/",
     [roleCheck([Role.TEACHER])],
     async (req: Request, res: Response) => {
-        //TODO: Adding hints and/or test cases?
+        //TODO: Adding hints and/or test cases? Only create and then use '/edit'?
         const {
             title,
             description,
@@ -61,16 +62,6 @@ routes.post(
         } else res.send(result);
     },
 );
-
-function saveExerciseId(req: Request, res: Response, nxt: NextFunction) {
-    const id: number = +req.params.exercise_id;
-    if (!id) {
-        res.status(400).send("Exercise ID not a number");
-        return;
-    }
-    res.locals.exerciseId = id;
-    nxt();
-}
 
 routes
     .route("/:exercise_id")
@@ -155,11 +146,18 @@ routes.post("/:exercise_id/test", async (req: Request, res: Response) => {
     } else res.send(result);
 });
 
-//TODO: Mod exercise (CRUD) hints+test cases
+// edit for exercises
+routes
+    .route(":exercise_id/edit")
+    .all([saveExerciseId, roleCheck([Role.TEACHER, Role.TA])])
+    .get(async (req, res) => {})
+    .patch(async (req, res) => {});
+//TODO: Mod exercise (CRUD) hints + test cases + examples (edit-endpoint)
 
 // exercise solutions
 routes.get(
     ":exercise_id/exercise-solutions",
+    saveExerciseId,
     async (req: Request, res: Response) => {
         const exerciseId: number = +res.locals.exerciseId;
 

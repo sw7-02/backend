@@ -1,25 +1,15 @@
-import Router, { NextFunction, Request, Response } from "express";
+import Router, { Request, Response } from "express";
 import exercise from "./exercise";
-import { Err, ResponseResult, Role } from "../../../lib";
+import { Err, Role } from "../../../lib";
 import roleCheck from "../../../middlewares/roleCheck";
 import CourseController from "../../../controllers/CourseController";
+import { saveSessionId } from "../../../middlewares/savings";
 
 const routes = Router();
 
-function sessionIDSave(req: Request, res: Response, next: NextFunction) {
-    const id = +req.params.session_id;
-
-    if (!id) {
-        res.status(400).send("Session ID not a number");
-        return;
-    }
-    res.locals.sessionId = id;
-    next();
-}
-
 // enables passing json bodies.
 routes.use(Router.json());
-routes.use("/:session_id/exercise", sessionIDSave, exercise);
+routes.use("/:session_id/exercise", saveSessionId, exercise);
 
 routes.get("/", async (req: Request, res: Response) => {
     const result = await CourseController.retrieveCourse(res.locals.courseId);
@@ -30,7 +20,7 @@ routes.get("/", async (req: Request, res: Response) => {
 
 routes
     .route("/:session_id")
-    .all(sessionIDSave)
+    .all(saveSessionId)
     .get(async (req: Request, res: Response) => {
         const result = await CourseController.retrieveSessionFromCourse(
             res.locals.sessionId,

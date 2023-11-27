@@ -30,23 +30,4 @@ routes
         return res.send("u made a DELETE request");
     });
 
-const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
-
-routes.get("/delay", async (_, res) => {
-    await delay(10000);
-
-    res.status(201).send("Delayed");
-});
-
-routes.get("/prismatest", async (_, res) => {
-    try {
-        res.status(201).send(
-            `User count from Prisma: ${await prisma.user.count()}`,
-        );
-    } catch (e) {
-        console.error("Err when getting Prisma: " + e);
-        res.status(401).send(`Error: ${e}`);
-    }
-});
-
 export default routes;

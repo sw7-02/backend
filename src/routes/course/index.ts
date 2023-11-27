@@ -3,7 +3,7 @@ import session from "./session";
 import assignment from "./assignment";
 import validateJWT from "../../middlewares/validateJWT";
 import CourseController from "../../controllers/CourseController";
-import { Err, ResponseResult, Role } from "../../lib";
+import { Err, Result, Role } from "../../lib";
 import enrollmentCheck from "../../middlewares/enrollmentCheck";
 import roleCheck from "../../middlewares/roleCheck";
 
@@ -14,7 +14,7 @@ const routes = Router()
     .use("/:course_id/session", [enrollmentCheck], session);
 
 const genericCourseIdHandler =
-    (func: (courseId: number) => Promise<ResponseResult<Object>>) =>
+    (func: (courseId: number) => Promise<Result<Object>>) =>
     async (req: Request, res: Response) => {
         const courseId = +res.locals.courseId;
         const result = await func(courseId);
@@ -48,27 +48,16 @@ routes.get(
 
 routes
     .route("/:course_id")
-    .get(
-        [enrollmentCheck],
-        genericCourseIdHandler(CourseController.retrieveFullCourse),
-    )
-    .put(
-        [enrollmentCheck, roleCheck([Role.TEACHER])],
-        (req: Request, res: Response) => {
-            res.send("You have just updated a course (Unimplemented)");
-        },
-    )
-    .post(
-        [enrollmentCheck, roleCheck([Role.TEACHER])],
-        (req: Request, res: Response) => {
-            res.send("You have just created a new session (Unimplemented)");
-        },
-    )
-    .delete(
-        [enrollmentCheck, roleCheck([Role.TEACHER])],
-        (req: Request, res: Response) => {
-            res.send("You have just updated a course (Unimplemented)");
-        },
-    );
+    .all(enrollmentCheck)
+    .get(genericCourseIdHandler(CourseController.retrieveFullCourse))
+    .put([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
+        res.send("You have just updated a course (Unimplemented)");
+    })
+    .post([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
+        res.send("You have just created a new session (Unimplemented)");
+    })
+    .delete([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
+        res.send("You have just updated a course (Unimplemented)");
+    });
 
 export default routes;

@@ -1,7 +1,7 @@
 import prisma from "../prisma";
 import * as bcrypt from "bcryptjs";
 import config from "../config";
-import { Err, ResponseResult } from "../lib";
+import { Err, Result } from "../lib";
 import { generateJWTToken } from "../lib";
 
 const specialCharRegEx = new RegExp(
@@ -9,7 +9,7 @@ const specialCharRegEx = new RegExp(
 );
 const numberRegEx = new RegExp(`([0-9].*){${config.auth.pw.num_count}}`);
 
-export function validatePassword(pw: string): ResponseResult<void> {
+export function validatePassword(pw: string): Result<void> {
     const code = 406;
     if (pw.length < config.auth.pw.length)
         return new Err(
@@ -51,7 +51,7 @@ export default class AuthController {
     static login = async (
         username: string,
         password: string,
-    ): Promise<ResponseResult<AuthRes>> => {
+    ): Promise<Result<AuthRes>> => {
         const valid = validatePassword(password);
         if (valid instanceof Err)
             return new Err(valid.code, `Password not valid: ${valid.msg}`);
@@ -92,7 +92,7 @@ export default class AuthController {
     static signUp = async (
         username: string,
         password: string,
-    ): Promise<ResponseResult<AuthRes>> => {
+    ): Promise<Result<AuthRes>> => {
         return prisma.user
             .findFirstOrThrow({
                 where: { username },

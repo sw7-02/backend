@@ -1,6 +1,6 @@
 import Router, { Request, Response } from "express";
 import AuthController, { AuthRes } from "../controllers/AuthController";
-import { Err, ResponseResult } from "../lib";
+import { Err, Result } from "../lib";
 
 const routes = Router();
 
@@ -8,12 +8,7 @@ const routes = Router();
 routes.use(Router.json());
 
 const genericAuthHandler =
-    (
-        func: (
-            username: string,
-            password: string,
-        ) => Promise<ResponseResult<AuthRes>>,
-    ) =>
+    (func: (username: string, password: string) => Promise<Result<AuthRes>>) =>
     async (req: Request, res: Response) => {
         const { username, password } = req.body;
         if (!username || !password) {

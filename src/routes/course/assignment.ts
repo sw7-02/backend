@@ -3,6 +3,7 @@ import ExerciseController from "../../controllers/ExerciseController";
 import { Err, Role } from "../../lib";
 import AssignmentController from "../../controllers/AssignmentController";
 import roleCheck from "../../middlewares/roleCheck";
+import { saveAssignmentId } from "../../middlewares/savings";
 
 const routes = Router();
 
@@ -18,16 +19,6 @@ routes.get("/", async (req: Request, res: Response) => {
         res.status(code).send(msg);
     } else res.send(result);
 });
-
-function saveAssignmentId(req: Request, res: Response, nxt: NextFunction) {
-    const id: number = +req.params.assignment_id;
-    if (!id) {
-        res.status(400).send("Assignment ID not a number");
-        return;
-    }
-    res.locals.assignmentId = id;
-    nxt();
-}
 
 routes
     .route("/:assignment_id")
@@ -55,11 +46,14 @@ routes
             const { code, msg } = result;
             res.status(code).send(msg);
         } else res.send(result);
+    })
+    .put([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
+        //TODO: Add assignment
     });
 
 routes.get(
     "/:assignment_id/assignment-solution/",
-    [roleCheck([Role.TEACHER, Role.TA])],
+    [roleCheck([Role.TEACHER, Role.TA]), saveAssignmentId],
     async (req: Request, res: Response) => {
         //const id: number = +res.locals.assignmentId
         const result =
