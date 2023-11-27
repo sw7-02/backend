@@ -1,10 +1,11 @@
-import Router, { Request, Response } from "express";
+import Router, { NextFunction, Request, Response } from "express";
 import ExerciseController from "../../../controllers/ExerciseController";
 import { Err, Role } from "../../../lib";
 import CourseController from "../../../controllers/CourseController";
 import roleCheck from "../../../middlewares/roleCheck";
 import enrollmentCheck from "../../../middlewares/enrollmentCheck";
 import prisma from "../../../prisma";
+import validateJWT from "../../../middlewares/validateJWT";
 
 const routes = Router();
 
@@ -61,14 +62,21 @@ routes.post(
     },
 );
 
+function saveExerciseId(req: Request, res: Response, nxt: NextFunction) {
+    const id: number = +req.params.exercise_id;
+    if (!id) {
+        res.status(400).send("Exercise ID not a number");
+        return;
+    }
+    res.locals.exerciseId = id;
+    nxt();
+}
+
 routes
     .route("/:exercise_id")
+    .all(saveExerciseId)
     .get(async (req: Request, res: Response) => {
-        const id: number = +req.params.exercise_id;
-        if (!id) {
-            res.status(400).send("Exercise ID not a number");
-            return;
-        }
+        const id: number = +res.locals.exerciseId;
         const result = await ExerciseController.retrieveExercise(id);
         if (result instanceof Err) {
             const { code, msg } = result;
@@ -78,11 +86,7 @@ routes
     .delete(
         [roleCheck([Role.TEACHER])],
         async (req: Request, res: Response) => {
-            const id: number = +req.params.exercise_id;
-            if (!id) {
-                res.status(400).send("Exercise ID not a number");
-                return;
-            }
+            const id: number = +res.locals.exerciseId;
             const result = await ExerciseController.deleteExercise(id);
             if (result instanceof Err) {
                 const { code, msg } = result;
@@ -91,11 +95,7 @@ routes
         },
     )
     .post(async (req: Request, res: Response) => {
-        const exerciseId: number = +req.params.exercise_id;
-        if (!exerciseId) {
-            res.status(400).send("Exercise ID not a number");
-            return;
-        }
+        const exerciseId: number = +res.locals.exerciseId;
         const userId: number = res.locals.jwtPayload.userId;
         const courseId = res.locals.courseId;
         const { solution, is_anonymous } = req.body;
@@ -141,11 +141,7 @@ routes
     });
 
 routes.post("/:exercise_id/test", async (req: Request, res: Response) => {
-    const id: number = +req.params.exercise_id;
-    if (!id) {
-        res.status(400).send("Exercise ID not a number");
-        return;
-    }
+    const id: number = +res.locals.exerciseId;
     const { solution } = req.body;
     if (!solution) {
         res.status(400).send("No solution provided");
@@ -166,11 +162,7 @@ routes.post("/:exercise_id/test", async (req: Request, res: Response) => {
 routes.get(
     ":exercise_id/exercise-solutions",
     async (req: Request, res: Response) => {
-        const exerciseId: number = +req.params.exercise_id;
-        if (!exerciseId) {
-            res.status(400).send("Exercise ID not a number");
-            return;
-        }
+        const exerciseId: number = +res.locals.exerciseId;
 
         const userId = res.locals.jwtPayload.userId;
 

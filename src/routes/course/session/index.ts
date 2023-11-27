@@ -6,7 +6,7 @@ import CourseController from "../../../controllers/CourseController";
 
 const routes = Router();
 
-const sessionIDSave = (req: Request, res: Response, next: NextFunction) => {
+function sessionIDSave(req: Request, res: Response, next: NextFunction) {
     const id = +req.params.session_id;
 
     if (!id) {
@@ -15,7 +15,7 @@ const sessionIDSave = (req: Request, res: Response, next: NextFunction) => {
     }
     res.locals.sessionId = id;
     next();
-};
+}
 
 // enables passing json bodies.
 routes.use(Router.json());
@@ -29,8 +29,8 @@ routes.get("/", async (req: Request, res: Response) => {
 });
 
 routes
-    .use(sessionIDSave)
     .route("/:session_id")
+    .all(sessionIDSave)
     .get(async (req: Request, res: Response) => {
         const result = await CourseController.retrieveSessionFromCourse(
             res.locals.sessionId,

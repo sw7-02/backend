@@ -1,4 +1,4 @@
-import Router, { Request, Response } from "express";
+import Router, { NextFunction, Request, Response } from "express";
 import ExerciseController from "../../controllers/ExerciseController";
 import { Err, Role } from "../../lib";
 import AssignmentController from "../../controllers/AssignmentController";
@@ -19,14 +19,21 @@ routes.get("/", async (req: Request, res: Response) => {
     } else res.send(result);
 });
 
+function saveAssignmentId(req: Request, res: Response, nxt: NextFunction) {
+    const id: number = +req.params.assignment_id;
+    if (!id) {
+        res.status(400).send("Assignment ID not a number");
+        return;
+    }
+    res.locals.assignmentId = id;
+    nxt();
+}
+
 routes
     .route("/:assignment_id")
+    .all(saveAssignmentId)
     .get(async (req: Request, res: Response) => {
-        const id: number = +req.params.assignment_id;
-        if (!id) {
-            res.status(400).send("ID not a number");
-            return;
-        }
+        const id: number = +res.locals.assignmentId;
         const result = await AssignmentController.retrieveAssignment(id);
         if (result instanceof Err) {
             const { code, msg } = result;
@@ -35,11 +42,7 @@ routes
     })
     .post(async (req: Request, res: Response) => {
         // submit assignment solution
-        const id: number = +req.params.assignment_id;
-        if (!id) {
-            res.status(400).send("ID not a number");
-            return;
-        }
+        const id: number = +res.locals.assignmentId;
         const userId: number = res.locals.jwtPayload.userId;
         const { solution } = req.body;
 
@@ -58,11 +61,7 @@ routes.get(
     "/:assignment_id/assignment-solution/",
     [roleCheck([Role.TEACHER, Role.TA])],
     async (req: Request, res: Response) => {
-        const id: number = +req.params.assignment_id;
-        if (!id) {
-            res.status(400).send("ID not a number");
-            return;
-        }
+        //const id: number = +res.locals.assignmentId
         const result =
             await AssignmentController.retrieveAllAssignmentSolutions(
                 res.locals.courseId,
@@ -75,12 +74,9 @@ routes.get(
 );
 routes
     .route("/:assignment_id/assignment-solution/feedback")
+    .all(saveAssignmentId)
     .get(async (req: Request, res: Response) => {
-        const id: number = +req.params.assignment_id;
-        if (!id) {
-            res.status(400).send("Assignment ID not a number");
-            return;
-        }
+        const id: number = +res.locals.assignmentId;
         const result = await AssignmentController.retrieveAssignmentFeedback(
             id,
             res.locals.jwtPayload.userId,
