@@ -46,7 +46,9 @@ describe("AuthController testing", function () {
     it("Login Existing User", async function () {
         const res = await AuthController.login("user1", "password1@");
         assert.notEqual(res instanceof Err, true);
-        const jwtPayload = <any>jwt.verify((<any>res).jwt_token, config.jwt.secret);
+        const jwtPayload = <any>(
+            jwt.verify((<any>res).jwt_token, config.jwt.secret)
+        );
         assert.equal(jwtPayload.username, "user1");
         await prisma.user
             .findFirstOrThrow({
