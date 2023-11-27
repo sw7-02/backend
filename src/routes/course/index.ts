@@ -48,7 +48,7 @@ routes.get(
 
 routes
     .route("/:course_id")
-    .get([enrollmentCheck], genericCourseIdHandler(CourseController.retrieveCourse))
+    .get([enrollmentCheck], genericCourseIdHandler(CourseController.retrieveFullCourse))
     .put([enrollmentCheck, roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
         res.send("You have just updated a course (Unimplemented)");
     })
