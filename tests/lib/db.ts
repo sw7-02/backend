@@ -24,6 +24,13 @@ export async function seed() {
             pw_salt: salt,
         },
     });
+    const teacher = await prisma.user.create({
+        data: {
+            username: "teacher",
+            user_password: await bcrypt.hash("teacher1@", salt),
+            pw_salt: salt,
+        },
+    });
 
     // Create sample courses
     const course1 = await prisma.course.create({
@@ -59,8 +66,15 @@ export async function seed() {
         data: {
             user_id: user2.user_id,
             course_id: course1.course_id,
-            user_role: 1,
+            user_role: 0,
             total_points: 2,
+        },
+    });
+    await prisma.enrollment.create({
+        data: {
+            user_id: teacher.user_id,
+            course_id: course1.course_id,
+            user_role: 1,
         },
     });
     // Create sample TA enrollment

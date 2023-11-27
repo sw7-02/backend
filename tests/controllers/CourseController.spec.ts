@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import CourseController from "../../src/controllers/CourseController";
-import { Err } from "../../src/lib";
+import { Err, Role } from "../../src/lib";
 
 describe("ExerciseController testing", function () {
     it("Retrieve course: Valid ID", async function () {
@@ -117,10 +117,13 @@ describe("ExerciseController testing", function () {
         const result = await CourseController.retrieveEnrolledCourses(1);
         assert.notEqual(result instanceof Err, true);
         const res = <any[]>result;
-        assert.equal(res.length, 1);
+        assert.equal(res.length, 2);
         assert.equal(res[0].course_id, 1);
         assert.equal(res[0].title, "Course 1");
-        assert.equal(res[0].user_role, 0);
+        assert.equal(res[0].user_role, Role.STUDENT);
+        assert.equal(res[1].course_id, 1);
+        assert.equal(res[1].title, "Course 2");
+        assert.equal(res[1].user_role, Role.TA);
     });
     it("Retrieve enrolled courses: Invalid ID", async function () {
         const result = await CourseController.retrieveEnrolledCourses(1000);
