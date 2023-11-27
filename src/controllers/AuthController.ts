@@ -116,7 +116,7 @@ export default class AuthController {
                     });
                     return {
                         jwt_token: generateJWTToken({ userId, username }),
-                        is_teacher: false, // TODO: Default val?
+                        is_teacher: false,
                     };
                 },
             );

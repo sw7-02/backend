@@ -43,8 +43,6 @@ routes
         const userId: number = res.locals.jwtPayload.userId;
         const { solution } = req.body;
 
-        // TODO: Test code (if assignments should be tested?)
-
         const result = await AssignmentController.submitAssignementSolution(
             id,
             userId,

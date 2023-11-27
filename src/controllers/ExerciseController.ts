@@ -255,7 +255,7 @@ export default class ExerciseController {
         hints: string[] = [],
         testCases: string[] = [],
     ): Promise<Result<number>> => {
-        let order = 1; //TODO: zero-index?
+        let order = 1;
         return prisma.exercise
             .create({
                 data: {

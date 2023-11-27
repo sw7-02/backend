@@ -12,7 +12,7 @@ routes.get("/status", (_, res) => res.send("Service is running!"));
 routes.use(Router.json());
 
 routes.use("/course", course);
-routes.use("/", auth); //TODO: `/auth` path?
+routes.use("/", auth);
 
 // CRUD for Courses
 routes

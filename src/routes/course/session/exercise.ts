@@ -61,7 +61,7 @@ routes.post(
     },
 );
 
-routes.get("/:exercise_id", async (req: Request, res: Response) => {
+routes.route("/:exercise_id").get(async (req: Request, res: Response) => {
     const id: number = +req.params.exercise_id;
     if (!id) {
         res.status(400).send("ID not a number");
@@ -72,10 +72,7 @@ routes.get("/:exercise_id", async (req: Request, res: Response) => {
         const { code, msg } = result;
         res.status(code).send(msg);
     } else res.send(result);
-});
-
-routes.delete(
-    "/:exercise_id",
+}).delete(
     [roleCheck([Role.TEACHER])],
     async (req: Request, res: Response) => {
         const id: number = +req.params.exercise_id;
@@ -89,10 +86,7 @@ routes.delete(
             res.status(code).send(msg);
         } else res.send();
     },
-);
-
-// submit exercise solution
-routes.post("/:exercise_id", async (req: Request, res: Response) => {
+).post(async (req: Request, res: Response) => {
     const exerciseId: number = +req.params.exercise_id;
     if (!exerciseId) {
         res.status(400).send("ID not a number");
@@ -131,8 +125,12 @@ routes.post("/:exercise_id", async (req: Request, res: Response) => {
     } else res.send(resultSubmission);
 });
 
+routes.post("/:exercise_id/test", (req: Request, res: Response) => {
+   // TODO: TEST CODE
+   res.send("Tested code (Unimplemented)");
+});
+
 // exercise solutions
-// TODO: has submitted or is teacher/ta check
 routes.get(
     ":exercise_id/exercise-solutions",
     async (req: Request, res: Response) => {

@@ -25,7 +25,7 @@ type _AssignmentSolution = {
 export default class AssignmentController {
     static retrieveAllAssignments = async (
         courseId: number,
-    ): Promise<Result<_AssignmentIdentifier[]>> => // TODO: Identifier?
+    ): Promise<Result<_AssignmentIdentifier[]>> =>
         prisma.course
             .findUniqueOrThrow({
                 where: {
@@ -116,7 +116,7 @@ export default class AssignmentController {
                     console.error(
                         `Failure submitting assignment ${assignmentId}: ${r}`,
                     );
-                    return new Err(404, "User or Assignment doesn't exist"); //TODO: What happens?
+                    return new Err(404, "User or Assignment doesn't exist");
                 },
             );
 
