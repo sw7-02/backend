@@ -4,7 +4,7 @@ import config from "../config";
 import { generateJWTToken } from "../lib";
 
 /// Checks given JWT in the header of the requests, serves a new with a deadline of the provided config
-export default function validateJWT (
+export default function validateJWT(
     req: Request,
     res: Response,
     next: NextFunction,
@@ -29,4 +29,4 @@ export default function validateJWT (
 
     //Call the next middleware or controller
     next();
-};
+}

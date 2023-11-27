@@ -23,7 +23,8 @@ export default async function enrollmentCheck(
     const r = await prisma.enrollment.findUnique({
         where: {
             user_id_course_id: {
-                user_id: userId, course_id: courseId,
+                user_id: userId,
+                course_id: courseId,
             },
         },
     });
@@ -34,4 +35,4 @@ export default async function enrollmentCheck(
     } else {
         res.status(401).send("No enrollment found");
     }
-};
+}

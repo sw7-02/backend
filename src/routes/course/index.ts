@@ -46,12 +46,13 @@ routes
     });
 
 routes.get(
-    "/:course_id/leaderboard", [enrollmentCheck],
+    "/:course_id/leaderboard",
+    [enrollmentCheck],
     genericCourseIdHandler(CourseController.retrieveLeaderboard),
 );
 
-
-routes.use(enrollmentCheck)
+routes
+    .use(enrollmentCheck)
     .route("/:course_id")
     .get(genericCourseIdHandler(CourseController.retrieveCourse))
     .put((req: Request, res: Response) => {

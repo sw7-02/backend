@@ -20,10 +20,12 @@ describe("Testing enrollmentCheck", function () {
 
     it("Correct enrollment", () => {
         request.params.course_id = "1";
-        response.locals = {jwtPayload: {
+        response.locals = {
+            jwtPayload: {
                 userId: 1,
-                username: "user1"
-            }};
+                username: "user1",
+            },
+        };
 
         enrollmentCheck(request, response, nxtFunc);
 
@@ -37,10 +39,12 @@ describe("Testing enrollmentCheck", function () {
 
     it("Not enrolled: Wrong User ID", () => {
         request.params.course_id = "1";
-        response.locals = {jwtPayload: {
+        response.locals = {
+            jwtPayload: {
                 userId: 1000,
-                username: "user1000"
-            }};
+                username: "user1000",
+            },
+        };
 
         enrollmentCheck(request, response, nxtFunc);
 
@@ -52,10 +56,12 @@ describe("Testing enrollmentCheck", function () {
     });
     it("Not enrolled: Wrong Course ID", () => {
         request.params.course_id = "1000";
-        response.locals = {jwtPayload: {
-            userId: 1,
-                username: "user1"
-        }};
+        response.locals = {
+            jwtPayload: {
+                userId: 1,
+                username: "user1",
+            },
+        };
 
         enrollmentCheck(request, response, nxtFunc);
 
@@ -69,10 +75,12 @@ describe("Testing enrollmentCheck", function () {
 
     it("Invalid Course ID", () => {
         request.params.course_id = "1000A";
-        response.locals = {jwtPayload: {
+        response.locals = {
+            jwtPayload: {
                 userId: 1,
-                username: "user1"
-            }};
+                username: "user1",
+            },
+        };
 
         enrollmentCheck(request, response, nxtFunc);
 
