@@ -6,6 +6,7 @@ import prisma from "../../src/prisma";
 describe("ExerciseController testing", function () {
     it("Retrieve all exercises: Valid session", async function () {
         const result = await ExerciseController.retrieveAllExercises(1);
+        console.log(result);
         assert.notEqual(result instanceof Err, true);
         assert.equal((<[]>result).length, 1);
     });
@@ -18,6 +19,7 @@ describe("ExerciseController testing", function () {
 
     it("Retrieve specific exercise: Valid id", async function () {
         const result = await ExerciseController.retrieveExercise(1);
+        console.log(result);
         assert.notEqual(result instanceof Err, true);
         const res = <any>result;
         assert.equal(res.exercise_id, 1);
