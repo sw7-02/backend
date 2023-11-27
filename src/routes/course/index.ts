@@ -28,8 +28,8 @@ const genericCourseIdHandler =
 routes
     .route("/")
     .get(async (req: Request, res: Response) => {
-        const courseId = +res.locals.jwtPayload.courseId;
-        const result = await CourseController.retrieveEnrolledCourses(courseId);
+        const userId = +res.locals.jwtPayload.userId;
+        const result = await CourseController.retrieveEnrolledCourses(userId);
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);
