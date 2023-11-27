@@ -296,30 +296,77 @@ export default class CourseController {
                 },
             );
 
-    static retrieveSessionFromCourse = async(
-        courseId: number, sessionId: number
-    ): Promise<void> => {}//TODO RETURN TYPE
+    static retrieveSessionFromCourse = async (
+        sessionId: number,
+    ): Promise<Result<_Session>> =>
+        prisma.session
+            .findUniqueOrThrow({
+                where: {
+                    session_id: sessionId,
+                },
+                select: {
+                    session_id: true,
+                    title: true,
+                    exercises: {
+                        select: {
+                            exercise_id: true,
+                            title: true,
+                        }
+                    }
+                },
+            })
+            .then(
+                (r) => r,
+                (reason) => {
+                    console.error(`Failed getting session: ${reason}`);
+                    return new Err(404, "Session does not exist");
+                },
+            );
 
-    static insertSessionFromCourse = async(
-        courseId: number, title: string
-    ): Promise<Result<number>> => prisma.session.create({
-    data: {
-        title, course: {
-            connect: {
-                course_id: courseId,
-            },
-        },
-    }, select: {
-        session_id: true,
-        }}).then(r => r.session_id,
-        reason => {
-            console.error(`Failed adding session to course ${courseId}: ${reason}`);
-            return new Err(40, "Failed adding new session");
-        });
+    static insertSessionFromCourse = async (
+        courseId: number,
+        title: string,
+    ): Promise<Result<{ session_id: number }>> =>
+        prisma.session
+            .create({
+                data: {
+                    title,
+                    course: {
+                        connect: {
+                            course_id: courseId,
+                        },
+                    },
+                },
+                select: {
+                    session_id: true,
+                },
+            })
+            .then(
+                (r) => r,
+                (reason) => {
+                    console.error(
+                        `Failed adding session to course ${courseId}: ${reason}`,
+                    );
+                    return new Err(400, "Failed adding new session");
+                },
+            );
 
-    static deleteSessionFromCourse = async(
-        courseId: number, sessionId: number
-    ): Promise<void> => {}//TODO RETURN TYPE
+    static deleteSessionFromCourse = async (
+        sessionId: number,
+    ): Promise<Result<void>> =>
+        prisma.session
+            .delete({
+                where: {
+                    session_id: sessionId,
+                },
+            })
+            .then(
+                () => {},
+                (reason) => {
+                    console.error(`Failed deleting session: ${reason}`);
+                    return new Err(500, "Failed deleting session");
+                },
+            );
 
     static getUserId = async (
         courseId: number,

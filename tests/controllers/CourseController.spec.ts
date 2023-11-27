@@ -131,4 +131,6 @@ describe("ExerciseController testing", function () {
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "User does not exist");
     });
+
+    //TODO: Session tests
 });
