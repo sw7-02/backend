@@ -66,7 +66,7 @@ routes
     .get(async (req: Request, res: Response) => {
         const id: number = +req.params.exercise_id;
         if (!id) {
-            res.status(400).send("ID not a number");
+            res.status(400).send("Exercise ID not a number");
             return;
         }
         const result = await ExerciseController.retrieveExercise(id);
@@ -80,7 +80,7 @@ routes
         async (req: Request, res: Response) => {
             const id: number = +req.params.exercise_id;
             if (!id) {
-                res.status(400).send("ID not a number");
+                res.status(400).send("Exercise ID not a number");
                 return;
             }
             const result = await ExerciseController.deleteExercise(id);
@@ -93,15 +93,22 @@ routes
     .post(async (req: Request, res: Response) => {
         const exerciseId: number = +req.params.exercise_id;
         if (!exerciseId) {
-            res.status(400).send("ID not a number");
+            res.status(400).send("Exercise ID not a number");
             return;
         }
-
-        // TODO: test the solution beforehand
-
         const userId: number = res.locals.jwtPayload.userId;
         const courseId = res.locals.courseId;
         const { solution, is_anonymous } = req.body;
+
+        const testResult = await ExerciseController.testExercise(
+            exerciseId,
+            solution,
+        );
+        if (testResult instanceof Err) {
+            const { code, msg } = testResult;
+            res.status(code).send(msg);
+            return;
+        }
 
         let points;
         const resultSubmission = await CourseController.updatePoints(
@@ -133,11 +140,26 @@ routes
         } else res.send(resultSubmission);
     });
 
-routes.post("/:exercise_id/test", (req: Request, res: Response) => {
-    // TODO: TEST CODE
-    res.send("Tested code (Unimplemented)");
+routes.post("/:exercise_id/test", async (req: Request, res: Response) => {
+    const id: number = +req.params.exercise_id;
+    if (!id) {
+        res.status(400).send("Exercise ID not a number");
+        return;
+    }
+    const { solution } = req.body;
+    if (!solution) {
+        res.status(400).send("No solution provided");
+        return;
+    }
+
+    const result = await ExerciseController.testExercise(id, solution);
+    if (result instanceof Err) {
+        const { code, msg } = result;
+        res.status(code).send(msg);
+    } else res.send(result);
 });
 
+// TODO: Pull exercise middleware? (lots of duplicate)
 //TODO: Mod exercise (CRUD) hints+test cases
 
 // exercise solutions
@@ -146,7 +168,7 @@ routes.get(
     async (req: Request, res: Response) => {
         const exerciseId: number = +req.params.exercise_id;
         if (!exerciseId) {
-            res.status(400).send("ID not a number");
+            res.status(400).send("Exercise ID not a number");
             return;
         }
 
