@@ -296,6 +296,31 @@ export default class CourseController {
                 },
             );
 
+    static retrieveSessionFromCourse = async(
+        courseId: number, sessionId: number
+    ): Promise<void> => {}//TODO RETURN TYPE
+
+    static insertSessionFromCourse = async(
+        courseId: number, title: string
+    ): Promise<Result<number>> => prisma.session.create({
+    data: {
+        title, course: {
+            connect: {
+                course_id: courseId,
+            },
+        },
+    }, select: {
+        session_id: true,
+        }}).then(r => r.session_id,
+        reason => {
+            console.error(`Failed adding session to course ${courseId}: ${reason}`);
+            return new Err(40, "Failed adding new session");
+        });
+
+    static deleteSessionFromCourse = async(
+        courseId: number, sessionId: number
+    ): Promise<void> => {}//TODO RETURN TYPE
+
     static getUserId = async (
         courseId: number,
         username: string,

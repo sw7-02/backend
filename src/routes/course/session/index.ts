@@ -1,5 +1,7 @@
 import Router, { NextFunction, Request, Response } from "express";
 import exercise from "./exercise";
+import { Err, Result, Role } from "../../../lib";
+import roleCheck from "../../../middlewares/roleCheck";
 
 const routes = Router();
 
@@ -17,7 +19,17 @@ const sessionIDSave = (req: Request, res: Response, next: NextFunction) => {
 // enables passing json bodies.
 routes.use(Router.json());
 routes.use("/:session_id/exercise", sessionIDSave, exercise);
-//routes.use("/:session_id/exercise", exercise);
+
+const genericCourseIdHandler =
+    (func: (courseId: number) => Promise<Result<Object>>) =>
+        async (req: Request, res: Response) => {
+            const courseId = +res.locals.courseId;
+            const result = await func(courseId);
+            if (result instanceof Err) {
+                const { code, msg } = result;
+                res.status(code).send(msg);
+            } else res.send(result);
+        };
 
 routes.get("/", (req: Request, res: Response) => {
     res.send("This is the session overview (Unimplemented)");
@@ -28,10 +40,10 @@ routes
     .get((req: Request, res: Response) => {
         res.send("This is the a specific session (Unimplemented)");
     })
-    .put((req: Request, res: Response) => {
+    .put([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
         res.send("You have just updated a session (Unimplemented)");
     })
-    .delete((req: Request, res: Response) => {
+    .delete([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
         res.send("You have just deleted a session (Unimplemented)");
     });
 
