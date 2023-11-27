@@ -99,6 +99,6 @@ describe("ExerciseController testing", function () {
     });
 
     // TODO: Add/Remove exercise (not in routes, ignored for now in testing)
-
-    //TODO: Testing code
+    // TODO: Add/Remove hints/test cases
+    // TODO: Testing code
 });

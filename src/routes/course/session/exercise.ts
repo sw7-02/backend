@@ -155,7 +155,6 @@ routes.post("/:exercise_id/test", async (req: Request, res: Response) => {
     } else res.send(result);
 });
 
-// TODO: Pull exercise middleware? (lots of duplicate)
 //TODO: Mod exercise (CRUD) hints+test cases
 
 // exercise solutions
