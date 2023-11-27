@@ -60,7 +60,7 @@ export async function seed() {
             user_id: user2.user_id,
             course_id: course1.course_id,
             user_role: 1,
-            total_points: 2
+            total_points: 2,
         },
     });
     // Create sample TA enrollment
