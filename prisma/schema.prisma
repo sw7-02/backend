@@ -20,6 +20,7 @@ model Enrollment {
   course Course @relation(fields: [course_id], references: [course_id])
   user   User   @relation(fields: [user_id], references: [user_id])
 
+  @@unique([user_id, course_id])
   @@map("enrollments")
 }
 
