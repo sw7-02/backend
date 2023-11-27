@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 import httpMocks from "node-mocks-http";
 import * as jwt from "jsonwebtoken";
 import config from "../../src/config";
-import { validateJWT } from "../../src/middlewares/validateJWT";
+import validateJWT from "../../src/middlewares/validateJWT";
 
 const nxtFunc = () => {};
 let response: Response;
