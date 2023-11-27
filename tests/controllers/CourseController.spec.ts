@@ -143,7 +143,7 @@ describe("ExerciseController testing", function () {
         assert.equal(res.exercises[0].title, "Exercise 1");
     });
     it("Retrieve session: Invalid ID", async function () {
-        const result = await CourseController.retrieveSessionFromCourse(1);
+        const result = await CourseController.retrieveSessionFromCourse(1000);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "Session does not exist");
@@ -156,7 +156,7 @@ describe("ExerciseController testing", function () {
         );
         assert.notEqual(result instanceof Err, true);
         const res = <any>result;
-        assert.equal(res, 2);
+        assert.equal(res.session_id, 2);
     });
     it("Insert session: Invalid ID", async function () {
         const result = await CourseController.insertSessionFromCourse(

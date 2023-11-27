@@ -33,7 +33,7 @@
         "build-docker": "docker build -t ${npm_package_name}:${npm_package_version} -t ${npm_package_name}:dev .",
         "start": "set debug=* && ts-node-dev --respawn --transpile-only ./src/index.ts",
         "prod": "tsc && node ./build/index.js",
-        "test": "mocha --require ts-node/register \"./tests/**/*.spec.ts\"",
+        "test": "nyc mocha --require ts-node/register \"./tests/**/*.spec.ts\"",
         "fmt": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
         "fmt-check": "prettier --check \"**/*.+(js|ts|json)\""
     },
