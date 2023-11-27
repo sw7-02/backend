@@ -4,6 +4,7 @@ import { Err, Role } from "../../../lib";
 import CourseController from "../../../controllers/CourseController";
 import roleCheck from "../../../middlewares/roleCheck";
 import enrollmentCheck from "../../../middlewares/enrollmentCheck";
+import prisma from "../../../prisma";
 
 const routes = Router();
 
@@ -139,6 +140,44 @@ routes.get(
         if (!exerciseId) {
             res.status(400).send("ID not a number");
             return;
+        }
+
+        const userId = res.locals.jwtPayload.userId;
+
+        const role = await prisma.enrollment
+            .findUnique({
+                where: {
+                    user_id_course_id: {
+                        user_id: userId,
+                        course_id: res.locals.courseId,
+                    },
+                },
+                select: {
+                    user_role: true,
+                },
+            })
+            .then((r) => r?.user_role);
+        if (!role) {
+            res.status(500).send("Internal error");
+            return;
+        }
+
+        if (![Role.TEACHER, Role.TA].includes(role)) {
+            const hasSubmitted = await prisma.exerciseSolution
+                .findFirst({
+                    where: {
+                        exercise_id: exerciseId,
+                        user_id: userId,
+                    },
+                })
+                .then((r) => true);
+
+            if (!hasSubmitted) {
+                res.status(403).send(
+                    "You need to submit an exercise yourself before you can see the others",
+                );
+                return;
+            }
         }
 
         const result =

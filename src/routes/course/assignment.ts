@@ -78,7 +78,6 @@ routes.get(
 routes
     .route("/:assignment_id/assignment-solution/feedback")
     .get(async (req: Request, res: Response) => {
-        //TODO: correct user check
         const id: number = +req.params.assignment_id;
         if (!id) {
             res.status(400).send("Assignment ID not a number");

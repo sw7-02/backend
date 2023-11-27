@@ -29,6 +29,7 @@ export async function seed() {
             username: "teacher",
             user_password: await bcrypt.hash("teacher1@", salt),
             pw_salt: salt,
+            is_teacher: true,
         },
     });
 
