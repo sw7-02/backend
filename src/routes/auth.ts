@@ -7,8 +7,9 @@ const routes = Router();
 // enables passing json bodies.
 routes.use(Router.json());
 
+
 const genericAuthHandler =
-    (func: (username: string, password: string) => Promise<Result<string>>) =>
+    (func: (username: string, password: string) => Promise<Result<AuthRes>>) =>
     async (req: Request, res: Response) => {
         const { username, password } = req.body;
         if (!(username && password))
