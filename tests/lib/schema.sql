@@ -20,21 +20,21 @@ SET row_security = off;
 
 --
 -- TOC entry 5 (class 2615 OID 2200)
--- Name: public; Type: SCHEMA; Schema: -; Owner: pg_database_owner
+-- Name: improved_schema; Type: SCHEMA; Schema: -; Owner: pg_database_owner
 --
 
-CREATE SCHEMA public;
+CREATE SCHEMA improved_schema;
 
 
-ALTER SCHEMA public OWNER TO pg_database_owner;
+ALTER SCHEMA improved_schema OWNER TO pg_database_owner;
 
 --
 -- TOC entry 4899 (class 0 OID 0)
 -- Dependencies: 5
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: pg_database_owner
+-- Name: SCHEMA improved_schema; Type: COMMENT; Schema: -; Owner: pg_database_owner
 --
 
-COMMENT ON SCHEMA public IS 'standard public schema';
+COMMENT ON SCHEMA improved_schema IS 'standard improved_schema schema';
 
 
 SET default_tablespace = '';
@@ -43,10 +43,10 @@ SET default_table_access_method = heap;
 
 --
 -- TOC entry 224 (class 1259 OID 16556)
--- Name: assignment_solutions; Type: TABLE; Schema: public; Owner: postgres
+-- Name: assignment_solutions; Type: TABLE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE TABLE public.assignment_solutions (
+CREATE TABLE improved_schema.assignment_solutions (
     assignment_solution_id integer NOT NULL,
     assignment_id integer,
     user_id integer,
@@ -55,14 +55,14 @@ CREATE TABLE public.assignment_solutions (
 );
 
 
-ALTER TABLE public.assignment_solutions OWNER TO postgres;
+ALTER TABLE improved_schema.assignment_solutions OWNER TO postgres;
 
 --
 -- TOC entry 223 (class 1259 OID 16555)
--- Name: assignment_solutions_assignment_solution_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: assignment_solutions_assignment_solution_id_seq; Type: SEQUENCE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE SEQUENCE public.assignment_solutions_assignment_solution_id_seq
+CREATE SEQUENCE improved_schema.assignment_solutions_assignment_solution_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -71,23 +71,23 @@ CREATE SEQUENCE public.assignment_solutions_assignment_solution_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.assignment_solutions_assignment_solution_id_seq OWNER TO postgres;
+ALTER SEQUENCE improved_schema.assignment_solutions_assignment_solution_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 4900 (class 0 OID 0)
 -- Dependencies: 223
--- Name: assignment_solutions_assignment_solution_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: assignment_solutions_assignment_solution_id_seq; Type: SEQUENCE OWNED BY; Schema: improved_schema; Owner: postgres
 --
 
-ALTER SEQUENCE public.assignment_solutions_assignment_solution_id_seq OWNED BY public.assignment_solutions.assignment_solution_id;
+ALTER SEQUENCE improved_schema.assignment_solutions_assignment_solution_id_seq OWNED BY improved_schema.assignment_solutions.assignment_solution_id;
 
 
 --
 -- TOC entry 222 (class 1259 OID 16542)
--- Name: assignments; Type: TABLE; Schema: public; Owner: postgres
+-- Name: assignments; Type: TABLE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE TABLE public.assignments (
+CREATE TABLE improved_schema.assignments (
     assignment_id integer NOT NULL,
     course_id integer,
     title character varying(255),
@@ -98,14 +98,14 @@ CREATE TABLE public.assignments (
 );
 
 
-ALTER TABLE public.assignments OWNER TO postgres;
+ALTER TABLE improved_schema.assignments OWNER TO postgres;
 
 --
 -- TOC entry 221 (class 1259 OID 16541)
--- Name: assignments_assignment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: assignments_assignment_id_seq; Type: SEQUENCE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE SEQUENCE public.assignments_assignment_id_seq
+CREATE SEQUENCE improved_schema.assignments_assignment_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -114,36 +114,36 @@ CREATE SEQUENCE public.assignments_assignment_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.assignments_assignment_id_seq OWNER TO postgres;
+ALTER SEQUENCE improved_schema.assignments_assignment_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 4901 (class 0 OID 0)
 -- Dependencies: 221
--- Name: assignments_assignment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: assignments_assignment_id_seq; Type: SEQUENCE OWNED BY; Schema: improved_schema; Owner: postgres
 --
 
-ALTER SEQUENCE public.assignments_assignment_id_seq OWNED BY public.assignments.assignment_id;
+ALTER SEQUENCE improved_schema.assignments_assignment_id_seq OWNED BY improved_schema.assignments.assignment_id;
 
 
 --
 -- TOC entry 216 (class 1259 OID 16505)
--- Name: courses; Type: TABLE; Schema: public; Owner: postgres
+-- Name: courses; Type: TABLE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE TABLE public.courses (
+CREATE TABLE improved_schema.courses (
     course_id integer NOT NULL,
     title character varying(255)
 );
 
 
-ALTER TABLE public.courses OWNER TO postgres;
+ALTER TABLE improved_schema.courses OWNER TO postgres;
 
 --
 -- TOC entry 215 (class 1259 OID 16504)
--- Name: courses_course_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: courses_course_id_seq; Type: SEQUENCE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE SEQUENCE public.courses_course_id_seq
+CREATE SEQUENCE improved_schema.courses_course_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -152,23 +152,23 @@ CREATE SEQUENCE public.courses_course_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.courses_course_id_seq OWNER TO postgres;
+ALTER SEQUENCE improved_schema.courses_course_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 4902 (class 0 OID 0)
 -- Dependencies: 215
--- Name: courses_course_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: courses_course_id_seq; Type: SEQUENCE OWNED BY; Schema: improved_schema; Owner: postgres
 --
 
-ALTER SEQUENCE public.courses_course_id_seq OWNED BY public.courses.course_id;
+ALTER SEQUENCE improved_schema.courses_course_id_seq OWNED BY improved_schema.courses.course_id;
 
 
 --
 -- TOC entry 220 (class 1259 OID 16525)
--- Name: enrollments; Type: TABLE; Schema: public; Owner: postgres
+-- Name: enrollments; Type: TABLE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE TABLE public.enrollments (
+CREATE TABLE improved_schema.enrollments (
     enrollment_id integer NOT NULL,
     course_id integer,
     user_id integer,
@@ -177,14 +177,14 @@ CREATE TABLE public.enrollments (
 );
 
 
-ALTER TABLE public.enrollments OWNER TO postgres;
+ALTER TABLE improved_schema.enrollments OWNER TO postgres;
 
 --
 -- TOC entry 219 (class 1259 OID 16524)
--- Name: enrollments_enrollment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: enrollments_enrollment_id_seq; Type: SEQUENCE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE SEQUENCE public.enrollments_enrollment_id_seq
+CREATE SEQUENCE improved_schema.enrollments_enrollment_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -193,23 +193,23 @@ CREATE SEQUENCE public.enrollments_enrollment_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.enrollments_enrollment_id_seq OWNER TO postgres;
+ALTER SEQUENCE improved_schema.enrollments_enrollment_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 4903 (class 0 OID 0)
 -- Dependencies: 219
--- Name: enrollments_enrollment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: enrollments_enrollment_id_seq; Type: SEQUENCE OWNED BY; Schema: improved_schema; Owner: postgres
 --
 
-ALTER SEQUENCE public.enrollments_enrollment_id_seq OWNED BY public.enrollments.enrollment_id;
+ALTER SEQUENCE improved_schema.enrollments_enrollment_id_seq OWNED BY improved_schema.enrollments.enrollment_id;
 
 
 --
 -- TOC entry 235 (class 1259 OID 17043)
--- Name: examples; Type: TABLE; Schema: public; Owner: postgres
+-- Name: examples; Type: TABLE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE TABLE public.examples (
+CREATE TABLE improved_schema.examples (
     input character varying,
     output character varying,
     example_id bigint NOT NULL,
@@ -217,14 +217,14 @@ CREATE TABLE public.examples (
 );
 
 
-ALTER TABLE public.examples OWNER TO postgres;
+ALTER TABLE improved_schema.examples OWNER TO postgres;
 
 --
 -- TOC entry 234 (class 1259 OID 16629)
--- Name: exercise_solutions; Type: TABLE; Schema: public; Owner: postgres
+-- Name: exercise_solutions; Type: TABLE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE TABLE public.exercise_solutions (
+CREATE TABLE improved_schema.exercise_solutions (
     exercise_solution_id integer NOT NULL,
     exercise_id integer,
     user_id integer,
@@ -234,14 +234,14 @@ CREATE TABLE public.exercise_solutions (
 );
 
 
-ALTER TABLE public.exercise_solutions OWNER TO postgres;
+ALTER TABLE improved_schema.exercise_solutions OWNER TO postgres;
 
 --
 -- TOC entry 233 (class 1259 OID 16628)
--- Name: exercise_solutions_exercise_solution_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: exercise_solutions_exercise_solution_id_seq; Type: SEQUENCE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE SEQUENCE public.exercise_solutions_exercise_solution_id_seq
+CREATE SEQUENCE improved_schema.exercise_solutions_exercise_solution_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -250,23 +250,23 @@ CREATE SEQUENCE public.exercise_solutions_exercise_solution_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.exercise_solutions_exercise_solution_id_seq OWNER TO postgres;
+ALTER SEQUENCE improved_schema.exercise_solutions_exercise_solution_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 4904 (class 0 OID 0)
 -- Dependencies: 233
--- Name: exercise_solutions_exercise_solution_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: exercise_solutions_exercise_solution_id_seq; Type: SEQUENCE OWNED BY; Schema: improved_schema; Owner: postgres
 --
 
-ALTER SEQUENCE public.exercise_solutions_exercise_solution_id_seq OWNED BY public.exercise_solutions.exercise_solution_id;
+ALTER SEQUENCE improved_schema.exercise_solutions_exercise_solution_id_seq OWNED BY improved_schema.exercise_solutions.exercise_solution_id;
 
 
 --
 -- TOC entry 228 (class 1259 OID 16587)
--- Name: exercises; Type: TABLE; Schema: public; Owner: postgres
+-- Name: exercises; Type: TABLE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE TABLE public.exercises (
+CREATE TABLE improved_schema.exercises (
     exercise_id integer NOT NULL,
     session_id integer,
     title character varying(255),
@@ -277,14 +277,14 @@ CREATE TABLE public.exercises (
 );
 
 
-ALTER TABLE public.exercises OWNER TO postgres;
+ALTER TABLE improved_schema.exercises OWNER TO postgres;
 
 --
 -- TOC entry 227 (class 1259 OID 16586)
--- Name: exercises_exercise_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: exercises_exercise_id_seq; Type: SEQUENCE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE SEQUENCE public.exercises_exercise_id_seq
+CREATE SEQUENCE improved_schema.exercises_exercise_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -293,23 +293,23 @@ CREATE SEQUENCE public.exercises_exercise_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.exercises_exercise_id_seq OWNER TO postgres;
+ALTER SEQUENCE improved_schema.exercises_exercise_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 4905 (class 0 OID 0)
 -- Dependencies: 227
--- Name: exercises_exercise_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: exercises_exercise_id_seq; Type: SEQUENCE OWNED BY; Schema: improved_schema; Owner: postgres
 --
 
-ALTER SEQUENCE public.exercises_exercise_id_seq OWNED BY public.exercises.exercise_id;
+ALTER SEQUENCE improved_schema.exercises_exercise_id_seq OWNED BY improved_schema.exercises.exercise_id;
 
 
 --
 -- TOC entry 232 (class 1259 OID 16615)
--- Name: hints; Type: TABLE; Schema: public; Owner: postgres
+-- Name: hints; Type: TABLE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE TABLE public.hints (
+CREATE TABLE improved_schema.hints (
     hint_id integer NOT NULL,
     exercise_id integer,
     description text,
@@ -317,14 +317,14 @@ CREATE TABLE public.hints (
 );
 
 
-ALTER TABLE public.hints OWNER TO postgres;
+ALTER TABLE improved_schema.hints OWNER TO postgres;
 
 --
 -- TOC entry 231 (class 1259 OID 16614)
--- Name: hints_hint_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: hints_hint_id_seq; Type: SEQUENCE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE SEQUENCE public.hints_hint_id_seq
+CREATE SEQUENCE improved_schema.hints_hint_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -333,37 +333,37 @@ CREATE SEQUENCE public.hints_hint_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.hints_hint_id_seq OWNER TO postgres;
+ALTER SEQUENCE improved_schema.hints_hint_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 4906 (class 0 OID 0)
 -- Dependencies: 231
--- Name: hints_hint_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: hints_hint_id_seq; Type: SEQUENCE OWNED BY; Schema: improved_schema; Owner: postgres
 --
 
-ALTER SEQUENCE public.hints_hint_id_seq OWNED BY public.hints.hint_id;
+ALTER SEQUENCE improved_schema.hints_hint_id_seq OWNED BY improved_schema.hints.hint_id;
 
 
 --
 -- TOC entry 226 (class 1259 OID 16575)
--- Name: sessions; Type: TABLE; Schema: public; Owner: postgres
+-- Name: sessions; Type: TABLE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE TABLE public.sessions (
+CREATE TABLE improved_schema.sessions (
     session_id integer NOT NULL,
     course_id integer,
     title character varying(255)
 );
 
 
-ALTER TABLE public.sessions OWNER TO postgres;
+ALTER TABLE improved_schema.sessions OWNER TO postgres;
 
 --
 -- TOC entry 225 (class 1259 OID 16574)
--- Name: sessions_session_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: sessions_session_id_seq; Type: SEQUENCE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE SEQUENCE public.sessions_session_id_seq
+CREATE SEQUENCE improved_schema.sessions_session_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -372,23 +372,23 @@ CREATE SEQUENCE public.sessions_session_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.sessions_session_id_seq OWNER TO postgres;
+ALTER SEQUENCE improved_schema.sessions_session_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 4907 (class 0 OID 0)
 -- Dependencies: 225
--- Name: sessions_session_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: sessions_session_id_seq; Type: SEQUENCE OWNED BY; Schema: improved_schema; Owner: postgres
 --
 
-ALTER SEQUENCE public.sessions_session_id_seq OWNED BY public.sessions.session_id;
+ALTER SEQUENCE improved_schema.sessions_session_id_seq OWNED BY improved_schema.sessions.session_id;
 
 
 --
 -- TOC entry 230 (class 1259 OID 16601)
--- Name: test_cases; Type: TABLE; Schema: public; Owner: postgres
+-- Name: test_cases; Type: TABLE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE TABLE public.test_cases (
+CREATE TABLE improved_schema.test_cases (
     test_case_id integer NOT NULL,
     exercise_id integer,
     code text,
@@ -396,14 +396,14 @@ CREATE TABLE public.test_cases (
 );
 
 
-ALTER TABLE public.test_cases OWNER TO postgres;
+ALTER TABLE improved_schema.test_cases OWNER TO postgres;
 
 --
 -- TOC entry 229 (class 1259 OID 16600)
--- Name: test_cases_test_case_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: test_cases_test_case_id_seq; Type: SEQUENCE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE SEQUENCE public.test_cases_test_case_id_seq
+CREATE SEQUENCE improved_schema.test_cases_test_case_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -412,23 +412,23 @@ CREATE SEQUENCE public.test_cases_test_case_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.test_cases_test_case_id_seq OWNER TO postgres;
+ALTER SEQUENCE improved_schema.test_cases_test_case_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 4908 (class 0 OID 0)
 -- Dependencies: 229
--- Name: test_cases_test_case_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: test_cases_test_case_id_seq; Type: SEQUENCE OWNED BY; Schema: improved_schema; Owner: postgres
 --
 
-ALTER SEQUENCE public.test_cases_test_case_id_seq OWNED BY public.test_cases.test_case_id;
+ALTER SEQUENCE improved_schema.test_cases_test_case_id_seq OWNED BY improved_schema.test_cases.test_case_id;
 
 
 --
 -- TOC entry 218 (class 1259 OID 16514)
--- Name: users; Type: TABLE; Schema: public; Owner: postgres
+-- Name: users; Type: TABLE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE TABLE public.users (
+CREATE TABLE improved_schema.users (
     user_id integer NOT NULL,
     username character varying(255),
     user_password character varying(255),
@@ -437,14 +437,14 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO postgres;
+ALTER TABLE improved_schema.users OWNER TO postgres;
 
 --
 -- TOC entry 217 (class 1259 OID 16513)
--- Name: users_user_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: users_user_id_seq; Type: SEQUENCE; Schema: improved_schema; Owner: postgres
 --
 
-CREATE SEQUENCE public.users_user_id_seq
+CREATE SEQUENCE improved_schema.users_user_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -453,99 +453,99 @@ CREATE SEQUENCE public.users_user_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.users_user_id_seq OWNER TO postgres;
+ALTER SEQUENCE improved_schema.users_user_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 4909 (class 0 OID 0)
 -- Dependencies: 217
--- Name: users_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: users_user_id_seq; Type: SEQUENCE OWNED BY; Schema: improved_schema; Owner: postgres
 --
 
-ALTER SEQUENCE public.users_user_id_seq OWNED BY public.users.user_id;
+ALTER SEQUENCE improved_schema.users_user_id_seq OWNED BY improved_schema.users.user_id;
 
 
 --
 -- TOC entry 4687 (class 2604 OID 16559)
--- Name: assignment_solutions assignment_solution_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: assignment_solutions assignment_solution_id; Type: DEFAULT; Schema: improved_schema; Owner: postgres
 --
 
-ALTER TABLE ONLY public.assignment_solutions ALTER COLUMN assignment_solution_id SET DEFAULT nextval('public.assignment_solutions_assignment_solution_id_seq'::regclass);
+ALTER TABLE ONLY improved_schema.assignment_solutions ALTER COLUMN assignment_solution_id SET DEFAULT nextval('improved_schema.assignment_solutions_assignment_solution_id_seq'::regclass);
 
 
 --
 -- TOC entry 4686 (class 2604 OID 16545)
--- Name: assignments assignment_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: assignments assignment_id; Type: DEFAULT; Schema: improved_schema; Owner: postgres
 --
 
-ALTER TABLE ONLY public.assignments ALTER COLUMN assignment_id SET DEFAULT nextval('public.assignments_assignment_id_seq'::regclass);
+ALTER TABLE ONLY improved_schema.assignments ALTER COLUMN assignment_id SET DEFAULT nextval('improved_schema.assignments_assignment_id_seq'::regclass);
 
 
 --
 -- TOC entry 4683 (class 2604 OID 16508)
--- Name: courses course_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: courses course_id; Type: DEFAULT; Schema: improved_schema; Owner: postgres
 --
 
-ALTER TABLE ONLY public.courses ALTER COLUMN course_id SET DEFAULT nextval('public.courses_course_id_seq'::regclass);
+ALTER TABLE ONLY improved_schema.courses ALTER COLUMN course_id SET DEFAULT nextval('improved_schema.courses_course_id_seq'::regclass);
 
 
 --
 -- TOC entry 4685 (class 2604 OID 16528)
--- Name: enrollments enrollment_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: enrollments enrollment_id; Type: DEFAULT; Schema: improved_schema; Owner: postgres
 --
 
-ALTER TABLE ONLY public.enrollments ALTER COLUMN enrollment_id SET DEFAULT nextval('public.enrollments_enrollment_id_seq'::regclass);
+ALTER TABLE ONLY improved_schema.enrollments ALTER COLUMN enrollment_id SET DEFAULT nextval('improved_schema.enrollments_enrollment_id_seq'::regclass);
 
 
 --
 -- TOC entry 4692 (class 2604 OID 16632)
--- Name: exercise_solutions exercise_solution_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: exercise_solutions exercise_solution_id; Type: DEFAULT; Schema: improved_schema; Owner: postgres
 --
 
-ALTER TABLE ONLY public.exercise_solutions ALTER COLUMN exercise_solution_id SET DEFAULT nextval('public.exercise_solutions_exercise_solution_id_seq'::regclass);
+ALTER TABLE ONLY improved_schema.exercise_solutions ALTER COLUMN exercise_solution_id SET DEFAULT nextval('improved_schema.exercise_solutions_exercise_solution_id_seq'::regclass);
 
 
 --
 -- TOC entry 4689 (class 2604 OID 16590)
--- Name: exercises exercise_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: exercises exercise_id; Type: DEFAULT; Schema: improved_schema; Owner: postgres
 --
 
-ALTER TABLE ONLY public.exercises ALTER COLUMN exercise_id SET DEFAULT nextval('public.exercises_exercise_id_seq'::regclass);
+ALTER TABLE ONLY improved_schema.exercises ALTER COLUMN exercise_id SET DEFAULT nextval('improved_schema.exercises_exercise_id_seq'::regclass);
 
 
 --
 -- TOC entry 4691 (class 2604 OID 16618)
--- Name: hints hint_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: hints hint_id; Type: DEFAULT; Schema: improved_schema; Owner: postgres
 --
 
-ALTER TABLE ONLY public.hints ALTER COLUMN hint_id SET DEFAULT nextval('public.hints_hint_id_seq'::regclass);
+ALTER TABLE ONLY improved_schema.hints ALTER COLUMN hint_id SET DEFAULT nextval('improved_schema.hints_hint_id_seq'::regclass);
 
 
 --
 -- TOC entry 4688 (class 2604 OID 16578)
--- Name: sessions session_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: sessions session_id; Type: DEFAULT; Schema: improved_schema; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sessions ALTER COLUMN session_id SET DEFAULT nextval('public.sessions_session_id_seq'::regclass);
+ALTER TABLE ONLY improved_schema.sessions ALTER COLUMN session_id SET DEFAULT nextval('improved_schema.sessions_session_id_seq'::regclass);
 
 
 --
 -- TOC entry 4690 (class 2604 OID 16604)
--- Name: test_cases test_case_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: test_cases test_case_id; Type: DEFAULT; Schema: improved_schema; Owner: postgres
 --
 
-ALTER TABLE ONLY public.test_cases ALTER COLUMN test_case_id SET DEFAULT nextval('public.test_cases_test_case_id_seq'::regclass);
+ALTER TABLE ONLY improved_schema.test_cases ALTER COLUMN test_case_id SET DEFAULT nextval('improved_schema.test_cases_test_case_id_seq'::regclass);
 
 
 --
 -- TOC entry 4684 (class 2604 OID 16517)
--- Name: users user_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: users user_id; Type: DEFAULT; Schema: improved_schema; Owner: postgres
 --
 
-ALTER TABLE ONLY public.users ALTER COLUMN user_id SET DEFAULT nextval('public.users_user_id_seq'::regclass);
+ALTER TABLE ONLY improved_schema.users ALTER COLUMN user_id SET DEFAULT nextval('improved_schema.users_user_id_seq'::regclass);
 
 
 --
 -- TOC entry 4882 (class 0 OID 16556)
 -- Dependencies: 224
--- Data for Name: assignment_solutions; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: assignment_solutions; Type: TABLE DATA; Schema: improved_schema; Owner: postgres
 --
