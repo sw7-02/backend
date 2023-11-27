@@ -11,7 +11,7 @@ const numberRegEx = new RegExp(`([0-9].*){${config.auth.pw.num_count}}`);
 
 export function validatePassword(pw: string): Result<void> {
     const code = 406;
-    if (!pw || pw.length < config.auth.pw.length)
+    if (pw.length < config.auth.pw.length)
         return new Err(
             code,
             `Not long enough, should be at least ${
