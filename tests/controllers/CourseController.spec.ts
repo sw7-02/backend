@@ -55,15 +55,17 @@ describe("ExerciseController testing", function () {
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "Invalid exercise ID");
     });
-    it("Update points: Invalid enrollment", async function () {
-        let result = await CourseController.updatePoints(1000, 1, 1);
+    it("Update points: Invalid Course ID", async function () {
+        const result = await CourseController.updatePoints(1000, 1, 1);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal(
             (<Err>result).msg,
             "Failed finding enrollment: User not enrolled, or bad ID provided",
         );
-        result = await CourseController.updatePoints(1, 1000, 1);
+    });
+    it("Update points: Invalid User ID", async function () {
+        const result = await CourseController.updatePoints(1, 1000, 1);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal(
@@ -77,15 +79,17 @@ describe("ExerciseController testing", function () {
         assert.notEqual(result instanceof Err, true);
         assert.equal(result, 5);
     });
-    it("Decrement points: Invalid enrollment", async function () {
-        let result = await CourseController.decrementPoints(1000, 1, 10);
+    it("Decrement points: Invalid Course ID", async function () {
+        const result = await CourseController.decrementPoints(1000, 1, 10);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal(
             (<Err>result).msg,
             "Failed finding enrollment: User not enrolled, or bad ID provided",
         );
-        result = await CourseController.decrementPoints(1, 1000, 10);
+    });
+    it("Decrement points: Invalid User ID", async function () {
+        const result = await CourseController.decrementPoints(1, 1000, 10);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal(
