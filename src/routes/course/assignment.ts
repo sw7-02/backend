@@ -75,17 +75,12 @@ routes.get(
     },
 );
 routes
-    .route("/:assignment_id/assignment-solution/:assignment_solution_id")
+    .route("/:assignment_id/assignment-solution/feedback")
     .get(async (req: Request, res: Response) => {
         //TODO: correct user check
         const id: number = +req.params.assignment_id;
         if (!id) {
             res.status(400).send("Assignment ID not a number");
-            return;
-        }
-        const solId: number = +req.params.assignment_solution_id;
-        if (!solId) {
-            res.status(400).send("Assignment solution ID not a number");
             return;
         }
         const result = await AssignmentController.retrieveAssignmentFeedback(
@@ -99,7 +94,7 @@ routes
     })
     //TODO: Role middleware
     .post(async (req: Request, res: Response) => {
-        const solId: number = +req.params.assignment_solution_id;
+        const solId: number = +req.body.assignment_solution_id;
         if (!solId) {
             res.status(400).send("Assignment solution ID not a number");
             return;

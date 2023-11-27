@@ -20,22 +20,19 @@ routes.use("/:session_id/exercise", sessionIDSave, exercise);
 //routes.use("/:session_id/exercise", exercise);
 
 routes.get("/", (req: Request, res: Response) => {
-    res.send("This is the session overview");
-    return res.sendStatus(201);
+    res.send("This is the session overview (Unimplemented)");
 });
 
-routes.get("/:session_id", (req: Request, res: Response) => {
-    res.send("This is the a specific session");
-});
-
-routes.put("/:session_id", (req: Request, res: Response) => {
-    res.send("You have just updated a session");
-    return res.sendStatus(201);
-});
-
-routes.delete("/:session_id", (req: Request, res: Response) => {
-    res.send("You have just deleted a session");
-    return res.sendStatus(201);
-});
+routes
+    .route("/:session_id")
+    .get((req: Request, res: Response) => {
+        res.send("This is the a specific session (Unimplemented)");
+    })
+    .put((req: Request, res: Response) => {
+        res.send("You have just updated a session (Unimplemented)");
+    })
+    .delete((req: Request, res: Response) => {
+        res.send("You have just deleted a session (Unimplemented)");
+    });
 
 export default routes;
