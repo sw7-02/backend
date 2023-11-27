@@ -38,7 +38,7 @@ describe("RoleCheck testing", function () {
         );
         validateJWT(request, response, nxtFunc);
 
-        request.params = { course_id: `${courseId}` };
+        response.locals.jwtPayload.course_id = courseId;
 
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);
@@ -70,7 +70,7 @@ describe("RoleCheck testing", function () {
         );
         validateJWT(request, response, nxtFunc);
 
-        request.params = { course_id: `${courseId}` };
+        response.locals.jwtPayload.course_id = courseId;
 
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);
@@ -102,7 +102,7 @@ describe("RoleCheck testing", function () {
         );
         validateJWT(request, response, nxtFunc);
 
-        request.params = { course_id: `${courseId}` };
+        response.locals.jwtPayload.course_id = courseId;
 
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);
@@ -134,7 +134,7 @@ describe("RoleCheck testing", function () {
         );
         validateJWT(request, response, nxtFunc);
 
-        request.params = { course_id: `${courseId}` };
+        response.locals.jwtPayload.course_id = courseId;
 
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);
@@ -166,7 +166,7 @@ describe("RoleCheck testing", function () {
         );
         validateJWT(request, response, nxtFunc);
 
-        request.params = { course_id: `2` };
+        response.locals.jwtPayload.course_id = `2`;
 
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);
@@ -198,7 +198,7 @@ describe("RoleCheck testing", function () {
         );
         validateJWT(request, response, nxtFunc);
 
-        request.params = { course_id: `2` };
+        response.locals.jwtPayload.course_id = `2`;
 
         let rolecheck = roleCheck(roles);
         await rolecheck(request, response, nxtFunc);
