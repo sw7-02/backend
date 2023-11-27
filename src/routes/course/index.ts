@@ -1,21 +1,17 @@
 import Router, { Request, Response } from "express";
 import session from "./session";
 import assignment from "./assignment";
-import { validateJWT } from "../../middlewares/validateJWT";
+import validateJWT from "../../middlewares/validateJWT";
 import CourseController from "../../controllers/CourseController";
-import { Err, ResponseResult } from "../../lib";
+import { Err, ResponseResult, Role } from "../../lib";
+import enrollmentCheck from "../../middlewares/enrollmentCheck";
+import roleCheck from "../../middlewares/roleCheck";
 
-const routes = Router();
-
-// enables passing json bodies.
-routes.use(Router.json());
-
-// TODO: Uncomment when ready
-//routes.use(validateJWT); // Uses the middleware on ALL routes
-routes.use("/:course_id/assignment", assignment);
-routes.use("/:course_id/session", session);
-//routes.use("/:course_id/assignment", [ENROLLMENT], assignment);
-//routes.use("/:course_id/session", [ENROLLMENT], session);
+const routes = Router()
+    .use(Router.json())
+    .use(validateJWT)
+    .use("/:course_id/assignment", [enrollmentCheck], assignment)
+    .use("/:course_id/session", [enrollmentCheck], session);
 
 const genericCourseIdHandler =
     (func: (courseId: number) => Promise<ResponseResult<Object>>) =>
@@ -32,8 +28,8 @@ const genericCourseIdHandler =
 routes
     .route("/")
     .get(async (req: Request, res: Response) => {
-        const courseId = +res.locals.jwtPayload.userId;
-        const result = await CourseController.retrieveEnrolledCourses(courseId);
+        const userId = +res.locals.jwtPayload.userId;
+        const result = await CourseController.retrieveEnrolledCourses(userId);
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);
@@ -41,34 +37,38 @@ routes
     })
     .post((req: Request, res: Response) => {
         // TODO: Is teacher check
-        res.send("You added a new course");
-        return res.sendStatus(201);
+        res.send("You added a new course (Unimplemented)");
     });
 
-//TODO: Enrollment check middleware
 routes.get(
     "/:course_id/leaderboard",
+    [enrollmentCheck],
     genericCourseIdHandler(CourseController.retrieveLeaderboard),
 );
 
-//TODO: Enrollment middleware
 routes
     .route("/:course_id")
-    .get(genericCourseIdHandler(CourseController.retrieveCourse))
-    .put((req: Request, res: Response) => {
-        // TODO: Role middleware
-        res.send("You have just updated a course");
-        return res.sendStatus(201);
-    })
-    .post((req: Request, res: Response) => {
-        // TODO: Role middleware
-        res.send("You have just created a new session");
-        return res.sendStatus(201);
-    })
-    .delete((req: Request, res: Response) => {
-        // TODO: Role middleware
-        res.send("You have just updated a course");
-        return res.sendStatus(201);
-    });
+    .get(
+        [enrollmentCheck],
+        genericCourseIdHandler(CourseController.retrieveFullCourse),
+    )
+    .put(
+        [enrollmentCheck, roleCheck([Role.TEACHER])],
+        (req: Request, res: Response) => {
+            res.send("You have just updated a course (Unimplemented)");
+        },
+    )
+    .post(
+        [enrollmentCheck, roleCheck([Role.TEACHER])],
+        (req: Request, res: Response) => {
+            res.send("You have just created a new session (Unimplemented)");
+        },
+    )
+    .delete(
+        [enrollmentCheck, roleCheck([Role.TEACHER])],
+        (req: Request, res: Response) => {
+            res.send("You have just updated a course (Unimplemented)");
+        },
+    );
 
 export default routes;

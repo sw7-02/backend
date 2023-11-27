@@ -38,6 +38,7 @@ type _Leaderboard = {
 type _CourseOverview = {
     course_id: number;
     title: string;
+    user_role: Role;
 }[];
 
 export default class CourseController {
@@ -172,7 +173,6 @@ export default class CourseController {
     static decrementPoints = async function (
         courseId: number,
         userId: number,
-        exerciseId: number,
         points: number,
     ): Promise<ResponseResult<number>> {
         return prisma.enrollment
@@ -212,35 +212,41 @@ export default class CourseController {
     static retrieveLeaderboard = async (
         courseId: number,
     ): Promise<ResponseResult<_Leaderboard>> =>
-        prisma.enrollment
-            .findMany({
+        prisma.course
+            .findUniqueOrThrow({
                 where: {
                     course_id: courseId,
-                    user_role: Role.STUDENT,
                 },
                 select: {
-                    total_points: true,
-                    user: {
+                    enrollments: {
+                        where: {
+                            user_role: Role.STUDENT,
+                        },
                         select: {
-                            username: true,
-                            //TODO: Anon?
+                            total_points: true,
+                            user: {
+                                select: {
+                                    username: true,
+                                    //TODO: Anon?
+                                },
+                            },
+                        },
+                        orderBy: {
+                            total_points: "desc",
                         },
                     },
-                },
-                orderBy: {
-                    total_points: "asc",
                 },
             })
             .then(
                 (res) => {
-                    const b = res.find((r) => !r.total_points);
+                    const b = res.enrollments.find((r) => !r.total_points);
                     if (b) {
                         console.error(
                             `User with null points: ${b.user.username}`,
                         );
                         return new Err(500, "Internal error");
                     }
-                    return res.map((r) => {
+                    return res.enrollments.map((r) => {
                         return {
                             total_points: r.total_points!!,
                             username: r.user.username,
@@ -249,32 +255,116 @@ export default class CourseController {
                 },
                 (reason) => {
                     console.error(`Failed getting leaderboards: ${reason}`);
-                    return new Err(404, "Bad Course ID");
+                    return new Err(404, "Course does not exist");
                 },
             );
 
     static retrieveEnrolledCourses = async (
         userId: number,
     ): Promise<ResponseResult<_CourseOverview>> =>
-        prisma.enrollment
-            .findMany({
+        prisma.user
+            .findUniqueOrThrow({
                 where: {
                     user_id: userId,
                 },
                 select: {
-                    course: {
+                    enrollments: {
                         select: {
-                            course_id: true,
+                            user_role: true,
+                            course: {
+                                select: {
+                                    course_id: true,
+                                    title: true,
+                                },
+                            },
+                        },
+                        orderBy: {
+                            course_id: "asc",
+                        },
+                    },
+                },
+            })
+            .then(
+                (res) =>
+                    res.enrollments.map((r) => {
+                        const { course_id, title } = r.course;
+                        return { course_id, title, user_role: r.user_role };
+                    }),
+                (reason) => {
+                    console.error(`Failed getting courses: ${reason}`);
+                    return new Err(404, "User does not exist");
+                },
+            );
+
+    static retrieveSessionFromCourse = async (
+        sessionId: number,
+    ): Promise<ResponseResult<_Session>> =>
+        prisma.session
+            .findUniqueOrThrow({
+                where: {
+                    session_id: sessionId,
+                },
+                select: {
+                    session_id: true,
+                    title: true,
+                    exercises: {
+                        select: {
+                            exercise_id: true,
                             title: true,
                         },
                     },
                 },
             })
             .then(
-                (res) => res.map((r) => r.course),
+                (r) => r,
                 (reason) => {
-                    console.error(`Failed getting courses: ${reason}`);
-                    return new Err(404, "Invalid user");
+                    console.error(`Failed getting session: ${reason}`);
+                    return new Err(404, "Session does not exist");
+                },
+            );
+
+    static insertSessionFromCourse = async (
+        courseId: number,
+        title: string,
+    ): Promise<ResponseResult<{ session_id: number }>> =>
+        prisma.session
+            .create({
+                data: {
+                    title,
+                    course: {
+                        connect: {
+                            course_id: courseId,
+                        },
+                    },
+                },
+                select: {
+                    session_id: true,
+                },
+            })
+            .then(
+                (r) => r,
+                (reason) => {
+                    console.error(
+                        `Failed adding session to course ${courseId}: ${reason}`,
+                    );
+                    return new Err(400, "Failed adding new session");
+                },
+            );
+
+    static deleteSessionFromCourse = async (
+        sessionId: number,
+    ): Promise<ResponseResult<void>> =>
+        prisma.session
+            .delete({
+                where: {
+                    session_id: sessionId,
+                },
+            })
+            .then(
+                () => {},
+                (reason) => {
+                    console.error(`Failed deleting session: ${reason}`);
+                    return new Err(500, "Failed deleting session");
                 },
             );
 

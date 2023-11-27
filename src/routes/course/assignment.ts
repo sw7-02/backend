@@ -1,7 +1,8 @@
 import Router, { Request, Response } from "express";
 import ExerciseController from "../../controllers/ExerciseController";
-import { Err } from "../../lib";
+import { Err, Role } from "../../lib";
 import AssignmentController from "../../controllers/AssignmentController";
+import roleCheck from "../../middlewares/roleCheck";
 
 const routes = Router();
 
@@ -42,8 +43,6 @@ routes
         const userId: number = res.locals.jwtPayload.userId;
         const { solution } = req.body;
 
-        // TODO: Test code (if assignments should be tested?)
-
         const result = await AssignmentController.submitAssignementSolution(
             id,
             userId,
@@ -55,9 +54,9 @@ routes
         } else res.send(result);
     });
 
-//TODO: Role middleware
 routes.get(
     "/:assignment_id/assignment-solution/",
+    [roleCheck([Role.TEACHER, Role.TA])],
     async (req: Request, res: Response) => {
         const id: number = +req.params.assignment_id;
         if (!id) {
@@ -75,50 +74,40 @@ routes.get(
     },
 );
 routes
-    .route("/:assignment_id/assignment-solution/:username")
+    .route("/:assignment_id/assignment-solution/feedback")
     .get(async (req: Request, res: Response) => {
         const id: number = +req.params.assignment_id;
         if (!id) {
-            res.status(400).send("ID not a number");
-            return;
-        }
-        const username: string = req.params.username;
-        if (!username) {
-            res.status(400).send("Username invalid");
+            res.status(400).send("Assignment ID not a number");
             return;
         }
         const result = await AssignmentController.retrieveAssignmentFeedback(
             id,
-            username,
+            res.locals.jwtPayload.userId,
         );
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);
         } else res.send(result);
     })
-    //TODO: Role middleware
-    .post(async (req: Request, res: Response) => {
-        const id: number = +req.params.assignment_id;
-        if (!id) {
-            res.status(400).send("ID not a number");
-            return;
-        }
-        const username: string = req.params.username;
-        if (!username) {
-            res.status(400).send("Username invalid");
-            return;
-        }
-        const feedback: string = req.body.feedback;
-        const result = await AssignmentController.postAssignmentFeedback(
-            id,
-            res.locals.courseId,
-            username,
-            feedback,
-        );
-        if (result instanceof Err) {
-            const { code, msg } = result;
-            res.status(code).send(msg);
-        } else res.send(result);
-    });
+    .post(
+        [roleCheck([Role.TEACHER, Role.TA])],
+        async (req: Request, res: Response) => {
+            const solId: number = +req.body.assignment_solution_id;
+            if (!solId) {
+                res.status(400).send("Assignment solution ID not a number");
+                return;
+            }
+            const feedback: string = req.body.feedback;
+            const result = await AssignmentController.postAssignmentFeedback(
+                solId,
+                feedback,
+            );
+            if (result instanceof Err) {
+                const { code, msg } = result;
+                res.status(code).send(msg);
+            } else res.send(result);
+        },
+    );
 
 export default routes;

@@ -42,13 +42,16 @@ function genPass(pw: string, username: string): PW {
     return { hash: bcrypt.hashSync(pw, salt), salt };
 }
 
-export type LoginResult = { jwt_token: string; is_teacher: boolean };
+export type AuthRes = {
+    jwt_token: string;
+    is_teacher: boolean;
+};
 
 export default class AuthController {
     static login = async (
         username: string,
         password: string,
-    ): Promise<ResponseResult<LoginResult>> => {
+    ): Promise<ResponseResult<AuthRes>> => {
         const valid = validatePassword(password);
         if (valid instanceof Err)
             return new Err(valid.code, `Password not valid: ${valid.msg}`);
@@ -89,7 +92,7 @@ export default class AuthController {
     static signUp = async (
         username: string,
         password: string,
-    ): Promise<ResponseResult<LoginResult>> => {
+    ): Promise<ResponseResult<AuthRes>> => {
         return prisma.user
             .findFirstOrThrow({
                 where: { username },
@@ -114,7 +117,7 @@ export default class AuthController {
                     return {
                         jwt_token: generateJWTToken({ userId, username }),
                         is_teacher: false,
-                    }; // TODO: Default false?
+                    };
                 },
             );
     };

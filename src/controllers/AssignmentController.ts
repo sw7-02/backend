@@ -13,32 +13,39 @@ type _Assignment = {
     title: string;
     description: string;
     code_template: string;
+    programming_language: string;
     due_date: Date;
 };
 
 type _AssignmentSolution = {
-    assignment_id: number;
+    assignment_solution_id: number;
     solution: string;
-    username: string;
 };
 
 export default class AssignmentController {
     static retrieveAllAssignments = async (
         courseId: number,
-    ): Promise<ResponseResult<_AssignmentIdentifier[]>> => // TODO: Identifier?
-        prisma.assignment
-            .findMany({
+    ): Promise<ResponseResult<_AssignmentIdentifier[]>> =>
+        prisma.course
+            .findUniqueOrThrow({
                 where: {
                     course_id: courseId,
                 },
                 select: {
-                    assignment_id: true,
-                    title: true,
-                    due_date: true,
+                    assignments: {
+                        select: {
+                            assignment_id: true,
+                            title: true,
+                            due_date: true,
+                        },
+                        orderBy: {
+                            due_date: "asc",
+                        },
+                    },
                 },
             })
             .then(
-                (res) => res,
+                (res) => res.assignments,
                 (r) => {
                     console.error(
                         `Failure getting Assignment in course ${courseId}: ${r}`,
@@ -61,6 +68,7 @@ export default class AssignmentController {
                     description: true,
                     code_template: true,
                     due_date: true,
+                    programming_language: true,
                 },
             })
             .then(
@@ -88,8 +96,16 @@ export default class AssignmentController {
                 },
                 update: { solution, feedback: "" },
                 create: {
-                    assignment_id: assignmentId,
-                    user_id: userId,
+                    user: {
+                        connect: {
+                            user_id: userId,
+                        },
+                    },
+                    assignment: {
+                        connect: {
+                            assignment_id: assignmentId,
+                        },
+                    },
                     solution,
                     feedback: "",
                 },
@@ -100,38 +116,32 @@ export default class AssignmentController {
                     console.error(
                         `Failure submitting assignment ${assignmentId}: ${r}`,
                     );
-                    return new Err(500, "Internal error"); //TODO: What happens?
+                    return new Err(404, "User or Assignment doesn't exist");
                 },
             );
 
     static retrieveAllAssignmentSolutions = async (
         assignmentId: number,
     ): Promise<ResponseResult<_AssignmentSolution[]>> =>
-        prisma.assignmentSolution
-            .findMany({
+        prisma.assignment
+            .findUniqueOrThrow({
                 where: {
                     assignment_id: assignmentId,
                 },
                 select: {
-                    assignment_id: true,
-                    solution: true,
-                    user: {
+                    solutions: {
                         select: {
-                            username: true,
+                            assignment_solution_id: true,
+                            solution: true,
+                        },
+                        orderBy: {
+                            assignment_solution_id: "asc",
                         },
                     },
                 },
             })
             .then(
-                (res) =>
-                    res.map((r) => {
-                        const { solution, assignment_id } = r;
-                        return {
-                            assignment_id,
-                            solution,
-                            username: r.user.username,
-                        };
-                    }),
+                (res) => res.solutions,
                 (r) => {
                     console.error(
                         `Failure getting assignment ${assignmentId}: ${r}`,
@@ -141,15 +151,13 @@ export default class AssignmentController {
             );
     static retrieveAssignmentFeedback = async (
         assignmentId: number,
-        username: string,
+        userId: number,
     ): Promise<ResponseResult<string>> =>
         prisma.assignmentSolution
             .findFirstOrThrow({
                 where: {
                     assignment_id: assignmentId,
-                    user: {
-                        username,
-                    },
+                    user_id: userId,
                 },
                 select: {
                     feedback: true,
@@ -161,43 +169,28 @@ export default class AssignmentController {
                         ? res.feedback
                         : new Err(204, "Feedback has not been provided yet"),
                 (r) => {
-                    console.error(
-                        `Failure getting assignment solution from ${username} for assignment ${assignmentId}: ${r}`,
-                    );
+                    console.error(`Failure getting assignment solution: ${r}`);
                     return new Err(404, "Assignment solution does not exist");
                 },
             );
     static postAssignmentFeedback = async (
-        assignmentId: number,
-        courseId: number,
-        username: string,
+        assignmentSolutionId: number,
         feedback: string,
-    ): Promise<ResponseResult<void>> => {
-        let userId = await CourseController.getUserId(courseId, username);
-        if (userId instanceof Err) {
-            console.error(`User ${username} not in course ${courseId}`);
-            return userId;
-        }
+    ): Promise<ResponseResult<void>> =>
         prisma.assignmentSolution
             .update({
                 where: {
-                    user_id_assignment_id: {
-                        assignment_id: assignmentId,
-                        user_id: userId,
-                    },
+                    assignment_solution_id: assignmentSolutionId,
                 },
                 data: {
                     feedback,
                 },
             })
             .then(
-                (res) => res,
+                () => {},
                 (r) => {
-                    console.error(
-                        `Failure getting assignment solution from ${username} for assignment ${assignmentId}: ${r}`,
-                    );
+                    console.error(`Failure getting assignment solution: ${r}`);
                     return new Err(404, "Assignment solution does not exist");
                 },
             );
-    };
 }

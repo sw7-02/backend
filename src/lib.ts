@@ -12,9 +12,9 @@ class Err {
     }
 }
 
-type Result<T, E> = T | E;
-
 type ResponseResult<T> = Result<T, Err>;
+
+type Result<T, E> = T | E;
 
 type JWTPayload = {
     userId: number;

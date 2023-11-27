@@ -4,22 +4,16 @@ import AuthController, {
     validatePassword,
 } from "../../src/controllers/AuthController";
 import config from "../../src/config";
-import { after, afterEach, before } from "mocha";
 import prisma from "../../src/prisma";
-import { exhaust, seed } from "../lib/db";
 import { Err } from "../../src/lib";
 
 describe("AuthController testing", function () {
-    before("Seed DB", async function () {
-        this.timeout(10000);
-        await seed();
-    });
-    after("Purge DB", exhaust);
-
     it("Signup New User", async function () {
         const res = await AuthController.signUp("user3", "password3@");
         assert.notEqual(res instanceof Err, true);
-        const jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
+        const jwtPayload = <any>(
+            jwt.verify((<any>res).jwt_token, config.jwt.secret)
+        );
         assert.equal(jwtPayload.username, "user3");
         try {
             await prisma.user
@@ -54,17 +48,17 @@ describe("AuthController testing", function () {
     it("Login Existing User", async function () {
         const res = await AuthController.login("user1", "password1@");
         assert.notEqual(res instanceof Err, true);
-        const jwtPayload = <any>jwt.verify(<string>res, config.jwt.secret);
+        const jwtPayload = <any>(
+            jwt.verify((<any>res).jwt_token, config.jwt.secret)
+        );
         assert.equal(jwtPayload.username, "user1");
-        try {
-            await prisma.user.findFirstOrThrow({
+        await prisma.user
+            .findFirstOrThrow({
                 where: {
-                    username: "user3",
+                    username: "user1",
                 },
-            });
-        } catch (e) {
-            assert.fail("unreachable");
-        }
+            })
+            .catch(() => assert.fail("unreachable"));
     });
     it("Login New User", async function () {
         const res = await AuthController.login("user4", "password4@");

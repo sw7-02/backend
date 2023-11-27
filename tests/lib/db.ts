@@ -1,8 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 import config from "../../src/config";
+import prisma from "../../src/prisma";
 
-const prisma = new PrismaClient();
+//const prisma = new PrismaClient();
 
 export async function seed() {
     // Create sample users
@@ -21,6 +22,14 @@ export async function seed() {
             username: "user2",
             user_password: await bcrypt.hash("password2@", salt),
             pw_salt: salt,
+        },
+    });
+    const teacher = await prisma.user.create({
+        data: {
+            username: "teacher",
+            user_password: await bcrypt.hash("teacher1@", salt),
+            pw_salt: salt,
+            is_teacher: true,
         },
     });
 
@@ -44,13 +53,37 @@ export async function seed() {
         },
     });
 
-    // Create sample enrollments
+    // Create sample student enrollment
     await prisma.enrollment.create({
         data: {
             user_id: user1.user_id,
             course_id: course1.course_id,
             user_role: 0,
             total_points: 5,
+        },
+    });
+    // Create sample teacher enrollment
+    await prisma.enrollment.create({
+        data: {
+            user_id: user2.user_id,
+            course_id: course1.course_id,
+            user_role: 0,
+            total_points: 2,
+        },
+    });
+    await prisma.enrollment.create({
+        data: {
+            user_id: teacher.user_id,
+            course_id: course1.course_id,
+            user_role: 1,
+        },
+    });
+    // Create sample TA enrollment
+    await prisma.enrollment.create({
+        data: {
+            user_id: user1.user_id,
+            course_id: course2.course_id,
+            user_role: 2,
         },
     });
 
@@ -60,7 +93,7 @@ export async function seed() {
             title: "Assignment 1",
             description: "Description of Assignment 1",
             code_template: "Your code template here",
-            due_date: new Date(),
+            due_date: new Date("2023-12-21"),
             course_id: course1.course_id,
             programming_language: "JavaScript",
         },
@@ -71,6 +104,13 @@ export async function seed() {
             user_id: user1.user_id,
             solution: "Sample solution 1",
             feedback: "Feedback for solution 1",
+        },
+    });
+    const assignmentSolution2 = await prisma.assignmentSolution.create({
+        data: {
+            assignment_id: assignment1.assignment_id,
+            user_id: user2.user_id,
+            solution: "solution from user2",
         },
     });
 
@@ -114,28 +154,17 @@ export async function seed() {
     });
 
     console.log("Sample data seeded successfully.");
-
-    await prisma.$disconnect();
 }
 
-/*
-seed().catch((error) => {
-    console.error("Err seeding data:", error);
-});
- */
-
 export async function exhaust() {
-    prisma.user.deleteMany();
-    prisma.enrollment.deleteMany();
-
-    prisma.course.deleteMany();
-    prisma.session.deleteMany();
-
-    prisma.exercise.deleteMany();
-    prisma.exerciseSolution.deleteMany();
-    prisma.hint.deleteMany();
-    prisma.testCase.deleteMany();
-
-    prisma.assignment.deleteMany();
-    prisma.assignmentSolution.deleteMany();
+    await prisma.assignmentSolution.deleteMany({});
+    await prisma.assignment.deleteMany({});
+    await prisma.enrollment.deleteMany({});
+    await prisma.exerciseSolution.deleteMany({});
+    await prisma.hint.deleteMany({});
+    await prisma.testCase.deleteMany({});
+    await prisma.exercise.deleteMany({});
+    await prisma.session.deleteMany({});
+    await prisma.course.deleteMany({});
+    await prisma.user.deleteMany({});
 }

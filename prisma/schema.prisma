@@ -58,7 +58,7 @@ model Assignment { //TODO: visibility?
   due_date             DateTime
   programming_language String
 
-  course    Course               @relation(fields: [course_id], references: [course_id], map: "course_id")
+  course    Course               @relation(fields: [course_id], references: [course_id])
   solutions AssignmentSolution[]
 
   @@map("assignments")
@@ -71,8 +71,8 @@ model AssignmentSolution {
   solution               String
   feedback               String? //TODO: line-specefic feedback like when reviewing on GH?
 
-  assignment Assignment @relation(fields: [assignment_id], references: [assignment_id], map: "assignment_id")
-  user       User       @relation(fields: [user_id], references: [user_id], map: "user_id")
+  assignment Assignment @relation(fields: [assignment_id], references: [assignment_id])
+  user       User       @relation(fields: [user_id], references: [user_id])
 
   @@unique([user_id, assignment_id])
   @@map("assignment_solutions")
@@ -83,7 +83,7 @@ model Session {
   title      String @unique
   course_id  Int
 
-  course    Course     @relation(fields: [course_id], references: [course_id], map: "course_id")
+  course    Course     @relation(fields: [course_id], references: [course_id])
   exercises Exercise[]
 
   @@map("sessions")
@@ -98,7 +98,7 @@ model Exercise {
   programming_language String
   code_template        String
 
-  session   Session            @relation(fields: [session_id], references: [session_id], map: "session_id")
+  session   Session            @relation(fields: [session_id], references: [session_id])
   test_case TestCase[]
   hints     Hint[]
   solutions ExerciseSolution[]
@@ -112,7 +112,7 @@ model TestCase {
   code         String
   is_visible   Boolean
 
-  exercise Exercise @relation(fields: [exercise_id], references: [exercise_id], map: "exercise_id")
+  exercise Exercise @relation(fields: [exercise_id], references: [exercise_id])
 
   @@map("test_cases")
 }
@@ -123,7 +123,7 @@ model Hint {
   description String
   order       Int
 
-  exercise Exercise @relation(fields: [exercise_id], references: [exercise_id], map: "exercise_id")
+  exercise Exercise @relation(fields: [exercise_id], references: [exercise_id])
 
   @@unique([hint_id, order])
   @@map("hints")
@@ -137,8 +137,8 @@ model ExerciseSolution {
   is_anonymous         Boolean @default(true)
   is_pinned            Boolean @default(false)
 
-  exercise Exercise @relation(fields: [exercise_id], references: [exercise_id], map: "exercise_id")
-  user     User     @relation(fields: [user_id], references: [user_id], map: "user_id")
+  exercise Exercise @relation(fields: [exercise_id], references: [exercise_id])
+  user     User     @relation(fields: [user_id], references: [user_id])
 
   @@unique([user_id, exercise_id])
   @@map("exercise_solutions")

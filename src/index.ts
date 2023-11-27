@@ -4,7 +4,7 @@ import helmet from "helmet";
 import cors from "cors";
 import routes from "./routes";
 import config from "./config";
-import { seed } from "./db";
+import { seed } from "../tests/lib/db";
 import prisma from "./prisma";
 
 const app = express();
@@ -19,14 +19,13 @@ app.use(bodyParser.json());
 app.use("/", routes);
 
 if (process.env["NODE_ENV"] === "dev")
-    setTimeout(
-        () =>
-            seed().then(async () => {
-                console.log(await prisma.user.findMany());
-            }),
-        3000,
-    );
-
-app.listen(config.server.port, () => {
-    console.log(`Server started on port ${config.server.port}!`);
-});
+    seed().then(() => {
+        console.log("Seeded DB");
+        app.listen(config.server.port, () => {
+            console.log(`Server started on port ${config.server.port}!`);
+        });
+    });
+else
+    app.listen(config.server.port, () => {
+        console.log(`Server started on port ${config.server.port}!`);
+    });

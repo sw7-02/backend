@@ -4,16 +4,15 @@ import config from "../config";
 import { generateJWTToken } from "../lib";
 
 /// Checks given JWT in the header of the requests, serves a new with a deadline of the provided config
-export const validateJWT = (
+export default function validateJWT(
     req: Request,
     res: Response,
     next: NextFunction,
-) => {
+) {
     //Get the jwt token from the header
     const token = <string>req.headers["auth"];
     let jwtPayload;
 
-    console.log(req.params.course_id);
     //Validate the token and get data
     try {
         jwtPayload = <any>jwt.verify(token, config.jwt.secret);
@@ -21,7 +20,7 @@ export const validateJWT = (
     } catch (error) {
         //If token is not valid, 401 (unauthorized)
         res.status(401).send();
-        console.log("no jwt");
+        console.error(`Invalid JWT: ${error}`);
         return;
     }
 
@@ -30,4 +29,4 @@ export const validateJWT = (
 
     //Call the next middleware or controller
     next();
-};
+}
