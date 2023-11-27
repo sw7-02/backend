@@ -18,7 +18,7 @@ describe("Testing enrollmentCheck", function () {
         response = httpMocks.createResponse();
     });
 
-    it("Correct enrollment", () => {
+    it("Correct enrollment", async () => {
         request.params.course_id = "1";
         response.locals = {
             jwtPayload: {
@@ -27,7 +27,7 @@ describe("Testing enrollmentCheck", function () {
             },
         };
 
-        enrollmentCheck(request, response, nxtFunc);
+        await enrollmentCheck(request, response, nxtFunc);
 
         assert.equal(
             response.statusCode,
@@ -37,7 +37,7 @@ describe("Testing enrollmentCheck", function () {
         assert.equal(response.locals.courseId, 1);
     });
 
-    it("Not enrolled: Wrong User ID", () => {
+    it("Not enrolled: Wrong User ID", async () => {
         request.params.course_id = "1";
         response.locals = {
             jwtPayload: {
@@ -46,7 +46,7 @@ describe("Testing enrollmentCheck", function () {
             },
         };
 
-        enrollmentCheck(request, response, nxtFunc);
+        await enrollmentCheck(request, response, nxtFunc);
 
         assert.equal(
             response.statusCode,
@@ -54,7 +54,7 @@ describe("Testing enrollmentCheck", function () {
             "Status code not accepted, enrollmentCheck failed",
         );
     });
-    it("Not enrolled: Wrong Course ID", () => {
+    it("Not enrolled: Wrong Course ID", async () => {
         request.params.course_id = "1000";
         response.locals = {
             jwtPayload: {
@@ -63,7 +63,7 @@ describe("Testing enrollmentCheck", function () {
             },
         };
 
-        enrollmentCheck(request, response, nxtFunc);
+        await enrollmentCheck(request, response, nxtFunc);
 
         assert.equal(
             response.statusCode,
@@ -73,7 +73,7 @@ describe("Testing enrollmentCheck", function () {
         assert.equal(response.locals.courseId, 1);
     });
 
-    it("Invalid Course ID", () => {
+    it("Invalid Course ID", async () => {
         request.params.course_id = "1000A";
         response.locals = {
             jwtPayload: {
@@ -82,7 +82,7 @@ describe("Testing enrollmentCheck", function () {
             },
         };
 
-        enrollmentCheck(request, response, nxtFunc);
+        await enrollmentCheck(request, response, nxtFunc);
 
         assert.equal(
             response.statusCode,
