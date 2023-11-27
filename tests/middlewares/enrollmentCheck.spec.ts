@@ -53,6 +53,7 @@ describe("Testing enrollmentCheck", function () {
             401,
             "Status code not accepted, enrollmentCheck failed",
         );
+        assert.equal(response.locals.courseId, undefined);
     });
     it("Not enrolled: Wrong Course ID", async () => {
         request.params.course_id = "1000";
@@ -70,7 +71,7 @@ describe("Testing enrollmentCheck", function () {
             401,
             "Status code not accepted, enrollmentCheck failed",
         );
-        assert.equal(response.locals.courseId, 1);
+        assert.equal(response.locals.courseId, undefined);
     });
 
     it("Invalid Course ID", async () => {
@@ -89,6 +90,6 @@ describe("Testing enrollmentCheck", function () {
             400,
             "Status code not accepted, enrollmentCheck failed",
         );
-        assert.equal(response.locals.courseId, 1);
+        assert.equal(response.locals.courseId, undefined);
     });
 });

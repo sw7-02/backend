@@ -6,17 +6,11 @@ import CourseController from "../../controllers/CourseController";
 import { Err, Result } from "../../lib";
 import enrollmentCheck from "../../middlewares/enrollmentCheck";
 
-const routes = Router().use(validateJWT);
-
-// enables passing json bodies.
-routes.use(Router.json());
-
-// TODO: Uncomment when ready
-//routes.use(validateJWT); // Uses the middleware on ALL routes
-//routes.use("/:course_id/assignment", assignment);
-//routes.use("/:course_id/session", session);
-routes.use("/:course_id/assignment", [enrollmentCheck], assignment);
-routes.use("/:course_id/session", [enrollmentCheck], session);
+const routes = Router()
+    .use(Router.json())
+    .use(validateJWT)
+    .use("/:course_id/assignment", [enrollmentCheck], assignment)
+    .use("/:course_id/session", [enrollmentCheck], session);
 
 const genericCourseIdHandler =
     (func: (courseId: number) => Promise<Result<Object>>) =>

@@ -27,12 +27,12 @@ export default async function enrollmentCheck(
             },
         },
     });
-    console.log(r);
 
     if (r) {
         res.locals.courseId = courseId;
         next();
     } else {
         res.status(401).send("No enrollment found");
+        return;
     }
 }
