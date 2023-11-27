@@ -55,7 +55,7 @@ CREATE TABLE public.assignment_solutions (
 );
 
 
-ALTER TABLE public.assignment_solutions OWNER TO postgres;
+
 
 --
 -- TOC entry 223 (class 1259 OID 16555)
@@ -71,7 +71,7 @@ CREATE SEQUENCE public.assignment_solutions_assignment_solution_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.assignment_solutions_assignment_solution_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4900 (class 0 OID 0)
@@ -98,7 +98,7 @@ CREATE TABLE public.assignments (
 );
 
 
-ALTER TABLE public.assignments OWNER TO postgres;
+
 
 --
 -- TOC entry 221 (class 1259 OID 16541)
@@ -114,7 +114,7 @@ CREATE SEQUENCE public.assignments_assignment_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.assignments_assignment_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4901 (class 0 OID 0)
@@ -136,7 +136,7 @@ CREATE TABLE public.courses (
 );
 
 
-ALTER TABLE public.courses OWNER TO postgres;
+
 
 --
 -- TOC entry 215 (class 1259 OID 16504)
@@ -152,7 +152,7 @@ CREATE SEQUENCE public.courses_course_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.courses_course_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4902 (class 0 OID 0)
@@ -177,7 +177,7 @@ CREATE TABLE public.enrollments (
 );
 
 
-ALTER TABLE public.enrollments OWNER TO postgres;
+
 
 --
 -- TOC entry 219 (class 1259 OID 16524)
@@ -193,7 +193,7 @@ CREATE SEQUENCE public.enrollments_enrollment_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.enrollments_enrollment_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4903 (class 0 OID 0)
@@ -217,7 +217,7 @@ CREATE TABLE public.examples (
 );
 
 
-ALTER TABLE public.examples OWNER TO postgres;
+
 
 --
 -- TOC entry 234 (class 1259 OID 16629)
@@ -234,7 +234,7 @@ CREATE TABLE public.exercise_solutions (
 );
 
 
-ALTER TABLE public.exercise_solutions OWNER TO postgres;
+
 
 --
 -- TOC entry 233 (class 1259 OID 16628)
@@ -250,7 +250,7 @@ CREATE SEQUENCE public.exercise_solutions_exercise_solution_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.exercise_solutions_exercise_solution_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4904 (class 0 OID 0)
@@ -277,7 +277,7 @@ CREATE TABLE public.exercises (
 );
 
 
-ALTER TABLE public.exercises OWNER TO postgres;
+
 
 --
 -- TOC entry 227 (class 1259 OID 16586)
@@ -293,7 +293,7 @@ CREATE SEQUENCE public.exercises_exercise_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.exercises_exercise_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4905 (class 0 OID 0)
@@ -317,7 +317,7 @@ CREATE TABLE public.hints (
 );
 
 
-ALTER TABLE public.hints OWNER TO postgres;
+
 
 --
 -- TOC entry 231 (class 1259 OID 16614)
@@ -333,7 +333,7 @@ CREATE SEQUENCE public.hints_hint_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.hints_hint_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4906 (class 0 OID 0)
@@ -356,7 +356,7 @@ CREATE TABLE public.sessions (
 );
 
 
-ALTER TABLE public.sessions OWNER TO postgres;
+
 
 --
 -- TOC entry 225 (class 1259 OID 16574)
@@ -372,7 +372,7 @@ CREATE SEQUENCE public.sessions_session_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.sessions_session_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4907 (class 0 OID 0)
@@ -396,7 +396,7 @@ CREATE TABLE public.test_cases (
 );
 
 
-ALTER TABLE public.test_cases OWNER TO postgres;
+
 
 --
 -- TOC entry 229 (class 1259 OID 16600)
@@ -412,7 +412,7 @@ CREATE SEQUENCE public.test_cases_test_case_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.test_cases_test_case_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4908 (class 0 OID 0)
@@ -437,7 +437,7 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO postgres;
+
 
 --
 -- TOC entry 217 (class 1259 OID 16513)
@@ -453,7 +453,7 @@ CREATE SEQUENCE public.users_user_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.users_user_id_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4909 (class 0 OID 0)
