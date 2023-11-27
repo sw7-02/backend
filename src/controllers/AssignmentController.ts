@@ -1,5 +1,5 @@
 import prisma from "../prisma";
-import { Err, Result } from "../lib";
+import { Err, ResponseResult } from "../lib";
 import CourseController from "./CourseController";
 
 type _AssignmentIdentifier = {
@@ -25,7 +25,7 @@ type _AssignmentSolution = {
 export default class AssignmentController {
     static retrieveAllAssignments = async (
         courseId: number,
-    ): Promise<Result<_AssignmentIdentifier[]>> =>
+    ): Promise<ResponseResult<_AssignmentIdentifier[]>> =>
         prisma.course
             .findUniqueOrThrow({
                 where: {
@@ -56,7 +56,7 @@ export default class AssignmentController {
 
     static retrieveAssignment = async (
         assignmentId: number,
-    ): Promise<Result<_Assignment>> =>
+    ): Promise<ResponseResult<_Assignment>> =>
         prisma.assignment
             .findUniqueOrThrow({
                 where: {
@@ -85,7 +85,7 @@ export default class AssignmentController {
         assignmentId: number,
         userId: number,
         solution: string,
-    ): Promise<Result<void>> =>
+    ): Promise<ResponseResult<void>> =>
         prisma.assignmentSolution
             .upsert({
                 where: {
@@ -122,7 +122,7 @@ export default class AssignmentController {
 
     static retrieveAllAssignmentSolutions = async (
         assignmentId: number,
-    ): Promise<Result<_AssignmentSolution[]>> =>
+    ): Promise<ResponseResult<_AssignmentSolution[]>> =>
         prisma.assignment
             .findUniqueOrThrow({
                 where: {
@@ -152,7 +152,7 @@ export default class AssignmentController {
     static retrieveAssignmentFeedback = async (
         assignmentId: number,
         userId: number,
-    ): Promise<Result<string>> =>
+    ): Promise<ResponseResult<string>> =>
         prisma.assignmentSolution
             .findFirstOrThrow({
                 where: {
@@ -176,7 +176,7 @@ export default class AssignmentController {
     static postAssignmentFeedback = async (
         assignmentSolutionId: number,
         feedback: string,
-    ): Promise<Result<void>> =>
+    ): Promise<ResponseResult<void>> =>
         prisma.assignmentSolution
             .update({
                 where: {

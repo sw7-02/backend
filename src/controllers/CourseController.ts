@@ -1,5 +1,5 @@
 import prisma from "../prisma";
-import { Err, Result, Role } from "../lib";
+import { Err, ResponseResult, Role } from "../lib";
 
 type _ExerciseIdentifier = {
     title: string;
@@ -44,7 +44,7 @@ type _CourseOverview = {
 export default class CourseController {
     static retrieveCourse = async (
         courseId: number,
-    ): Promise<Result<_Course>> =>
+    ): Promise<ResponseResult<_Course>> =>
         prisma.course
             .findUniqueOrThrow({
                 where: {
@@ -74,7 +74,7 @@ export default class CourseController {
 
     static retrieveFullCourse = async (
         courseId: number,
-    ): Promise<Result<_CourseFull>> =>
+    ): Promise<ResponseResult<_CourseFull>> =>
         prisma.course
             .findUniqueOrThrow({
                 where: {
@@ -112,7 +112,7 @@ export default class CourseController {
         courseId: number,
         userId: number,
         exerciseId: number,
-    ): Promise<Result<number>> {
+    ): Promise<ResponseResult<number>> {
         let points = await prisma.exercise
             .findUniqueOrThrow({
                 where: {
@@ -174,7 +174,7 @@ export default class CourseController {
         courseId: number,
         userId: number,
         points: number,
-    ): Promise<Result<number>> {
+    ): Promise<ResponseResult<number>> {
         return prisma.enrollment
             .update({
                 where: {
@@ -211,7 +211,7 @@ export default class CourseController {
 
     static retrieveLeaderboard = async (
         courseId: number,
-    ): Promise<Result<_Leaderboard>> =>
+    ): Promise<ResponseResult<_Leaderboard>> =>
         prisma.course
             .findUniqueOrThrow({
                 where: {
@@ -261,7 +261,7 @@ export default class CourseController {
 
     static retrieveEnrolledCourses = async (
         userId: number,
-    ): Promise<Result<_CourseOverview>> =>
+    ): Promise<ResponseResult<_CourseOverview>> =>
         prisma.user
             .findUniqueOrThrow({
                 where: {
@@ -298,7 +298,7 @@ export default class CourseController {
 
     static retrieveSessionFromCourse = async (
         sessionId: number,
-    ): Promise<Result<_Session>> =>
+    ): Promise<ResponseResult<_Session>> =>
         prisma.session
             .findUniqueOrThrow({
                 where: {
@@ -311,8 +311,8 @@ export default class CourseController {
                         select: {
                             exercise_id: true,
                             title: true,
-                        }
-                    }
+                        },
+                    },
                 },
             })
             .then(
@@ -326,7 +326,7 @@ export default class CourseController {
     static insertSessionFromCourse = async (
         courseId: number,
         title: string,
-    ): Promise<Result<{ session_id: number }>> =>
+    ): Promise<ResponseResult<{ session_id: number }>> =>
         prisma.session
             .create({
                 data: {
@@ -353,7 +353,7 @@ export default class CourseController {
 
     static deleteSessionFromCourse = async (
         sessionId: number,
-    ): Promise<Result<void>> =>
+    ): Promise<ResponseResult<void>> =>
         prisma.session
             .delete({
                 where: {
@@ -371,7 +371,7 @@ export default class CourseController {
     static getUserId = async (
         courseId: number,
         username: string,
-    ): Promise<Result<number>> =>
+    ): Promise<ResponseResult<number>> =>
         prisma.enrollment
             .findFirstOrThrow({
                 where: {

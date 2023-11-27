@@ -11,7 +11,9 @@ class Err {
     }
 }
 
-type Result<T> = T | Err;
+type ResponseResult<T> = Result<T, Err>;
+
+type Result<T, E> = T | E;
 
 type JWTPayload = {
     userId: number;
@@ -31,4 +33,4 @@ enum Role {
     TA = 2,
 }
 
-export { Err, Result, generateJWTToken, Role };
+export { Err, ResponseResult, Result, generateJWTToken, Role };

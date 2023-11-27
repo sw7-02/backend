@@ -138,6 +138,8 @@ routes.post("/:exercise_id/test", (req: Request, res: Response) => {
     res.send("Tested code (Unimplemented)");
 });
 
+//TODO: Mod exercise (CRUD) hints+test cases
+
 // exercise solutions
 routes.get(
     ":exercise_id/exercise-solutions",

@@ -1,6 +1,6 @@
 import Router, { NextFunction, Request, Response } from "express";
 import exercise from "./exercise";
-import { Err, Result, Role } from "../../../lib";
+import { Err, ResponseResult, Role } from "../../../lib";
 import roleCheck from "../../../middlewares/roleCheck";
 import CourseController from "../../../controllers/CourseController";
 
@@ -21,34 +21,48 @@ const sessionIDSave = (req: Request, res: Response, next: NextFunction) => {
 routes.use(Router.json());
 routes.use("/:session_id/exercise", sessionIDSave, exercise);
 
-routes.get("/", (req: Request, res: Response) => {
-    res.send("This is the session overview (Unimplemented)");
+routes.get("/", async (req: Request, res: Response) => {
+    const result = await CourseController.retrieveCourse(res.locals.courseId);
+    if (result instanceof Err) {
+        res.status(result.code).send(result.msg);
+    } else res.send(result.sessions);
 });
 
-routes.use(sessionIDSave)
+routes
+    .use(sessionIDSave)
     .route("/:session_id")
     .get(async (req: Request, res: Response) => {
-        const result = await CourseController.retrieveSessionFromCourse(res.locals.sessionId);
+        const result = await CourseController.retrieveSessionFromCourse(
+            res.locals.sessionId,
+        );
         if (result instanceof Err) {
             res.status(result.code).send(result.msg);
         } else res.send(result);
     })
     .put([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
-        const {title} = req.body;
+        const { title } = req.body;
         if (!title) {
             res.status(400).send("Bad request body");
             return;
         }
-        const result = await CourseController.insertSessionFromCourse(res.locals.courseId, title);
+        const result = await CourseController.insertSessionFromCourse(
+            res.locals.courseId,
+            title,
+        );
         if (result instanceof Err) {
             res.status(result.code).send(result.msg);
         } else res.send(result);
     })
-    .delete([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
-        const result = await CourseController.deleteSessionFromCourse(res.locals.sessionId);
-        if (result instanceof Err) {
-            res.status(result.code).send(result.msg);
-        } else res.send(result);
-    });
+    .delete(
+        [roleCheck([Role.TEACHER])],
+        async (req: Request, res: Response) => {
+            const result = await CourseController.deleteSessionFromCourse(
+                res.locals.sessionId,
+            );
+            if (result instanceof Err) {
+                res.status(result.code).send(result.msg);
+            } else res.send(result);
+        },
+    );
 
 export default routes;
