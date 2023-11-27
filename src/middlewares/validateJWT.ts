@@ -20,6 +20,7 @@ export const validateJWT = (
     } catch (error) {
         //If token is not valid, 401 (unauthorized)
         res.status(401).send();
+        console.error(`Invalid JWT: ${error}`);
         return;
     }
 

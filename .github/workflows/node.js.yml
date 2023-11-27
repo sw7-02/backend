@@ -13,7 +13,8 @@ jobs:
   build-and-test:
     strategy:
       matrix:
-        node-version: [ 20.9.0]
+        #node-version: [16.x, 20.9.0]
+        node-version: [ 20.9.0 ]
         os: [ ubuntu-latest ]
         #os: [ ubuntu-latest, windows-latest, macos-latest ] service only on ubuntu :(
 

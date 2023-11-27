@@ -16,8 +16,8 @@ const genericAuthHandler =
 
         const result = await func(username, password);
 
-        if (typeof result === typeof Err) {
-            const { code, msg } = <Err>result;
+        if (result instanceof Err) {
+            const { code, msg } = result;
             res.status(code).send(msg);
         } else res.send(result);
     };
