@@ -36,7 +36,7 @@ describe("Savings testing", function () {
         );
         assert.equal(response.locals.exerciseId, 1);
     });
-    it("Save ExerciseId: Inalid", function () {
+    it("Save ExerciseId: Invalid", function () {
         request.params.exercise_id = "1a";
 
         saveExerciseId(request, response, nxtFunc);
