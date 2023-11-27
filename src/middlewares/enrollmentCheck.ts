@@ -14,7 +14,7 @@ export default async function enrollmentCheck(
     const userId = +res.locals.jwtPayload.userId;
 
     const courseId = +req.params.course_id;
-    if (!courseId && courseId > 0) {
+    if (!courseId || courseId <= 0) {
         res.status(400).send("Course ID not a valid number");
         return;
     }
