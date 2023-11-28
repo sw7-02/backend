@@ -120,7 +120,7 @@ model TestCase {
   test_case_id Int     @id @default(autoincrement())
   exercise_id  Int
   code         String
-  is_visible   Boolean
+  // is_visible   Boolean
 
   exercise Exercise @relation(fields: [exercise_id], references: [exercise_id])
 
