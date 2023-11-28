@@ -102,7 +102,7 @@ describe("ExerciseController testing", function () {
         assert.equal((<Err>result).msg, "Exercise does not exist");
     });
 
-    it("Patch exercise: New hints", async function () {
+    it("Patch exercise: New Hints", async function () {
         const pre = await prisma.exercise
             .findFirstOrThrow({
                 where: { exercise_id: 1 },
@@ -143,6 +143,90 @@ describe("ExerciseController testing", function () {
         assert.equal(fix!.hints.length, 1);
         assert.equal(fix!.hints[0].description, "Hint 1 description");
         assert.equal(fix!.hints[0].order, 1);
+    });
+    it("Patch exercise: New Examples", async function () {
+        const pre = await prisma.exercise
+            .findFirstOrThrow({
+                where: { exercise_id: 1 },
+                include: { examples: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(pre!.examples.length, 1);
+        assert.equal(pre!.examples[0].input, "[1, 2, 3]");
+        assert.equal(pre!.examples[0].output, "6");
+
+        const examples = [
+            { input: "1", output: "2" },
+            { input: "2", output: "4" },
+            { input: "3", output: "6" },
+        ];
+        let result = await ExerciseController.patchExercise(1, { examples });
+        assert.notEqual(result instanceof Err, true);
+
+        const post = await prisma.exercise
+            .findFirst({
+                where: { exercise_id: 1 },
+                include: { examples: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(post!.examples.length, 3);
+        for (let i = 0; i < 3; i++) {
+            assert.equal(post!.examples[i].input, examples[i].input);
+            assert.equal(post!.examples[i].output, examples[i].output);
+        }
+
+        result = await ExerciseController.patchExercise(1, {
+            examples: [{ input: "[1, 2, 3]", output: "6" }],
+        });
+        assert.notEqual(result instanceof Err, true);
+
+        const fix = await prisma.exercise
+            .findFirst({
+                where: { exercise_id: 1 },
+                include: { examples: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(fix!.examples.length, 1);
+        assert.equal(fix!.examples[0].input, "[1, 2, 3]");
+        assert.equal(fix!.examples[0].output, "6");
+    });
+    it("Patch exercise: New Test Cases", async function () {
+        const pre = await prisma.exercise
+            .findFirstOrThrow({
+                where: { exercise_id: 1 },
+                include: { test_case: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(pre!.test_case.length, 1);
+        assert.equal(pre!.test_case[0].code, "Test case 1 code");
+
+        const testCases = ["Case 1", "Case 2", "Case 3"];
+        let result = await ExerciseController.patchExercise(1, { testCases });
+        assert.notEqual(result instanceof Err, true);
+
+        const post = await prisma.exercise
+            .findFirst({
+                where: { exercise_id: 1 },
+                include: { test_case: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(post!.test_case.length, 3);
+        for (let i = 0; i < 3; i++)
+            assert.equal(post!.test_case[i].code, testCases[i]);
+
+        result = await ExerciseController.patchExercise(1, {
+            testCases: ["Test case 1 code"],
+        });
+        assert.notEqual(result instanceof Err, true);
+
+        const fix = await prisma.exercise
+            .findFirst({
+                where: { exercise_id: 1 },
+                include: { test_case: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(fix!.test_case.length, 1);
+        assert.equal(fix!.test_case[0].code, "Test case 1 code");
     });
 
     // TODO: Add/Remove exercise (not in routes, ignored for now in testing)
