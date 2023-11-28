@@ -35,6 +35,7 @@ describe("Testing enrollmentCheck", function () {
             "Status code not accepted, enrollmentCheck failed",
         );
         assert.equal(response.locals.courseId, 1);
+        assert.equal(response.locals.userRole, 0);
     });
 
     it("Not enrolled: Wrong User ID", async () => {
@@ -54,6 +55,7 @@ describe("Testing enrollmentCheck", function () {
             "Status code not accepted, enrollmentCheck failed",
         );
         assert.equal(response.locals.courseId, undefined);
+        assert.equal(response.locals.userRole, undefined);
     });
     it("Not enrolled: Wrong Course ID", async () => {
         request.params.course_id = "1000";
@@ -72,6 +74,7 @@ describe("Testing enrollmentCheck", function () {
             "Status code not accepted, enrollmentCheck failed",
         );
         assert.equal(response.locals.courseId, undefined);
+        assert.equal(response.locals.userRole, undefined);
     });
 
     it("Invalid Course ID", async () => {
@@ -91,5 +94,6 @@ describe("Testing enrollmentCheck", function () {
             "Status code not accepted, enrollmentCheck failed",
         );
         assert.equal(response.locals.courseId, undefined);
+        assert.equal(response.locals.userRole, undefined);
     });
 });

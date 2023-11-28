@@ -102,11 +102,13 @@ describe("ExerciseController testing", function () {
         assert.equal((<Err>result).msg, "Exercise does not exist");
     });
 
-    it("Patch exercises: New hints", async function () {
-        const pre = await prisma.exercise.findFirst({
-            where: { exercise_id: 1 },
-            include: { hints: true },
-        });
+    it("Patch exercise: New hints", async function () {
+        const pre = await prisma.exercise
+            .findFirstOrThrow({
+                where: { exercise_id: 1 },
+                include: { hints: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
         assert.equal(pre, true);
         assert.equal(pre!.hints.length, 1);
         assert.equal(pre!.hints[0].description, "Hint 1 description");
@@ -116,10 +118,12 @@ describe("ExerciseController testing", function () {
         let result = await ExerciseController.patchExercise(1, { hints });
         assert.notEqual(result instanceof Err, true);
 
-        const post = await prisma.exercise.findFirst({
-            where: { exercise_id: 1 },
-            include: { hints: true },
-        });
+        const post = await prisma.exercise
+            .findFirst({
+                where: { exercise_id: 1 },
+                include: { hints: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
         assert.equal(pre, true);
         assert.equal(pre!.hints.length, 3);
         for (let i = 0; i < 3; i++) {
@@ -128,14 +132,16 @@ describe("ExerciseController testing", function () {
         }
 
         result = await ExerciseController.patchExercise(1, {
-            hints: ["only one"],
+            hints: ["Hint 1 description"],
         });
         assert.notEqual(result instanceof Err, true);
 
-        const fix = await prisma.exercise.findFirst({
-            where: { exercise_id: 1 },
-            include: { hints: true },
-        });
+        const fix = await prisma.exercise
+            .findFirst({
+                where: { exercise_id: 1 },
+                include: { hints: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
         assert.equal(fix, true);
         assert.equal(fix!.hints.length, 1);
         assert.equal(fix!.hints[0].description, "Hint 1 description");
@@ -143,6 +149,6 @@ describe("ExerciseController testing", function () {
     });
 
     // TODO: Add/Remove exercise (not in routes, ignored for now in testing)
-    // TODO: Add/Remove hints/test cases
+    // TODO: Patch hints/test cases/examples
     // TODO: Testing code
 });
