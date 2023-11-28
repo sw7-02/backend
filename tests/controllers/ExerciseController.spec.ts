@@ -109,7 +109,6 @@ describe("ExerciseController testing", function () {
                 include: { hints: true },
             })
             .catch(() => assert.fail("Exercise gone"));
-        assert.equal(pre, true);
         assert.equal(pre!.hints.length, 1);
         assert.equal(pre!.hints[0].description, "Hint 1 description");
         assert.equal(pre!.hints[0].order, 1);
@@ -124,11 +123,10 @@ describe("ExerciseController testing", function () {
                 include: { hints: true },
             })
             .catch(() => assert.fail("Exercise gone"));
-        assert.equal(pre, true);
-        assert.equal(pre!.hints.length, 3);
+        assert.equal(post!.hints.length, 3);
         for (let i = 0; i < 3; i++) {
-            assert.equal(pre!.hints[i].description, hints[i]);
-            assert.equal(pre!.hints[i].order, i + 1);
+            assert.equal(post!.hints[i].description, hints[i]);
+            assert.equal(post!.hints[i].order, i + 1);
         }
 
         result = await ExerciseController.patchExercise(1, {
@@ -142,13 +140,12 @@ describe("ExerciseController testing", function () {
                 include: { hints: true },
             })
             .catch(() => assert.fail("Exercise gone"));
-        assert.equal(fix, true);
         assert.equal(fix!.hints.length, 1);
         assert.equal(fix!.hints[0].description, "Hint 1 description");
         assert.equal(fix!.hints[0].order, 1);
     });
 
     // TODO: Add/Remove exercise (not in routes, ignored for now in testing)
-    // TODO: Patch hints/test cases/examples
+    // TODO: test cases/examples
     // TODO: Testing code
 });
