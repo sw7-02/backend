@@ -439,6 +439,12 @@ export default class ExerciseController {
                     programming_language: programmingLanguage,
                     points,
                     hints: {
+                        deleteMany: {
+                            exercise_id: exerciseId,
+                            order: {
+                                gte: hints?.length,
+                            },
+                        },
                         updateMany: {
                             where: {
                                 exercise_id: exerciseId,
@@ -448,12 +454,6 @@ export default class ExerciseController {
                                 description: hints?.at(order-1),
                                 order: order++
                             }
-                        },
-                        deleteMany: {
-                            exercise_id: exerciseId,
-                            order: {
-                                gte: order,
-                            },
                         },
                         createMany: {
                             data:
