@@ -437,7 +437,7 @@ export default class ExerciseController {
                     description,
                     programming_language: programmingLanguage,
                     points,
-                    hints: {
+                    hints: { //TODO: Change existing (also for other relations)
                         createMany: {
                             data: hints.map((h) => {
                                 return { description: h, order: order++ };

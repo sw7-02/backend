@@ -396,7 +396,7 @@ CREATE TABLE improved_schema.test_cases (
 );
 
 
-ALTER TABLE improved_schema.test_cases OWNER TO postgres;
+--ALTER TABLE improved_schema.test_cases OWNER TO postgres;
 
 --
 -- TOC entry 229 (class 1259 OID 16600)
