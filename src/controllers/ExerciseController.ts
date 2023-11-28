@@ -428,7 +428,13 @@ export default class ExerciseController {
     ): Promise<Result<void>> => {
         let order = 1;
         console.log(hints);
-        prisma.exercise
+        console.log(
+            hints?.map((h) => {
+                return { description: h, order: order++ };
+            }) ?? [],
+        );
+        order = 1;
+        return prisma.exercise
             .update({
                 where: {
                     exercise_id: exerciseId,
@@ -441,16 +447,18 @@ export default class ExerciseController {
                     hints: {
                         //TODO: Change existing (also for other relations)
                         createMany: {
-                            data: hints?.map((h) => {
-                                return { description: h, order: order++ };
-                            }) ?? [],
+                            data:
+                                hints?.map((h) => {
+                                    return { description: h, order: order++ };
+                                }) ?? [],
                         },
                     },
                     test_case: {
                         createMany: {
-                            data: testCases?.map((c) => {
-                                return { code: c };
-                            }) ?? [],
+                            data:
+                                testCases?.map((c) => {
+                                    return { code: c };
+                                }) ?? [],
                         },
                     },
                     examples: {
