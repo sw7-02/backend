@@ -417,9 +417,9 @@ export default class ExerciseController {
     static patchExercise = async (
         exerciseId: number,
         {
-            hints = [],
-            testCases = [],
-            examples = [],
+            hints,
+            testCases,
+            examples,
             description = undefined,
             title = undefined,
             points = undefined,
