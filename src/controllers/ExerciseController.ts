@@ -41,6 +41,7 @@ type _Patch = {
     description?: string;
     programmingLanguage?: string;
     points?: number;
+    codeTemplate?: string;
     hints?: string[];
     testCases?: string[];
     examples?: _Example[];
@@ -424,6 +425,7 @@ export default class ExerciseController {
             title,
             points,
             programmingLanguage,
+            codeTemplate,
         }: _Patch,
     ): Promise<Result<void>> => {
         let hintOrder = 1;
@@ -436,6 +438,7 @@ export default class ExerciseController {
                     title,
                     description,
                     programming_language: programmingLanguage,
+                    code_template: codeTemplate,
                     points,
                     hints: {
                         deleteMany: {

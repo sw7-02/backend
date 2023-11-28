@@ -102,6 +102,68 @@ describe("ExerciseController testing", function () {
         assert.equal((<Err>result).msg, "Exercise does not exist");
     });
 
+    it("Patch exercise: General stuff", async function () {
+        const pre = await prisma.exercise
+            .findFirstOrThrow({
+                where: { exercise_id: 1 },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(pre!.exercise_id, 1);
+        assert.equal(pre!.session_id, 1);
+        assert.equal(pre!.title, "Exercise 1");
+        assert.equal(pre!.description, "Description of Exercise 1");
+        assert.equal(pre!.points, 10);
+        assert.equal(pre!.programming_language, "JavaScript");
+        assert.equal(pre!.code_template, "Your code template here");
+
+        const hints = ["Hint 1", "Hint 2", "Hint 3"];
+        let result = await ExerciseController.patchExercise(1, {
+            title: "1",
+            description: "Description 1",
+            points: 1,
+            programmingLanguage: "Java",
+            codeTemplate: "template ",
+        });
+        assert.notEqual(result instanceof Err, true);
+
+        const post = await prisma.exercise
+            .findFirst({
+                where: { exercise_id: 1 },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+
+        assert.equal(post!.exercise_id, 1);
+        assert.equal(post!.session_id, 1);
+        assert.equal(post!.title, "1");
+        assert.equal(post!.description, "Description 1");
+        assert.equal(post!.points, 1);
+        assert.equal(post!.programming_language, "Java");
+        assert.equal(post!.code_template, "template ");
+
+        result = await ExerciseController.patchExercise(1, {
+            title: "Exercise 1",
+            description: "Description of Exercise 1",
+            points: 10,
+            programmingLanguage: "JavaScript",
+            codeTemplate: "Your code template here",
+        });
+        assert.notEqual(result instanceof Err, true);
+
+        const fix = await prisma.exercise
+            .findFirst({
+                where: { exercise_id: 1 },
+                include: { hints: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+
+        assert.equal(fix!.exercise_id, 1);
+        assert.equal(fix!.session_id, 1);
+        assert.equal(fix!.title, "Exercise 1");
+        assert.equal(fix!.description, "Description of Exercise 1");
+        assert.equal(fix!.points, 10);
+        assert.equal(fix!.programming_language, "JavaScript");
+        assert.equal(fix!.code_template, "Your code template here");
+    });
     it("Patch exercise: New Hints", async function () {
         const pre = await prisma.exercise
             .findFirstOrThrow({
@@ -230,6 +292,5 @@ describe("ExerciseController testing", function () {
     });
 
     // TODO: Add/Remove exercise (not in routes, ignored for now in testing)
-    // TODO: test cases/examples
     // TODO: Testing code
 });
