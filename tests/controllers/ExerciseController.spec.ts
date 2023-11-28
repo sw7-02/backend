@@ -102,17 +102,195 @@ describe("ExerciseController testing", function () {
         assert.equal((<Err>result).msg, "Exercise does not exist");
     });
 
-    it("Patch exercises: New hints ID", async function () {
-        const hints = ["Hint 1", "Hint 2", "Hint 3"];
-        console.log(prisma.exercise.findFirst({ where: { exercise_id: 1 } }));
-        console.log(prisma.hint.findMany());
-        const result = await ExerciseController.patchExercise(1, { hints });
+    it("Patch exercise: General stuff", async function () {
+        const pre = await prisma.exercise
+            .findFirstOrThrow({
+                where: { exercise_id: 1 },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(pre!.exercise_id, 1);
+        assert.equal(pre!.session_id, 1);
+        assert.equal(pre!.title, "Exercise 1");
+        assert.equal(pre!.description, "Description of Exercise 1");
+        assert.equal(pre!.points, 10);
+        assert.equal(pre!.programming_language, "JavaScript");
+        assert.equal(pre!.code_template, "Your code template here");
 
-        console.log(prisma.exercise.findFirst({ where: { exercise_id: 1 } }));
-        console.log(prisma.hint.findMany());
+        const hints = ["Hint 1", "Hint 2", "Hint 3"];
+        let result = await ExerciseController.patchExercise(1, {
+            title: "1",
+            description: "Description 1",
+            points: 1,
+            programmingLanguage: "Java",
+            codeTemplate: "template ",
+        });
+        assert.notEqual(result instanceof Err, true);
+
+        const post = await prisma.exercise
+            .findFirst({
+                where: { exercise_id: 1 },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+
+        assert.equal(post!.exercise_id, 1);
+        assert.equal(post!.session_id, 1);
+        assert.equal(post!.title, "1");
+        assert.equal(post!.description, "Description 1");
+        assert.equal(post!.points, 1);
+        assert.equal(post!.programming_language, "Java");
+        assert.equal(post!.code_template, "template ");
+
+        result = await ExerciseController.patchExercise(1, {
+            title: "Exercise 1",
+            description: "Description of Exercise 1",
+            points: 10,
+            programmingLanguage: "JavaScript",
+            codeTemplate: "Your code template here",
+        });
+        assert.notEqual(result instanceof Err, true);
+
+        const fix = await prisma.exercise
+            .findFirst({
+                where: { exercise_id: 1 },
+                include: { hints: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+
+        assert.equal(fix!.exercise_id, 1);
+        assert.equal(fix!.session_id, 1);
+        assert.equal(fix!.title, "Exercise 1");
+        assert.equal(fix!.description, "Description of Exercise 1");
+        assert.equal(fix!.points, 10);
+        assert.equal(fix!.programming_language, "JavaScript");
+        assert.equal(fix!.code_template, "Your code template here");
+    });
+    it("Patch exercise: New Hints", async function () {
+        const pre = await prisma.exercise
+            .findFirstOrThrow({
+                where: { exercise_id: 1 },
+                include: { hints: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(pre!.hints.length, 1);
+        assert.equal(pre!.hints[0].description, "Hint 1 description");
+        assert.equal(pre!.hints[0].order, 1);
+
+        const hints = ["Hint 1", "Hint 2", "Hint 3"];
+        let result = await ExerciseController.patchExercise(1, { hints });
+        assert.notEqual(result instanceof Err, true);
+
+        const post = await prisma.exercise
+            .findFirst({
+                where: { exercise_id: 1 },
+                include: { hints: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(post!.hints.length, 3);
+        for (let i = 0; i < 3; i++) {
+            assert.equal(post!.hints[i].description, hints[i]);
+            assert.equal(post!.hints[i].order, i + 1);
+        }
+
+        result = await ExerciseController.patchExercise(1, {
+            hints: ["Hint 1 description"],
+        });
+        assert.notEqual(result instanceof Err, true);
+
+        const fix = await prisma.exercise
+            .findFirst({
+                where: { exercise_id: 1 },
+                include: { hints: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(fix!.hints.length, 1);
+        assert.equal(fix!.hints[0].description, "Hint 1 description");
+        assert.equal(fix!.hints[0].order, 1);
+    });
+    it("Patch exercise: New Examples", async function () {
+        const pre = await prisma.exercise
+            .findFirstOrThrow({
+                where: { exercise_id: 1 },
+                include: { examples: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(pre!.examples.length, 1);
+        assert.equal(pre!.examples[0].input, "[1, 2, 3]");
+        assert.equal(pre!.examples[0].output, "6");
+
+        const examples = [
+            { input: "1", output: "2" },
+            { input: "2", output: "4" },
+            { input: "3", output: "6" },
+        ];
+        let result = await ExerciseController.patchExercise(1, { examples });
+        assert.notEqual(result instanceof Err, true);
+
+        const post = await prisma.exercise
+            .findFirst({
+                where: { exercise_id: 1 },
+                include: { examples: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(post!.examples.length, 3);
+        for (let i = 0; i < 3; i++) {
+            assert.equal(post!.examples[i].input, examples[i].input);
+            assert.equal(post!.examples[i].output, examples[i].output);
+        }
+
+        result = await ExerciseController.patchExercise(1, {
+            examples: [{ input: "[1, 2, 3]", output: "6" }],
+        });
+        assert.notEqual(result instanceof Err, true);
+
+        const fix = await prisma.exercise
+            .findFirst({
+                where: { exercise_id: 1 },
+                include: { examples: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(fix!.examples.length, 1);
+        assert.equal(fix!.examples[0].input, "[1, 2, 3]");
+        assert.equal(fix!.examples[0].output, "6");
+    });
+    it("Patch exercise: New Test Cases", async function () {
+        const pre = await prisma.exercise
+            .findFirstOrThrow({
+                where: { exercise_id: 1 },
+                include: { test_case: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(pre!.test_case.length, 1);
+        assert.equal(pre!.test_case[0].code, "Test case 1 code");
+
+        const testCases = ["Case 1", "Case 2", "Case 3"];
+        let result = await ExerciseController.patchExercise(1, { testCases });
+        assert.notEqual(result instanceof Err, true);
+
+        const post = await prisma.exercise
+            .findFirst({
+                where: { exercise_id: 1 },
+                include: { test_case: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(post!.test_case.length, 3);
+        for (let i = 0; i < 3; i++)
+            assert.equal(post!.test_case[i].code, testCases[i]);
+
+        result = await ExerciseController.patchExercise(1, {
+            testCases: ["Test case 1 code"],
+        });
+        assert.notEqual(result instanceof Err, true);
+
+        const fix = await prisma.exercise
+            .findFirst({
+                where: { exercise_id: 1 },
+                include: { test_case: true },
+            })
+            .catch(() => assert.fail("Exercise gone"));
+        assert.equal(fix!.test_case.length, 1);
+        assert.equal(fix!.test_case[0].code, "Test case 1 code");
     });
 
     // TODO: Add/Remove exercise (not in routes, ignored for now in testing)
-    // TODO: Add/Remove hints/test cases
     // TODO: Testing code
 });

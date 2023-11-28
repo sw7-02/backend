@@ -37,13 +37,14 @@ type _Example = {
     output: string;
 };
 type _Patch = {
-    title: string | undefined;
-    description: string | undefined;
-    programmingLanguage: string | undefined;
-    points: number | undefined;
-    hints: string[];
-    testCases: string[];
-    examples: _Example[];
+    title?: string;
+    description?: string;
+    programmingLanguage?: string;
+    points?: number;
+    codeTemplate?: string;
+    hints?: string[];
+    testCases?: string[];
+    examples?: _Example[];
 };
 
 export default class ExerciseController {
@@ -235,7 +236,7 @@ export default class ExerciseController {
                         points,
                         hints: hints.map((h) => h.description),
                         examples,
-                        test_cases: test_case.map(t => t.code),
+                        test_cases: test_case.map((t) => t.code),
                     };
                 },
                 (r) => {
@@ -345,9 +346,9 @@ export default class ExerciseController {
         points: number,
         programmingLanguage: string,
         codeTemplate: string,
-        hints: string[] = [],
-        testCases: string[] = [],
-        examples: _Example[] = [],
+        hints: string[],
+        testCases: string[],
+        examples: _Example[],
     ): Promise<Result<number>> => {
         let order = 1;
         return prisma.exercise
@@ -417,17 +418,18 @@ export default class ExerciseController {
     static patchExercise = async (
         exerciseId: number,
         {
-            hints = [],
-            testCases = [],
-            examples = [],
-            description = undefined,
-            title = undefined,
-            points = undefined,
-            programmingLanguage = undefined,
+            hints,
+            testCases,
+            examples,
+            description,
+            title,
+            points,
+            programmingLanguage,
+            codeTemplate,
         }: _Patch,
     ): Promise<Result<void>> => {
-        let order = 1;
-        prisma.exercise
+        let hintOrder = 1;
+        return prisma.exercise
             .update({
                 where: {
                     exercise_id: exerciseId,
@@ -436,24 +438,57 @@ export default class ExerciseController {
                     title,
                     description,
                     programming_language: programmingLanguage,
+                    code_template: codeTemplate,
                     points,
                     hints: {
+                        deleteMany: {
+                            // removes additional, if any
+                            exercise_id: exerciseId,
+                            order: {
+                                gt: hints?.length,
+                            },
+                        },
+                        updateMany: {
+                            // updates current
+                            where: {
+                                exercise_id: exerciseId,
+                            },
+
+                            data: {
+                                description: hints?.at(hintOrder - 1),
+                                order: hintOrder++,
+                            },
+                        },
                         createMany: {
-                            data: hints?.map((h) => {
-                                return { description: h, order: order++ };
-                            }),
+                            // Creates new if needed
+                            data:
+                                hints?.slice(hintOrder - 1).map((h) => {
+                                    return {
+                                        description: h,
+                                        order: hintOrder++,
+                                    };
+                                }) ?? [],
                         },
                     },
                     test_case: {
+                        deleteMany: {
+                            // removes additional, if any
+                            exercise_id: exerciseId,
+                        },
                         createMany: {
-                            data: testCases.map((c) => {
-                                return { code: c };
-                            }),
+                            data:
+                                testCases?.map((c) => {
+                                    return { code: c };
+                                }) ?? [],
                         },
                     },
                     examples: {
+                        deleteMany: {
+                            // removes additional, if any
+                            exercise_id: exerciseId,
+                        },
                         createMany: {
-                            data: examples,
+                            data: examples ?? [],
                         },
                     },
                 },

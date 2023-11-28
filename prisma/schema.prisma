@@ -111,7 +111,7 @@ model Example {
   example_id Int @id @default(autoincrement())
   exercise_id Int
   input String
-  output String
+  output String @map("_output")
   exercise Exercise @relation(fields: [exercise_id], references: [exercise_id])
   @@map("examples")
 }
@@ -135,7 +135,7 @@ model Hint {
 
   exercise Exercise @relation(fields: [exercise_id], references: [exercise_id])
 
-  @@unique([hint_id, order])
+  @@unique([exercise_id, order])
   @@map("hints")
 }
 

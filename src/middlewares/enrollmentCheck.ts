@@ -30,6 +30,7 @@ export default async function enrollmentCheck(
 
     if (r) {
         res.locals.courseId = courseId;
+        res.locals.userRole = r.user_role;
         next();
     } else {
         res.status(401).send("No enrollment found");

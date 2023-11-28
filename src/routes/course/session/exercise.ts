@@ -13,20 +13,18 @@ const routes = Router();
 // enables passing json bodies.
 routes.use(Router.json());
 
-routes.get("/", async (req: Request, res: Response) => {
-    const result = await ExerciseController.retrieveAllExercises(
-        res.locals.sessionId,
-    );
-    if (result instanceof Err) {
-        const { code, msg } = result;
-        res.status(code).send(msg);
-    } else res.send(result);
-});
-
-routes.post(
-    "/",
-    [roleCheck([Role.TEACHER])],
-    async (req: Request, res: Response) => {
+routes
+    .route("/")
+    .get(async (req: Request, res: Response) => {
+        const result = await ExerciseController.retrieveAllExercises(
+            res.locals.sessionId,
+        );
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send(result);
+    })
+    .post([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
         //TODO: Adding hints and/or test cases? Only create and then use '/edit'?
         const {
             title,
@@ -34,18 +32,13 @@ routes.post(
             points,
             programming_language,
             code_template,
+            test_cases,
+            examples,
             hints,
         } = req.body;
-        if (
-            !(
-                title &&
-                description &&
-                points &&
-                programming_language &&
-                code_template
-            )
-        ) {
-            res.status(400).send("Not all necessary parameters was provided");
+        if (!title) {
+            res.status(400).send("Title not provided provided");
+            return;
         }
         const result = await ExerciseController.addExercise(
             res.locals.sessionId,
@@ -55,13 +48,14 @@ routes.post(
             programming_language,
             code_template,
             hints,
+            test_cases,
+            examples,
         );
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);
         } else res.send(result);
-    },
-);
+    });
 
 routes
     .route("/:exercise_id") //TODO: Endpoint role check (full if teacher/TA, limited else)
@@ -74,6 +68,19 @@ routes
             res.status(code).send(msg);
         } else res.send(result);
     })
+    .patch([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
+        const {
+            hints,
+            test_cases,
+            examples,
+            description,
+            title,
+            points,
+            code_template,
+            programming_language,
+        } = req.body; //TODO: Do
+    })
+    //TODO: Put (All fields needed)
     .delete(
         [roleCheck([Role.TEACHER])],
         async (req: Request, res: Response) => {
