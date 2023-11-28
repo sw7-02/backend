@@ -253,12 +253,12 @@ describe("RoleCheck testing", function () {
         assert.equal(
             response.statusCode,
             404,
-            "Status code not accepted, roleChecker failed to deny access: No enrollment",
+            "Status code not accepted, roleChecker failed to deny access: No enrollment found",
         );
         assert.equal(
             response.statusMessage,
             "Enrollment does not exist",
-            "Status message not accepted, roleChecker failed to deny access: No enrollment",
+            "Status message not accepted, roleChecker failed to deny access: No enrollment found",
         );
     });
 });
