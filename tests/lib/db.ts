@@ -130,7 +130,6 @@ export async function seed() {
     const testCase1 = await prisma.testCase.create({
         data: {
             code: "Test case 1 code",
-            is_visible: true,
             exercise_id: exercise1.exercise_id,
         },
     });

@@ -24,6 +24,15 @@ type _Example = {
     input: string;
     output: string;
 };
+type _Patch = {
+    title: string | undefined;
+    description: string | undefined;
+    programmingLanguage: string | undefined;
+    points: number | undefined;
+    hints: string[];
+    testCases: string[];
+    examples: _Example[];
+};
 
 export default class ExerciseController {
     static retrieveAllExercises = async (
@@ -283,14 +292,14 @@ export default class ExerciseController {
                     test_case: {
                         createMany: {
                             data: testCases.map((c) => {
-                                return { code: c, is_visible: false }; // TODO: get if visible
+                                return { code: c };
                             }),
                         },
                     },
                     examples: {
                         createMany: {
                             data: examples.map(({ input, output }) => {
-                                return { input, output }; // TODO: get if visible
+                                return { input, output };
                             }),
                         },
                     },
@@ -324,6 +333,60 @@ export default class ExerciseController {
                     return new Err(404, "Exercise does not exist");
                 },
             );
+    static patchExercise = async (
+        exerciseId: number,
+        {
+            hints = [],
+            testCases = [],
+            examples = [],
+            description = undefined,
+            title = undefined,
+            points = undefined,
+            programmingLanguage = undefined,
+        }: _Patch,
+    ): Promise<Result<void>> => {
+        let order = 1;
+        prisma.exercise
+            .update({
+                where: {
+                    exercise_id: exerciseId,
+                },
+                data: {
+                    title,
+                    description,
+                    programming_language: programmingLanguage,
+                    points,
+                    hints: {
+                        createMany: {
+                            data: hints?.map((h) => {
+                                return { description: h, order: order++ };
+                            }),
+                        },
+                    },
+                    test_case: {
+                        createMany: {
+                            data: testCases.map((c) => {
+                                return { code: c };
+                            }),
+                        },
+                    },
+                    examples: {
+                        createMany: {
+                            data: examples,
+                        },
+                    },
+                },
+            })
+            .then(
+                () => {},
+                (r) => {
+                    console.error(
+                        `Failure patching exercise ${exerciseId}: ${r}`,
+                    );
+                    return new Err(404, "Exercise does not exist");
+                },
+            );
+    };
 
     static testExercise = async (
         exerciseId: number,
@@ -340,7 +403,6 @@ export default class ExerciseController {
                         select: {
                             code: true,
                             test_case_id: true,
-                            is_visible: true,
                         },
                     },
                 },
@@ -375,16 +437,11 @@ export default class ExerciseController {
 
         const fails = {
             count: result.length,
-            failed_visible_tests: result.filter(
-                (r) =>
-                    testCases.test_case.find(
-                        (v) => v.test_case_id == r.test_case_id,
-                    )?.is_visible,
-            ),
+            failed_visible_tests: result, // TODO: Transform object maybe
         };
         return new Err(69, fails);
 
-        // TODO: object to return should be total num of errors, and the ID's for the visible ones
+        // TODO: object to return should be total num of errors, and outputs from the failed
     };
 }
 

@@ -392,7 +392,7 @@ CREATE TABLE improved_schema.test_cases (
     test_case_id integer NOT NULL,
     exercise_id integer,
     code text,
-    is_visible boolean
+    --is_visible boolean
 );
 
 

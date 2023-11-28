@@ -151,7 +151,17 @@ routes
     .route(":exercise_id/edit")
     .all([saveExerciseId, roleCheck([Role.TEACHER, Role.TA])])
     .get(async (req, res) => {})
-    .patch(async (req, res) => {});
+    .patch(async (req, res) => {
+        const {
+            hints,
+            test_cases,
+            examples,
+            description,
+            title,
+            points,
+            programming_language,
+        } = req.body;
+    });
 //TODO: Mod exercise (CRUD) hints + test cases + examples (edit-endpoint)
 
 // exercise solutions
