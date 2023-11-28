@@ -391,12 +391,12 @@ ALTER SEQUENCE improved_schema.sessions_session_id_seq OWNED BY improved_schema.
 CREATE TABLE improved_schema.test_cases (
     test_case_id integer NOT NULL,
     exercise_id integer,
-    code text,
+    code text
     --is_visible boolean
 );
 
 
---ALTER TABLE improved_schema.test_cases OWNER TO postgres;
+ALTER TABLE improved_schema.test_cases OWNER TO postgres;
 
 --
 -- TOC entry 229 (class 1259 OID 16600)
