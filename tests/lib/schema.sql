@@ -219,6 +219,25 @@ CREATE TABLE improved_schema.examples (
 
 ALTER TABLE improved_schema.examples OWNER TO postgres;
 
+CREATE SEQUENCE improved_schema.examples_example_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE improved_schema.examples_example_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4904 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: exercise_solutions_exercise_solution_id_seq; Type: SEQUENCE OWNED BY; Schema: improved_schema; Owner: postgres
+--
+
+ALTER SEQUENCE improved_schema.examples_example_id_seq OWNED BY improved_schema.examples.example_id;
+
+
 --
 -- TOC entry 234 (class 1259 OID 16629)
 -- Name: exercise_solutions; Type: TABLE; Schema: improved_schema; Owner: postgres
@@ -495,6 +514,8 @@ ALTER TABLE ONLY improved_schema.courses ALTER COLUMN course_id SET DEFAULT next
 
 ALTER TABLE ONLY improved_schema.enrollments ALTER COLUMN enrollment_id SET DEFAULT nextval('improved_schema.enrollments_enrollment_id_seq'::regclass);
 
+
+ALTER TABLE ONLY improved_schema.examples ALTER COLUMN example_id SET DEFAULT nextval('improved_schema.examples_example_id_seq'::regclass);
 
 --
 -- TOC entry 4692 (class 2604 OID 16632)
