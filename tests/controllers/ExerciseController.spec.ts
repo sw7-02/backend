@@ -104,12 +104,16 @@ describe("ExerciseController testing", function () {
 
     it("Patch exercises: New hints ID", async function () {
         const hints = ["Hint 1", "Hint 2", "Hint 3"];
-        console.log(prisma.exercise.findFirst({ where: { exercise_id: 1 } }));
-        console.log(prisma.hint.findMany());
+        console.log(
+            await prisma.exercise.findFirst({ where: { exercise_id: 1 } }),
+        );
+        console.log(await prisma.hint.findMany());
         const result = await ExerciseController.patchExercise(1, { hints });
 
-        console.log(prisma.exercise.findFirst({ where: { exercise_id: 1 } }));
-        console.log(prisma.hint.findMany());
+        console.log(
+            await prisma.exercise.findFirst({ where: { exercise_id: 1 } }),
+        );
+        console.log(await prisma.hint.findMany());
     });
 
     // TODO: Add/Remove exercise (not in routes, ignored for now in testing)

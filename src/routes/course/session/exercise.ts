@@ -74,6 +74,17 @@ routes
             res.status(code).send(msg);
         } else res.send(result);
     })
+    .patch([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
+        const {
+            hints,
+            test_cases,
+            examples,
+            description,
+            title,
+            points,
+            programming_language,
+        } = req.body; //TODO: Do
+    })
     .delete(
         [roleCheck([Role.TEACHER])],
         async (req: Request, res: Response) => {
