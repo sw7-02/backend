@@ -346,9 +346,9 @@ export default class ExerciseController {
         points: number,
         programmingLanguage: string,
         codeTemplate: string,
-        hints: string[] = [],
-        testCases: string[] = [],
-        examples: _Example[] = [],
+        hints: string[],
+        testCases: string[],
+        examples: _Example[],
     ): Promise<Result<number>> => {
         let order = 1;
         return prisma.exercise
