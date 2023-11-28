@@ -64,11 +64,11 @@ routes.post(
 );
 
 routes
-    .route("/:exercise_id")
+    .route("/:exercise_id") //TODO: Endpoint role check (full if teacher/TA, limited else)
     .all(saveExerciseId)
     .get(async (req: Request, res: Response) => {
         const id: number = +res.locals.exerciseId;
-        const result = await ExerciseController.retrieveExercise(id);
+        const result = await ExerciseController.retrieveExerciseFull(id);
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);

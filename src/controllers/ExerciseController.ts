@@ -14,6 +14,18 @@ type _Exercise = {
     examples: _Example[];
 };
 
+type _ExerciseFull = {
+    exercise_id: number;
+    title: string;
+    description: string;
+    code_template: string;
+    programming_language: string;
+    points: number;
+    hints: string[];
+    examples: _Example[];
+    test_cases: string[];
+};
+
 type _ExerciseSolution = {
     solution: string;
     is_pinned: boolean;
@@ -155,6 +167,75 @@ export default class ExerciseController {
                         points,
                         hints: hints.map((h) => h.description),
                         examples,
+                    };
+                },
+                (r) => {
+                    console.error(
+                        `Failure getting exercise ${exerciseId}: ${r}`,
+                    );
+                    return new Err(404, "Exercise does not exist");
+                },
+            );
+
+    static retrieveExerciseFull = async (
+        exerciseId: number,
+    ): Promise<Result<_ExerciseFull>> =>
+        prisma.exercise
+            .findUniqueOrThrow({
+                where: {
+                    exercise_id: exerciseId,
+                },
+                select: {
+                    exercise_id: true,
+                    title: true,
+                    description: true,
+                    programming_language: true,
+                    code_template: true,
+                    hints: {
+                        select: {
+                            description: true,
+                        },
+                        orderBy: {
+                            order: "asc",
+                        },
+                    },
+                    points: true,
+                    examples: {
+                        select: {
+                            input: true,
+                            output: true,
+                        },
+                    },
+                    test_case: {
+                        select: {
+                            code: true,
+                        },
+                    },
+                },
+            })
+            .then(
+                (res) => {
+                    const {
+                        exercise_id,
+                        title,
+                        description,
+                        programming_language,
+                        hints,
+                        code_template,
+                        points,
+                        examples,
+                        test_case,
+                    } = res;
+                    return {
+                        exercise_id,
+                        title,
+                        description,
+                        programming_language,
+                        code_template,
+                        points,
+                        hints: hints.map((h) => h.description),
+                        examples,
+                        test_cases: test_case.map(t => t.code),
                     };
                 },
                 (r) => {
