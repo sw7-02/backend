@@ -443,10 +443,16 @@ export default class ExerciseController {
                             where: {
                                 exercise_id: exerciseId,
                             },
-                            data:
+
+                            data: {
+                                description: hints?.at(order-1),
+                                order: order++
+                            }
+                            /*
                                 hints?.map((s) => {
                                     return { description: s, order: order++ };
                                 }) ?? [],
+                             */
                         },
                         deleteMany: {
                             exercise_id: exerciseId,
