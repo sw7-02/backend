@@ -135,7 +135,7 @@ model Hint {
 
   exercise Exercise @relation(fields: [exercise_id], references: [exercise_id])
 
-  @@unique([hint_id, order])
+  @@unique([exercise_id, order])
   @@map("hints")
 }
 
