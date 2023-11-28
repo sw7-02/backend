@@ -37,13 +37,13 @@ type _Example = {
     output: string;
 };
 type _Patch = {
-    title: string | undefined;
-    description: string | undefined;
-    programmingLanguage: string | undefined;
-    points: number | undefined;
-    hints: string[];
-    testCases: string[];
-    examples: _Example[];
+    title?: string;
+    description?: string;
+    programmingLanguage?: string;
+    points?: number;
+    hints?: string[];
+    testCases?: string[];
+    examples?: _Example[];
 };
 
 export default class ExerciseController {
@@ -235,7 +235,7 @@ export default class ExerciseController {
                         points,
                         hints: hints.map((h) => h.description),
                         examples,
-                        test_cases: test_case.map(t => t.code),
+                        test_cases: test_case.map((t) => t.code),
                     };
                 },
                 (r) => {
@@ -439,7 +439,7 @@ export default class ExerciseController {
                     points,
                     hints: {
                         createMany: {
-                            data: hints?.map((h) => {
+                            data: hints.map((h) => {
                                 return { description: h, order: order++ };
                             }),
                         },
