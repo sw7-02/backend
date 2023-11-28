@@ -51,7 +51,7 @@ describe("RoleCheck testing", function () {
         assert.equal(
             response.statusMessage,
             "You don't have the authorized role for this action",
-            "Status message not accepted, roleChecker failed to deny student access"
+            "Status message not accepted, roleChecker failed to deny student access",
         );
     });
 
@@ -142,7 +142,7 @@ describe("RoleCheck testing", function () {
         response.locals.course_id = courseId;
 
         let rolecheck = roleCheck(roles);
-        let result = await rolecheck(request, response, nxtFunc);
+        await rolecheck(request, response, nxtFunc);
 
         assert.equal(
             response.statusCode,
@@ -152,7 +152,7 @@ describe("RoleCheck testing", function () {
         assert.equal(
             response.statusMessage,
             "You don't have the authorized role for this action",
-            "Status message not accepted, roleChecker failed to deny teacher access"
+            "Status message not accepted, roleChecker failed to deny teacher access",
         );
     });
 
@@ -189,7 +189,7 @@ describe("RoleCheck testing", function () {
         assert.equal(
             response.statusMessage,
             "You don't have the authorized role for this action",
-            "Status message not accepted, roleChecker failed to deny TA access"
+            "Status message not accepted, roleChecker failed to deny TA access",
         );
     });
 
@@ -226,8 +226,8 @@ describe("RoleCheck testing", function () {
     });
 
     it("Deny access: No enrollment", async function () {
-        let roles = [0,1,2];
-        let username = "user2"
+        let roles = [0, 1, 2];
+        let username = "user2";
         let { user_id: userId } = await prisma.user
             .findFirstOrThrow({
                 where: {
@@ -258,7 +258,7 @@ describe("RoleCheck testing", function () {
         assert.equal(
             response.statusMessage,
             "Enrollment does not exist",
-            "Status message not accepted, roleChecker failed to deny access: No enrollment"
+            "Status message not accepted, roleChecker failed to deny access: No enrollment",
         );
-    })
+    });
 });
