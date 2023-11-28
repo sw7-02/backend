@@ -143,6 +143,23 @@ export async function seed() {
         },
     });
 
+    // Create sample examples
+    const example1 = await prisma.example.create({
+        data: {
+            input: "[1, 2, 3]",
+            output: "6",
+            exercise_id: exercise1.exercise_id,
+        },
+    });
+
+    const example2 = await prisma.example.create({
+        data: {
+            input: "[3, 4, 7]",
+            output: "14",
+            exercise_id: exercise1.exercise_id,
+        },
+    });
+
     // Create sample exercise solutions
     const exerciseSolution1 = await prisma.exerciseSolution.create({
         data: {
