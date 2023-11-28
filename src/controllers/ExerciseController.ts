@@ -427,7 +427,6 @@ export default class ExerciseController {
         }: _Patch,
     ): Promise<Result<void>> => {
         let order = 1;
-        //hints?.reverse()
         return prisma.exercise
             .update({
                 where: {
@@ -439,13 +438,13 @@ export default class ExerciseController {
                     programming_language: programmingLanguage,
                     points,
                     hints: {
-                        deleteMany: {
+                        deleteMany: { // removes additional, if any
                             exercise_id: exerciseId,
                             order: {
-                                gte: hints?.length,
+                                gt: hints?.length,
                             },
                         },
-                        updateMany: {
+                        updateMany: { // updates current
                             where: {
                                 exercise_id: exerciseId,
                             },
@@ -455,7 +454,7 @@ export default class ExerciseController {
                                 order: order++
                             }
                         },
-                        createMany: {
+                        createMany: { // Creates new if needed
                             data:
                                 hints?.slice(order-1).map((h) => {
                                     return { description: h, order: order++ };
