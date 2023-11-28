@@ -48,6 +48,11 @@ describe("RoleCheck testing", function () {
             401,
             "Status code not accepted, roleChecker failed to deny student access",
         );
+        assert.equal(
+            response.statusMessage,
+            "You don't have the authorized role for this action",
+            "Status message not accepted, roleChecker failed to deny student access"
+        );
     });
 
     it("Grant student access", async function () {
@@ -134,15 +139,20 @@ describe("RoleCheck testing", function () {
         );
         validateJWT(request, response, nxtFunc);
 
-        response.locals.course_id = 2;
+        response.locals.course_id = courseId;
 
         let rolecheck = roleCheck(roles);
-        await rolecheck(request, response, nxtFunc);
+        let result = await rolecheck(request, response, nxtFunc);
 
         assert.equal(
             response.statusCode,
             401,
             "Status code not accepted, roleChecker failed to deny teacher access",
+        );
+        assert.equal(
+            response.statusMessage,
+            "You don't have the authorized role for this action",
+            "Status message not accepted, roleChecker failed to deny teacher access"
         );
     });
 
@@ -175,6 +185,11 @@ describe("RoleCheck testing", function () {
             response.statusCode,
             401,
             "Status code not accepted, roleChecker failed to deny TA access",
+        );
+        assert.equal(
+            response.statusMessage,
+            "You don't have the authorized role for this action",
+            "Status message not accepted, roleChecker failed to deny TA access"
         );
     });
 
@@ -209,4 +224,41 @@ describe("RoleCheck testing", function () {
             "Status code not accepted, roleChecker failed to grant TA access",
         );
     });
+
+    it("Deny access: No enrollment", async function () {
+        let roles = [0,1,2];
+        let username = "user2"
+        let { user_id: userId } = await prisma.user
+            .findFirstOrThrow({
+                where: {
+                    username: username,
+                },
+            })
+            .catch(() => assert.fail("Unreachable"));
+
+        request.headers.auth = jwt.sign(
+            { userId, username },
+            config.jwt.secret,
+            {
+                expiresIn: config.jwt.deadline,
+            },
+        );
+        validateJWT(request, response, nxtFunc);
+
+        response.locals.course_id = 2;
+
+        let rolecheck = roleCheck(roles);
+        await rolecheck(request, response, nxtFunc);
+
+        assert.equal(
+            response.statusCode,
+            404,
+            "Status code not accepted, roleChecker failed to deny access: No enrollment",
+        );
+        assert.equal(
+            response.statusMessage,
+            "Enrollment does not exist",
+            "Status message not accepted, roleChecker failed to deny access: No enrollment"
+        );
+    })
 });
