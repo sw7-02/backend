@@ -365,21 +365,21 @@ export default class ExerciseController {
                     code_template: codeTemplate,
                     hints: {
                         createMany: {
-                            data: hints.map((h) => {
+                            data: hints?.map((h) => {
                                 return { description: h, order: order++ };
                             }),
                         },
                     },
                     test_case: {
                         createMany: {
-                            data: testCases.map((c) => {
+                            data: testCases?.map((c) => {
                                 return { code: c };
                             }),
                         },
                     },
                     examples: {
                         createMany: {
-                            data: examples.map(({ input, output }) => {
+                            data: examples?.map(({ input, output }) => {
                                 return { input, output };
                             }),
                         },
@@ -441,21 +441,21 @@ export default class ExerciseController {
                     hints: {
                         //TODO: Change existing (also for other relations)
                         createMany: {
-                            data: hints.map((h) => {
+                            data: hints?.map((h) => {
                                 return { description: h, order: order++ };
-                            }),
+                            }) ?? [],
                         },
                     },
                     test_case: {
                         createMany: {
-                            data: testCases.map((c) => {
+                            data: testCases?.map((c) => {
                                 return { code: c };
-                            }),
+                            }) ?? [],
                         },
                     },
                     examples: {
                         createMany: {
-                            data: examples,
+                            data: examples ?? [],
                         },
                     },
                 },
