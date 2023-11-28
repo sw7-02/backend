@@ -365,21 +365,21 @@ export default class ExerciseController {
                     code_template: codeTemplate,
                     hints: {
                         createMany: {
-                            data: hints?.map((h) => {
+                            data: hints.map((h) => {
                                 return { description: h, order: order++ };
                             }),
                         },
                     },
                     test_case: {
                         createMany: {
-                            data: testCases?.map((c) => {
+                            data: testCases.map((c) => {
                                 return { code: c };
                             }),
                         },
                     },
                     examples: {
                         createMany: {
-                            data: examples?.map(({ input, output }) => {
+                            data: examples.map(({ input, output }) => {
                                 return { input, output };
                             }),
                         },
@@ -420,13 +420,13 @@ export default class ExerciseController {
             hints,
             testCases,
             examples,
-            description = undefined,
-            title = undefined,
-            points = undefined,
-            programmingLanguage = undefined,
+            description,
+            title,
+            points,
+            programmingLanguage,
         }: _Patch,
     ): Promise<Result<void>> => {
-        let order = 1;
+        let hintOrder = 1;
         return prisma.exercise
             .update({
                 where: {
@@ -438,30 +438,40 @@ export default class ExerciseController {
                     programming_language: programmingLanguage,
                     points,
                     hints: {
-                        deleteMany: { // removes additional, if any
+                        deleteMany: {
+                            // removes additional, if any
                             exercise_id: exerciseId,
                             order: {
                                 gt: hints?.length,
                             },
                         },
-                        updateMany: { // updates current
+                        updateMany: {
+                            // updates current
                             where: {
                                 exercise_id: exerciseId,
                             },
 
                             data: {
-                                description: hints?.at(order-1),
-                                order: order++
-                            }
+                                description: hints?.at(hintOrder - 1),
+                                order: hintOrder++,
+                            },
                         },
-                        createMany: { // Creates new if needed
+                        createMany: {
+                            // Creates new if needed
                             data:
-                                hints?.slice(order-1).map((h) => {
-                                    return { description: h, order: order++ };
+                                hints?.slice(hintOrder - 1).map((h) => {
+                                    return {
+                                        description: h,
+                                        order: hintOrder++,
+                                    };
                                 }) ?? [],
                         },
                     },
                     test_case: {
+                        deleteMany: {
+                            // removes additional, if any
+                            exercise_id: exerciseId,
+                        },
                         createMany: {
                             data:
                                 testCases?.map((c) => {
@@ -470,6 +480,10 @@ export default class ExerciseController {
                         },
                     },
                     examples: {
+                        deleteMany: {
+                            // removes additional, if any
+                            exercise_id: exerciseId,
+                        },
                         createMany: {
                             data: examples ?? [],
                         },

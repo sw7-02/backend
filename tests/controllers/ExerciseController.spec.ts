@@ -102,26 +102,44 @@ describe("ExerciseController testing", function () {
         assert.equal((<Err>result).msg, "Exercise does not exist");
     });
 
-    it("Patch exercises: New hints ID", async function () {
+    it("Patch exercises: New hints", async function () {
+        const pre = await prisma.exercise.findFirst({
+            where: { exercise_id: 1 },
+            include: { hints: true },
+        });
+        assert.equal(pre, true);
+        assert.equal(pre!.hints.length, 1);
+        assert.equal(pre!.hints[0].description, "Hint 1 description");
+        assert.equal(pre!.hints[0].order, 1);
+
         const hints = ["Hint 1", "Hint 2", "Hint 3"];
-        console.log(
-            await prisma.exercise.findFirst({ where: { exercise_id: 1 } }),
-        );
-        console.log(await prisma.hint.findMany());
         let result = await ExerciseController.patchExercise(1, { hints });
-        console.log(result);
+        assert.notEqual(result instanceof Err, true);
 
-        console.log(
-            await prisma.exercise.findFirst({ where: { exercise_id: 1 } }),
-        );
-        console.log(await prisma.hint.findMany());
-        result = await ExerciseController.patchExercise(1, { hints: ["only one"] });
-        console.log(result);
+        const post = await prisma.exercise.findFirst({
+            where: { exercise_id: 1 },
+            include: { hints: true },
+        });
+        assert.equal(pre, true);
+        assert.equal(pre!.hints.length, 3);
+        for (let i = 0; i < 3; i++) {
+            assert.equal(pre!.hints[i].description, hints[i]);
+            assert.equal(pre!.hints[i].order, i + 1);
+        }
 
-        console.log(
-            await prisma.exercise.findFirst({ where: { exercise_id: 1 } }),
-        );
-        console.log(await prisma.hint.findMany());
+        result = await ExerciseController.patchExercise(1, {
+            hints: ["only one"],
+        });
+        assert.notEqual(result instanceof Err, true);
+
+        const fix = await prisma.exercise.findFirst({
+            where: { exercise_id: 1 },
+            include: { hints: true },
+        });
+        assert.equal(fix, true);
+        assert.equal(fix!.hints.length, 1);
+        assert.equal(fix!.hints[0].description, "Hint 1 description");
+        assert.equal(fix!.hints[0].order, 1);
     });
 
     // TODO: Add/Remove exercise (not in routes, ignored for now in testing)
