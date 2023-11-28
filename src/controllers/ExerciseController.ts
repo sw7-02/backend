@@ -448,11 +448,6 @@ export default class ExerciseController {
                                 description: hints?.at(order-1),
                                 order: order++
                             }
-                            /*
-                                hints?.map((s) => {
-                                    return { description: s, order: order++ };
-                                }) ?? [],
-                             */
                         },
                         deleteMany: {
                             exercise_id: exerciseId,
@@ -462,7 +457,7 @@ export default class ExerciseController {
                         },
                         createMany: {
                             data:
-                                hints?.slice(order).map((h) => {
+                                hints?.slice(order-1).map((h) => {
                                     return { description: h, order: order++ };
                                 }) ?? [],
                         },
