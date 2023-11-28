@@ -262,4 +262,3 @@ describe("RoleCheck testing", function () {
         );
     });
 });
-
