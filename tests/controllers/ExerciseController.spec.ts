@@ -109,6 +109,7 @@ describe("ExerciseController testing", function () {
         );
         console.log(await prisma.hint.findMany());
         const result = await ExerciseController.patchExercise(1, { hints });
+        console.log(result);
 
         console.log(
             await prisma.exercise.findFirst({ where: { exercise_id: 1 } }),

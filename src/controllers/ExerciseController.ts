@@ -427,6 +427,7 @@ export default class ExerciseController {
         }: _Patch,
     ): Promise<Result<void>> => {
         let order = 1;
+        console.log(hints);
         prisma.exercise
             .update({
                 where: {
