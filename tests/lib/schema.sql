@@ -210,9 +210,9 @@ ALTER SEQUENCE improved_schema.enrollments_enrollment_id_seq OWNED BY improved_s
 --
 
 CREATE TABLE improved_schema.examples (
+    example_id integer NOT NULL,
     input character varying,
     output character varying,
-    example_id bigint NOT NULL,
     exercise_id bigint
 );
 
