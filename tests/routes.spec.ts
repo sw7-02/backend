@@ -4,7 +4,9 @@ const app = require("../src/index");
 
 describe("testing routes", function () {
     it("test route", function (done) {
-        return supertest(app).get("/").expect(200,done);
+        return supertest(app).get("/").expect(200).end(function (err: any){
+            err ? done(err) : done()
+        });
         /*.then((response: { body: unknown }) => {
                 assert.equal(response.body, "u made a GET request");
             });*/
