@@ -19,3 +19,5 @@ app.use("/", routes);
 app.listen(config.server.port, () => {
     console.log(`Server started on port ${config.server.port}!`);
 });
+
+module.exports = app;
