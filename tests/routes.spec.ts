@@ -8,10 +8,10 @@ const app = express();
 describe("testing routes", function () {
     it("test route", function () {
         return request(app)
-            .get("/")
+            .get("/status")
             .expect(200)
             .then((response: { body: unknown }) => {
-                assert.equal(response.body, "U made a GET request");
+                assert.equal(response.body, "Service is running!");
             });
     });
 });
