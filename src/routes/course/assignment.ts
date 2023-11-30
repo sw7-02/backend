@@ -65,9 +65,7 @@ routes.get(
             return;
         }
         const result =
-            await AssignmentController.retrieveAllAssignmentSolutions(
-                id,
-            );
+            await AssignmentController.retrieveAllAssignmentSolutions(id);
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);
