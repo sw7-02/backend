@@ -361,7 +361,7 @@ export default class ExerciseController {
                             session_id: sessionId,
                         },
                     },
-                    title: title ?? "UNREACHABLE",
+                    title: title ?? "UNREACHABLE", //TODO: Error?
                     description: description ?? "Description",
                     points: points ?? 10,
                     programming_language: programmingLanguage ?? "Language",
