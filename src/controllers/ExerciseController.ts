@@ -474,6 +474,7 @@ export default class ExerciseController {
                     }),
                 },
             };
+        console.log(examples?.length);
         if (examples)
             additional.examples = {
                 deleteMany: {

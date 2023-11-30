@@ -6,8 +6,6 @@ import prisma from "../../src/prisma";
 describe("ExerciseController testing", function () {
     it("Retrieve all exercises: Valid session", async function () {
         const result = await ExerciseController.retrieveAllExercises(1);
-        console.log(result);
-        console.log(await prisma.session.findMany());
         assert.notEqual(result instanceof Err, true);
         assert.equal((<[]>result).length, 1);
     });
@@ -20,8 +18,6 @@ describe("ExerciseController testing", function () {
 
     it("Retrieve specific exercise: Valid id", async function () {
         const result = await ExerciseController.retrieveExercise(1);
-        console.log(result);
-        console.log(await prisma.exercise.findMany());
         assert.notEqual(result instanceof Err, true);
         const res = <any>result;
         assert.equal(res.exercise_id, 1);
@@ -207,6 +203,7 @@ describe("ExerciseController testing", function () {
         assert.equal(fix!.hints[0].order, 1);
     });
     it("Patch exercise: New Examples", async function () {
+        console.log(await prisma.example.findMany());
         const pre = await prisma.exercise
             .findFirstOrThrow({
                 where: { exercise_id: 1 },
@@ -224,6 +221,7 @@ describe("ExerciseController testing", function () {
         ];
         let result = await ExerciseController.patchExercise(1, { examples });
         assert.notEqual(result instanceof Err, true);
+        console.log(await prisma.example.findMany());
 
         const post = await prisma.exercise
             .findFirst({
@@ -241,6 +239,7 @@ describe("ExerciseController testing", function () {
             examples: [{ input: "[1, 2, 3]", output: "6" }],
         });
         assert.notEqual(result instanceof Err, true);
+        console.log(await prisma.example.findMany());
 
         const fix = await prisma.exercise
             .findFirst({
