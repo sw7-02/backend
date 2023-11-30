@@ -55,12 +55,6 @@ routes
     .get(genericCourseIdHandler(CourseController.retrieveFullCourse))
     .put([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
         res.send("You have just updated a course (Unimplemented)");
-    })
-    .post([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
-        res.send("You have just created a new session (Unimplemented)");
-    })
-    .delete([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
-        res.send("You have just updated a course (Unimplemented)");
     });
 
 export default routes;

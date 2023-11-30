@@ -5,7 +5,7 @@ import { Err } from "../../src/lib";
 import prisma from "../../src/prisma";
 
 describe("AssignmentController testing", function () {
-    it("Retrieve all assignments: Valid session", async function () {
+    it("Retrieve all assignments: Valid Course ID", async function () {
         const result = await AssignmentController.retrieveAllAssignments(1);
         assert.notEqual(result instanceof Err, true);
         const res = <any[]>result;
@@ -17,7 +17,7 @@ describe("AssignmentController testing", function () {
             new Date("2023-12-21").toString(),
         );
     });
-    it("Retrieve all assignments: Invalid session", async function () {
+    it("Retrieve all assignments: Invalid Course ID", async function () {
         const result = await AssignmentController.retrieveAllAssignments(1000);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
@@ -46,7 +46,7 @@ describe("AssignmentController testing", function () {
     });
 
     it("Submit assignment: New", async function () {
-        const result = await AssignmentController.submitAssignementSolution(
+        const result = await AssignmentController.submitAssignmentSolution(
             1,
             2,
             "solution from user2",
@@ -54,7 +54,7 @@ describe("AssignmentController testing", function () {
         assert.notEqual(result instanceof Err, true);
     });
     it("Submit assignment: Invalid Assignment id", async function () {
-        const result = await AssignmentController.submitAssignementSolution(
+        const result = await AssignmentController.submitAssignmentSolution(
             1000,
             1,
             "solution from user1",
@@ -64,7 +64,7 @@ describe("AssignmentController testing", function () {
         assert.equal((<Err>result).msg, "User or Assignment doesn't exist");
     });
     it("Submit assignment: Invalid User id", async function () {
-        const result = await AssignmentController.submitAssignementSolution(
+        const result = await AssignmentController.submitAssignmentSolution(
             1,
             1000,
             "solution from user1000",
@@ -74,7 +74,7 @@ describe("AssignmentController testing", function () {
         assert.equal((<Err>result).msg, "User or Assignment doesn't exist");
     });
     it("Submit assignment: Override", async function () {
-        const result = await AssignmentController.submitAssignementSolution(
+        const result = await AssignmentController.submitAssignmentSolution(
             1,
             1,
             "solution from user1",
