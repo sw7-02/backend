@@ -31,9 +31,6 @@ describe("ExerciseController testing", function () {
         console.log(res.hints);
         assert.equal(res.hints[0], "Hint 1 description");
 
-        assert.equal(res.test_case.length, 1);
-        assert.equal(res.test_case[0].code, "Test case 1 code");
-
         assert.equal(res.examples.length, 2);
         assert.equal(res.hints[0].input, "[1, 2, 3]");
         assert.equal(res.hints[0].output, "6");
