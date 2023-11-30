@@ -1,8 +1,34 @@
 import * as assert from "assert";
 import CourseController from "../../src/controllers/CourseController";
 import { Err, Role } from "../../src/lib";
+import prisma from "../../src/prisma";
 
 describe("ExerciseController testing", function () {
+    it("Create course: Valid title", async function () {
+        const result = await CourseController.createCourse("Course 2");
+        assert.notEqual(result instanceof Err, true);
+        assert.equal(<number>result, 2);
+        await prisma.course
+            .findUniqueOrThrow({ where: { course_id: 2 } })
+            .catch(() => assert.fail("course not created"));
+    });
+
+    it("Delete course: Valid ID", async function () {
+        const result = await CourseController.deleteCourse(2);
+        assert.notEqual(result instanceof Err, true);
+        await prisma.course.findUniqueOrThrow({ where: { course_id: 2 } }).then(
+            () => assert.fail("course still exist"),
+            () => {},
+        );
+        assert.equal((await prisma.course.findMany()).length, 1);
+    });
+    it("Delete course: Invalid ID", async function () {
+        const result = await CourseController.deleteCourse(1000);
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 500);
+        assert.equal((<Err>result).msg, "Failed deleting course");
+    });
+
     it("Retrieve course: Valid ID", async function () {
         const result = await CourseController.retrieveCourse(1);
         assert.notEqual(result instanceof Err, true);

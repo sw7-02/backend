@@ -36,11 +36,17 @@ routes
         } else res.send(result);
     })
     .post((req: Request, res: Response) => {
-        // TODO: Is teacher check
-        res.send("You added a new course (Unimplemented)");
-    })
-    .delete((req: Request, res: Response) => {
-        res.send("You deleted a course (Unimplemented)");
+        //TODO: Is-teacher
+        const title: string = req.body.title;
+        if (!title) {
+            res.status(400).send("No valid title provided");
+            return;
+        }
+        const result = CourseController.createCourse(title);
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send(result);
     });
 
 routes.get(
@@ -97,6 +103,15 @@ routes
     .get(genericCourseIdHandler(CourseController.retrieveFullCourse))
     .put([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
         res.send("You have just updated a course (Unimplemented)");
+    })
+    .delete((req: Request, res: Response) => {
+        //TODO: Is_Teacher check
+        const courseId = +res.locals.courseId;
+        const result = CourseController.deleteCourse(courseId);
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send(result);
     });
 
 export default routes;
