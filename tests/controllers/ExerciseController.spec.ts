@@ -28,6 +28,7 @@ describe("ExerciseController testing", function () {
         assert.equal(res.code_template, "Your code template here");
 
         assert.equal(res.hints.length, 1);
+        console.log(res.hints);
         assert.equal(res.hints[0].description, "Hint 1 description");
         assert.equal(res.hints[0].order, 1);
 
