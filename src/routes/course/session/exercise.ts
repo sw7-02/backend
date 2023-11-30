@@ -69,6 +69,14 @@ routes
         } else res.send(result);
     })
     .patch([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
+        const id: number = +res.locals.exerciseId;
+        const result = await ExerciseController.patchExercise(id, req.body);
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send(result);
+    })
+    .put(async (req: Request, res: Response) => {
         const {
             hints,
             test_cases,
@@ -78,9 +86,29 @@ routes
             points,
             code_template,
             programming_language,
-        } = req.body; //TODO: Do
+        } = req.body;
+        if (
+            !(
+                hints &&
+                test_cases &&
+                examples &&
+                description &&
+                title &&
+                points &&
+                code_template &&
+                programming_language
+            )
+        ) {
+            res.status(400).send("Not all needed parameters provided");
+            return;
+        }
+        const id: number = +res.locals.exerciseId;
+        const result = await ExerciseController.patchExercise(id, req.body);
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send(result);
     })
-    //TODO: Put (All fields needed)
     .delete(
         [roleCheck([Role.TEACHER])],
         async (req: Request, res: Response) => {
