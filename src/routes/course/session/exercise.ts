@@ -201,26 +201,8 @@ routes.get(
     saveExerciseId,
     async (req: Request, res: Response) => {
         const exerciseId: number = +res.locals.exerciseId;
-
         const userId = res.locals.jwtPayload.userId;
-
-        const role = await prisma.enrollment
-            .findUnique({
-                where: {
-                    user_id_course_id: {
-                        user_id: userId,
-                        course_id: res.locals.courseId,
-                    },
-                },
-                select: {
-                    user_role: true,
-                },
-            })
-            .then((r) => r?.user_role);
-        if (!role) {
-            res.status(500).send("Internal error");
-            return;
-        }
+        const role = +res.locals.userRole;
 
         if (![Role.TEACHER, Role.TA].includes(role)) {
             const hasSubmitted = await prisma.exerciseSolution

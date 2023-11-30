@@ -28,7 +28,6 @@ describe("ExerciseController testing", function () {
         assert.equal(res.code_template, "Your code template here");
 
         assert.equal(res.hints.length, 1);
-        console.log(res.hints);
         assert.equal(res.hints[0], "Hint 1 description");
 
         assert.equal(res.examples.length, 2);
@@ -156,7 +155,6 @@ describe("ExerciseController testing", function () {
         const fix = await prisma.exercise
             .findFirst({
                 where: { exercise_id: 1 },
-                include: { hints: true },
             })
             .catch(() => assert.fail("Exercise gone"));
 
