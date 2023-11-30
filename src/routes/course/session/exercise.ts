@@ -1,4 +1,4 @@
-import Router, { NextFunction, Request, Response } from "express";
+import Router, { Request, Response } from "express";
 import ExerciseController from "../../../controllers/ExerciseController";
 import { Err, Role } from "../../../lib";
 import CourseController from "../../../controllers/CourseController";
@@ -25,7 +25,6 @@ routes
         } else res.send(result);
     })
     .post([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
-        //TODO: Adding hints and/or test cases? Only create and then use '/edit'?
         const {
             title,
             description,
@@ -55,7 +54,7 @@ routes
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);
-        } else res.send(result);
+        } else res.status(200).send({exercise_id: result});
     });
 
 routes
