@@ -53,7 +53,7 @@ routes
     .route("/:course_id/leaderboard/anonymity")
     .get([enrollmentCheck], async (req: Request, res: Response) => {
         const userId = +res.locals.jwtPayload.userId;
-        const courseId = +res.locals.jwtPayload.courseId;
+        const courseId = +res.locals.courseId;
         const result = await CourseController.getAnonymity(userId, courseId);
         if (result instanceof Err) {
             const { code, msg } = result;
@@ -62,7 +62,7 @@ routes
     })
     .post([enrollmentCheck], async (req: Request, res: Response) => {
         const userId = +res.locals.jwtPayload.userId;
-        const courseId = +res.locals.jwtPayload.courseId;
+        const courseId = +res.locals.courseId;
         const { anonymity } = req.body;
         if (anonymity === undefined) {
             res.status(400).send("Body missing 'anonymity'");
