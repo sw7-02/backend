@@ -341,14 +341,16 @@ export default class ExerciseController {
 
     static addExercise = async (
         sessionId: number,
-        title: string,
-        description: string,
-        points: number,
-        programmingLanguage: string,
-        codeTemplate: string,
-        hints: string[],
-        testCases: string[],
-        examples: _Example[],
+        {
+            title,
+            description,
+            points,
+            programmingLanguage,
+            codeTemplate,
+            hints,
+            testCases,
+            examples,
+        }: _Patch
     ): Promise<Result<number>> => {
         let order = 1;
         return prisma.exercise
@@ -359,30 +361,30 @@ export default class ExerciseController {
                             session_id: sessionId,
                         },
                     },
-                    title,
-                    description,
-                    points,
-                    programming_language: programmingLanguage,
-                    code_template: codeTemplate,
+                    title: title ?? "UNREACHABLE",
+                    description: description ?? "Description",
+                    points: points ?? 10,
+                    programming_language: programmingLanguage ?? "Language",
+                    code_template: codeTemplate ?? "Code template",
                     hints: {
                         createMany: {
-                            data: hints.map((h) => {
+                            data: hints?.map((h) => {
                                 return { description: h, order: order++ };
-                            }),
+                            }) ?? [],
                         },
                     },
                     test_case: {
                         createMany: {
-                            data: testCases.map((c) => {
+                            data: testCases?.map((c) => {
                                 return { code: c };
-                            }),
+                            }) ?? [],
                         },
                     },
                     examples: {
                         createMany: {
-                            data: examples.map(({ input, output }) => {
+                            data: examples?.map(({ input, output }) => {
                                 return { input, output };
-                            }),
+                            }) ?? [],
                         },
                     },
                 },
