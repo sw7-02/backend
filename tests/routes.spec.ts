@@ -1,6 +1,5 @@
-import supertest from "supertest"
-import assert from "assert"
-
+import supertest from "supertest";
+import assert from "assert";
 
 const app = require("../src/index");
 
