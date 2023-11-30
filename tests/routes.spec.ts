@@ -6,7 +6,8 @@ describe("testing routes", function () {
     it("test route", function (done) {
         supertest(app)
             .get("/")
-            .end(function (err: any) {
+            .expect(200)
+            .end(function (err: any, res:Response) {
                 if (err instanceof Error) done(err);
                 done();
             }); //.expect(200).end(done());
