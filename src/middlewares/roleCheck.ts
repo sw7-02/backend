@@ -37,4 +37,4 @@ export default function roleCheck(roles: number[]) {
     };
 }
 
-export  isTeacher = async(req: Request, res: Response, next: NextFunction) => res.locals.isTeacher;
+export const isTeacher = async(req: Request, res: Response, next: NextFunction) => res.locals.isTeacher;
