@@ -385,8 +385,8 @@ describe("ExerciseController testing", function () {
             null,
         );
         assert.equal(
-            await prisma.hint.findMany({ where: { exercise_id: id } }),
-            [],
+            (await prisma.hint.findMany({ where: { exercise_id: id } })).length,
+            0,
         );
         assert.equal(
             await prisma.example.findMany({ where: { exercise_id: id } }),
@@ -423,6 +423,5 @@ describe("ExerciseController testing", function () {
         assert.equal((<Err>result).msg, "Exercise does not exist");
     });
 
-    // TODO: Remove exercise
     // TODO: Test runner
 });

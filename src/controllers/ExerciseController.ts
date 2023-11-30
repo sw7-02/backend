@@ -353,6 +353,8 @@ export default class ExerciseController {
         }: _Patch,
     ): Promise<Result<number>> => {
         let order = 1;
+        if (!title)
+            return new Err (400, "No title supplied");
         return prisma.exercise
             .create({
                 data: {
@@ -361,7 +363,7 @@ export default class ExerciseController {
                             session_id: sessionId,
                         },
                     },
-                    title: title ?? "UNREACHABLE", //TODO: Error?
+                    title: title,
                     description: description ?? "Description",
                     points: points ?? 10,
                     programming_language: programmingLanguage ?? "Language",
