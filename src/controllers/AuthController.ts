@@ -93,15 +93,10 @@ export default class AuthController {
         username: string,
         password: string,
     ): Promise<Result<AuthRes>> => {
-        function valid(username: string) {
-            const trimmed = username.trim();
-            return (
-                !trimmed &&
-                username === trimmed &&
-                !numberRegEx.test(username.charAt(0)) &&
-                !specialCharRegEx.test(username)
-            );
-        }
+        const valid = (username: string) =>
+            username === username.trim() &&
+            !numberRegEx.test(username.charAt(0)) &&
+            !specialCharRegEx.test(username);
 
         if (!valid(username)) return new Err(406, "Username invalid");
         return prisma.user
