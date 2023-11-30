@@ -7,7 +7,7 @@ describe("testing routes", function () {
         supertest(app)
             .get("/")
             .expect(200)
-            .end(function (err: any, res:Response) {
+            .end(function (err: any, res: Response) {
                 if (err instanceof Error) done(err);
                 done();
             }); //.expect(200).end(done());
@@ -15,5 +15,6 @@ describe("testing routes", function () {
         /*.then((response: { body: unknown }) => {
                 assert.equal(response.body, "u made a GET request");
             });*/
+        done();
     });
 });
