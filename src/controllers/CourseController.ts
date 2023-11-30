@@ -227,7 +227,7 @@ export default class CourseController {
                             user: {
                                 select: {
                                     username: true,
-                                    //TODO: Anon?
+                                    is_anonymous: true,
                                 },
                             },
                         },
@@ -249,7 +249,7 @@ export default class CourseController {
                     return res.enrollments.map((r) => {
                         return {
                             total_points: r.total_points!!,
-                            username: r.user.username,
+                            username: r.is_anonymous ? "Anonymous" : r.user.username,
                         };
                     });
                 },
