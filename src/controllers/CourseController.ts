@@ -211,6 +211,7 @@ export default class CourseController {
 
     static retrieveLeaderboard = async (
         courseId: number,
+        userId: number,
     ): Promise<Result<_Leaderboard>> =>
         prisma.course
             .findUniqueOrThrow({
@@ -225,6 +226,7 @@ export default class CourseController {
                         select: {
                             total_points: true,
                             is_anonymous: true,
+                            user_id: true,
                             user: {
                                 select: {
                                     username: true,
@@ -250,7 +252,8 @@ export default class CourseController {
                         return {
                             total_points: r.total_points!!,
                             username: r.is_anonymous
-                                ? "Anonymous"
+                                ? "Anonymous" +
+                                  (r.user_id === userId ? " (you)" : "")
                                 : r.user.username,
                         };
                     });
