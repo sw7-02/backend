@@ -208,11 +208,11 @@ describe("ExerciseController testing", function () {
         await CourseController.setAnonymity(1, 1, true);
         let result = await CourseController.getAnonymity(1, 1);
         assert.notEqual(result instanceof Err, true);
-        assert.equal((<any>result).is_anonymous, false);
-        await CourseController.setAnonymity(1, 1, true);
+        assert.equal((<any>result).is_anonymous, true);
+        await CourseController.setAnonymity(1, 1, false);
         result = await CourseController.getAnonymity(1, 1);
         assert.notEqual(result instanceof Err, true);
-        assert.equal((<any>result).is_anonymous, true);
+        assert.equal((<any>result).is_anonymous, false);
     });
     it("Set Anonymity: Invalid User ID", async function () {
         const result = await CourseController.setAnonymity(1000, 1, true);
@@ -220,7 +220,7 @@ describe("ExerciseController testing", function () {
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "Course or User does not exist");
     });
-    it("Get Anonymity: Invalid Course ID", async function () {
+    it("Set Anonymity: Invalid Course ID", async function () {
         const result = await CourseController.setAnonymity(1, 1000, true);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
