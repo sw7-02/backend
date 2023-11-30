@@ -124,7 +124,7 @@ describe("ExerciseController testing", function () {
             title: "1",
             description: "Description 1",
             points: 1,
-            programmingLanguage: "Java",
+            programmingLanguage: " Java",
             codeTemplate: "template ",
         });
         assert.notEqual(result instanceof Err, true);
@@ -141,7 +141,7 @@ describe("ExerciseController testing", function () {
         assert.equal(post!.description, "Description 1");
         assert.equal(post!.points, 1);
         assert.equal(post!.programming_language, "Java");
-        assert.equal(post!.code_template, "template ");
+        assert.equal(post!.code_template, "template");
 
         result = await ExerciseController.patchExercise(1, {
             title: "Exercise 1",
