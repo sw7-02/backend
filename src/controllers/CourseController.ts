@@ -217,17 +217,17 @@ export default class CourseController {
                 where: {
                     course_id: courseId,
                 },
-                select: {
+                include: {
                     enrollments: {
                         where: {
                             user_role: Role.STUDENT,
                         },
                         select: {
                             total_points: true,
+                            is_anonymous: true,
                             user: {
                                 select: {
                                     username: true,
-                                    //TODO: Anon?
                                 },
                             },
                         },
@@ -249,7 +249,9 @@ export default class CourseController {
                     return res.enrollments.map((r) => {
                         return {
                             total_points: r.total_points!!,
-                            username: r.user.username,
+                            username: r.is_anonymous
+                                ? "Anonymous"
+                                : r.user.username,
                         };
                     });
                 },
@@ -365,6 +367,50 @@ export default class CourseController {
                 (reason) => {
                     console.error(`Failed deleting session: ${reason}`);
                     return new Err(500, "Failed deleting session");
+                },
+            );
+    static getAnonymity = async (
+        userId: number,
+        courseId: number,
+    ): Promise<Result<{ is_anonymous: boolean }>> =>
+        prisma.enrollment
+            .findUniqueOrThrow({
+                where: {
+                    user_id_course_id: {
+                        course_id: courseId,
+                        user_id: userId,
+                    },
+                },
+                select: {
+                    is_anonymous: true,
+                },
+            })
+            .catch((reason) => {
+                console.error(`Failed finding anonymity: ${reason}`);
+                return new Err(404, "Course or User does not exist");
+            });
+    static setAnonymity = async (
+        userId: number,
+        courseId: number,
+        anon: boolean,
+    ): Promise<Result<void>> =>
+        prisma.enrollment
+            .update({
+                where: {
+                    user_id_course_id: {
+                        course_id: courseId,
+                        user_id: userId,
+                    },
+                },
+                data: {
+                    is_anonymous: anon,
+                },
+            })
+            .then(
+                () => {},
+                (reason) => {
+                    console.error(`Failed setting anonymity: ${reason}`);
+                    return new Err(404, "Course or User does not exist");
                 },
             );
 }
