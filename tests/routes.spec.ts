@@ -6,7 +6,7 @@ const app = require("../src/index");
 describe("testing routes", function () {
     it("test route", async function (done) {
         this.timeout(10000);
-        let res = supertest(app)
+        await supertest(app)
             .get("/")
             .then((res) => {
                 console.log(`right before assert status, ${res.status}`);
