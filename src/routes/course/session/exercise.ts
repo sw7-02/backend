@@ -36,20 +36,21 @@ routes
             examples,
             hints,
         } = req.body;
-        if (!title) {
+        if (!req.body.title) {
             res.status(400).send("Title not provided provided");
             return;
         }
         const result = await ExerciseController.addExercise(
             res.locals.sessionId,
+            {
             title,
             description,
             points,
-            programming_language,
-            code_template,
+            programmingLanguage: programming_language,
+            codeTemplate: code_template,
             hints,
-            test_cases,
-            examples,
+            testCases: test_cases,
+            examples,}
         );
         if (result instanceof Err) {
             const { code, msg } = result;
