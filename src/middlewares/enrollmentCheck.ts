@@ -1,7 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import * as jwt from "jsonwebtoken";
-import config from "../config";
-import { generateJWTToken } from "../lib";
 import prisma from "../prisma";
 
 /// Checks given JWT in the header of the requests, serves a new with a deadline of the provided config
@@ -29,10 +26,10 @@ export default async function enrollmentCheck(
         include: {
             user: {
                 select: {
-                    is_teacher: true
-                }
-            }
-        }
+                    is_teacher: true,
+                },
+            },
+        },
     });
 
     if (r) {

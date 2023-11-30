@@ -101,7 +101,17 @@ routes
     .all(enrollmentCheck)
     .get(genericCourseIdHandler(CourseController.retrieveFullCourse))
     .put([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
-        res.send("You have just updated a course (Unimplemented)");
+        const title: string = req.body.title;
+        if (!title) {
+            res.status(400).send("No valid title provided");
+            return;
+        }
+        const courseId = +res.locals.courseId;
+        const result = CourseController.renameCourse(courseId, title);
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send(result);
     })
     .delete([isTeacher], (req: Request, res: Response) => {
         const courseId = +res.locals.courseId;

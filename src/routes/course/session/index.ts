@@ -4,7 +4,7 @@ import { Err, Role } from "../../../lib";
 import roleCheck from "../../../middlewares/roleCheck";
 import CourseController from "../../../controllers/CourseController";
 import { saveSessionId } from "../../../middlewares/savings";
-import ExerciseController from "../../../controllers/ExerciseController";
+import SessionController from "../../../controllers/SessionController";
 
 const routes = Router();
 
@@ -28,20 +28,20 @@ routes
             res.status(400).send("Bad request body");
             return;
         }
-        const result = await CourseController.insertSessionFromCourse(
+        const result = await SessionController.insertSessionFromCourse(
             res.locals.courseId,
             title,
         );
         if (result instanceof Err) {
             res.status(result.code).send(result.msg);
         } else res.send(result);
-    }); // TODO: Rename session
+    });
 
 routes
     .route("/:session_id")
     .all(saveSessionId)
     .get(async (req: Request, res: Response) => {
-        const result = await CourseController.retrieveSessionFromCourse(
+        const result = await SessionController.retrieveSessionFromCourse(
             res.locals.sessionId,
         );
         if (result instanceof Err) {
@@ -51,13 +51,27 @@ routes
     .delete(
         [roleCheck([Role.TEACHER])],
         async (req: Request, res: Response) => {
-            const result = await CourseController.deleteSessionFromCourse(
+            const result = await SessionController.deleteSessionFromCourse(
                 res.locals.sessionId,
             );
             if (result instanceof Err) {
                 res.status(result.code).send(result.msg);
             } else res.send(result);
         },
-    );
+    )
+    .put([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
+        const { title } = req.body;
+        if (!title) {
+            res.status(400).send("Bad request body");
+            return;
+        }
+        const result = await SessionController.renameSessionFromCourse(
+            res.locals.sessionId,
+            title,
+        );
+        if (result instanceof Err) {
+            res.status(result.code).send(result.msg);
+        } else res.send(result);
+    });
 
 export default routes;
