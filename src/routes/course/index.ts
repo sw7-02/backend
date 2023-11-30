@@ -46,7 +46,15 @@ routes
 routes.get(
     "/:course_id/leaderboard",
     [enrollmentCheck],
-    genericCourseIdHandler(CourseController.retrieveLeaderboard),
+    async (req: Request, res: Response) => {
+        const userId = +res.locals.jwtPayload.userId;
+        const courseId = +res.locals.courseId;
+        const result = await CourseController.retrieveLeaderboard(courseId, userId);
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send(result)
+    }
 );
 
 routes
