@@ -6,8 +6,8 @@ describe("testing routes", function () {
     it("test route", async function (done) {
         const res = await supertest(app)
             .get("/")
-            .end((err: Error, res: any) => {
-                if (err) done(err);
+            .end((err: any, res: any) => {
+                if (err instanceof Error) done(err);
                 done();
             }); //.expect(200).end(done());
         //assert.equal(res.status, 200);
