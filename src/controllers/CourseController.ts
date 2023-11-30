@@ -48,7 +48,7 @@ export default class CourseController {
         prisma.course
             .create({
                 data: {
-                    title,
+                    title: title.trim(),
                 },
             })
             .then(
@@ -85,7 +85,7 @@ export default class CourseController {
                     course_id: courseId,
                 },
                 data: {
-                    title: newTitle,
+                    title: newTitle.trim(),
                 },
             })
             .then(

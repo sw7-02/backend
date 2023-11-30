@@ -30,7 +30,7 @@ routes
         }
         const result = await SessionController.insertSessionFromCourse(
             res.locals.courseId,
-            title.trim(),
+            title,
         );
         if (result instanceof Err) {
             res.status(result.code).send(result.msg);
@@ -67,7 +67,7 @@ routes
         }
         const result = await SessionController.renameSessionFromCourse(
             res.locals.sessionId,
-            title.trim(),
+            title,
         );
         if (result instanceof Err) {
             res.status(result.code).send(result.msg);

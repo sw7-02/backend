@@ -362,16 +362,20 @@ export default class ExerciseController {
                             session_id: sessionId,
                         },
                     },
-                    title: title,
-                    description: description ?? "Description",
+                    title: title.trim(),
+                    description: description?.trim() ?? "Description",
                     points: points ?? 10,
-                    programming_language: programmingLanguage ?? "Language",
-                    code_template: codeTemplate ?? "Code template",
+                    programming_language:
+                        programmingLanguage?.trim() ?? "Language",
+                    code_template: codeTemplate?.trim() ?? "Code template",
                     hints: {
                         createMany: {
                             data:
                                 hints?.map((h) => {
-                                    return { description: h, order: order++ };
+                                    return {
+                                        description: h.trim(),
+                                        order: order++,
+                                    };
                                 }) ?? [],
                         },
                     },
@@ -379,7 +383,7 @@ export default class ExerciseController {
                         createMany: {
                             data:
                                 testCases?.map((c) => {
-                                    return { code: c };
+                                    return { code: c.trim() };
                                 }) ?? [],
                         },
                     },
@@ -387,7 +391,10 @@ export default class ExerciseController {
                         createMany: {
                             data:
                                 examples?.map(({ input, output }) => {
-                                    return { input, output };
+                                    return {
+                                        input: input.trim(),
+                                        output: output.trim(),
+                                    };
                                 }) ?? [],
                         },
                     },
@@ -472,7 +479,7 @@ export default class ExerciseController {
                     // Creates new if needed
                     data: hints.slice(hintOrder - 1).map((h) => {
                         return {
-                            description: h,
+                            description: h.trim(),
                             order: hintOrder++,
                         };
                     }),
@@ -486,7 +493,7 @@ export default class ExerciseController {
                 },
                 createMany: {
                     data: testCases.map((c) => {
-                        return { code: c };
+                        return { code: c.trim() };
                     }),
                 },
             };
@@ -497,7 +504,12 @@ export default class ExerciseController {
                     exercise_id: exerciseId,
                 },
                 createMany: {
-                    data: examples,
+                    data: examples.map((io) => {
+                        return {
+                            input: io.input.trim(),
+                            output: io.output.trim(),
+                        };
+                    }),
                 },
             };
 
@@ -507,10 +519,10 @@ export default class ExerciseController {
                     exercise_id: exerciseId,
                 },
                 data: {
-                    title,
-                    description,
-                    programming_language: programmingLanguage,
-                    code_template: codeTemplate,
+                    title: title?.trim(),
+                    description: description?.trim(),
+                    programming_language: programmingLanguage?.trim(),
+                    code_template: codeTemplate?.trim(),
                     points,
                     hints: additional.hints,
                     test_case: additional.test_case,
@@ -560,7 +572,7 @@ export default class ExerciseController {
         if (testCases instanceof Err) return testCases;
 
         const data: Test = {
-            code: solution,
+            code: solution.trim(),
             language: testCases.programming_language,
             test_cases: testCases.test_case.map((tc) => {
                 const { test_case_id, code } = tc;

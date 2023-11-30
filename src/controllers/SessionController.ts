@@ -37,7 +37,7 @@ export default class SessionController {
         prisma.session
             .create({
                 data: {
-                    title,
+                    title: title.trim(),
                     course: {
                         connect: {
                             course_id: courseId,
@@ -85,7 +85,7 @@ export default class SessionController {
                     session_id: sessionId,
                 },
                 data: {
-                    title: newTitle,
+                    title: newTitle.trim(),
                 },
             })
             .then(
