@@ -95,7 +95,10 @@ routes
             { val: req.body.title, name: "title" },
             { val: req.body.points, name: "points" },
             { val: req.body.code_template, name: "code template" },
-            { val: req.body.programming_language, name: "programming language" },
+            {
+                val: req.body.programming_language,
+                name: "programming language",
+            },
         ]
             .filter((c) => c.val === undefined)
             .map((c) => c.name);
@@ -106,7 +109,11 @@ routes
             return;
         }
         const id: number = +res.locals.exerciseId;
-        const result = await ExerciseController.patchExercise(id, req.body);
+        const result = await ExerciseController.patchExercise(id, {
+            programmingLanguage: req.body.programming_language,
+            codeTemplate: req.body.code_template,
+            ...req.body,
+        });
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);
