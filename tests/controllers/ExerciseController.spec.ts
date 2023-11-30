@@ -305,7 +305,7 @@ describe("ExerciseController testing", function () {
             title: "Exercise 2",
         });
         assert.notEqual(result instanceof Err, true);
-        assert.equal(result, 2);
+        assert.equal((<any>result).exercise_id, 2);
         const ex = await prisma.exercise
             .findUniqueOrThrow({
                 where: {
@@ -335,7 +335,7 @@ describe("ExerciseController testing", function () {
             testCases: ["test"],
         });
         assert.notEqual(result instanceof Err, true);
-        assert.equal(result, 3);
+        assert.equal((<any>result).exercise_id, 3);
         const ex = await prisma.exercise
             .findUniqueOrThrow({
                 where: {
