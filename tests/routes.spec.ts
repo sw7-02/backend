@@ -16,8 +16,8 @@ describe("testing routes", function () {
             console.log(`res == Error: ${res}`);
             return done(res);
         }
-        console.log(`right before assert, ${res.status}`);
-        console.log(`right before assert, ${res.body}`);
+        console.log(`right before assert status, ${res.status}`);
+        console.log(`right before assert body, ${res.body}`);
         assert.equal(res.status, 200);
     });
 });
