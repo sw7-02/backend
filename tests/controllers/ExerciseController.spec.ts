@@ -29,17 +29,13 @@ describe("ExerciseController testing", function () {
 
         assert.equal(res.hints.length, 1);
         console.log(res.hints);
-        assert.equal(res.hints[0].description, "Hint 1 description");
-        assert.equal(res.hints[0].order, 1);
-
-        assert.equal(res.test_case.length, 1);
-        assert.equal(res.test_case[0].code, "Test case 1 code");
+        assert.equal(res.hints[0], "Hint 1 description");
 
         assert.equal(res.examples.length, 2);
-        assert.equal(res.hints[0].input, "[1, 2, 3]");
-        assert.equal(res.hints[0].output, "6");
-        assert.equal(res.hints[1].input, "[3, 4, 7]");
-        assert.equal(res.hints[1].output, "14");
+        assert.equal(res.examples[0].input, "[1, 2, 3]");
+        assert.equal(res.examples[0].output, "6");
+        assert.equal(res.examples[1].input, "[3, 4, 7]");
+        assert.equal(res.examples[1].output, "14");
     });
     it("Retrieve specific exercise: Invalid id", async function () {
         const result = await ExerciseController.retrieveExercise(1000);
@@ -216,7 +212,6 @@ describe("ExerciseController testing", function () {
         assert.equal(fix!.hints[0].order, 1);
     });
     it("Patch exercise: New Examples", async function () {
-        console.log(await prisma.example.findMany());
         const pre = await prisma.exercise
             .findFirstOrThrow({
                 where: { exercise_id: 1 },
@@ -236,7 +231,6 @@ describe("ExerciseController testing", function () {
         ];
         let result = await ExerciseController.patchExercise(1, { examples });
         assert.notEqual(result instanceof Err, true);
-        console.log(await prisma.example.findMany());
 
         const post = await prisma.exercise
             .findFirst({
@@ -257,7 +251,6 @@ describe("ExerciseController testing", function () {
             ],
         });
         assert.notEqual(result instanceof Err, true);
-        console.log(await prisma.example.findMany());
 
         const fix = await prisma.exercise
             .findFirst({

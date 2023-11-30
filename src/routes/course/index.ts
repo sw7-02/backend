@@ -38,6 +38,9 @@ routes
     .post((req: Request, res: Response) => {
         // TODO: Is teacher check
         res.send("You added a new course (Unimplemented)");
+    })
+    .delete((req: Request, res: Response) => {
+        res.send("You deleted a course (Unimplemented)");
     });
 
 routes.get(
@@ -51,12 +54,6 @@ routes
     .all(enrollmentCheck)
     .get(genericCourseIdHandler(CourseController.retrieveFullCourse))
     .put([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
-        res.send("You have just updated a course (Unimplemented)");
-    })
-    .post([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
-        res.send("You have just created a new session (Unimplemented)");
-    })
-    .delete([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
         res.send("You have just updated a course (Unimplemented)");
     });
 

@@ -12,25 +12,16 @@ const routes = Router();
 routes.use(Router.json());
 routes.use("/:session_id/exercise", saveSessionId, exercise);
 
-routes.get("/", async (req: Request, res: Response) => {
-    const result = await CourseController.retrieveCourse(res.locals.courseId);
-    if (result instanceof Err) {
-        res.status(result.code).send(result.msg);
-    } else res.send(result.sessions);
-});
-
 routes
-    .route("/:session_id")
-    .all(saveSessionId)
+    .route("/")
     .get(async (req: Request, res: Response) => {
-        const result = await CourseController.retrieveSessionFromCourse(
-            res.locals.sessionId,
+        const result = await CourseController.retrieveCourse(
+            res.locals.courseId,
         );
         if (result instanceof Err) {
             res.status(result.code).send(result.msg);
-        } else res.send(result);
+        } else res.send(result.sessions);
     })
-    // TODO: Remove put and place above
     .put([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
         const { title } = req.body;
         if (!title) {
@@ -40,6 +31,18 @@ routes
         const result = await CourseController.insertSessionFromCourse(
             res.locals.courseId,
             title,
+        );
+        if (result instanceof Err) {
+            res.status(result.code).send(result.msg);
+        } else res.send(result);
+    });
+
+routes
+    .route("/:session_id")
+    .all(saveSessionId)
+    .get(async (req: Request, res: Response) => {
+        const result = await CourseController.retrieveSessionFromCourse(
+            res.locals.sessionId,
         );
         if (result instanceof Err) {
             res.status(result.code).send(result.msg);

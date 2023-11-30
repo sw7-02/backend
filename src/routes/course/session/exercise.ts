@@ -59,15 +59,24 @@ routes
     });
 
 routes
-    .route("/:exercise_id") //TODO: Endpoint role check (full if teacher/TA, limited else)
+    .route("/:exercise_id")
     .all(saveExerciseId)
     .get(async (req: Request, res: Response) => {
         const id: number = +res.locals.exerciseId;
-        const result = await ExerciseController.retrieveExerciseFull(id);
-        if (result instanceof Err) {
-            const { code, msg } = result;
-            res.status(code).send(msg);
-        } else res.send(result);
+        if ([Role.TEACHER, Role.TA].includes(res.locals.userRole)) {
+            const result = await ExerciseController.retrieveExerciseFull(id);
+            if (result instanceof Err) {
+                const { code, msg } = result;
+                res.status(code).send(msg);
+            } else res.send(result);
+        } else {
+            // Student
+            const result = await ExerciseController.retrieveExercise(id);
+            if (result instanceof Err) {
+                const { code, msg } = result;
+                res.status(code).send(msg);
+            } else res.send(result);
+        }
     })
     .patch([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
         const id: number = +res.locals.exerciseId;
@@ -77,7 +86,7 @@ routes
             res.status(code).send(msg);
         } else res.send(result);
     })
-    .put(async (req: Request, res: Response) => {
+    .put([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
         const {
             hints,
             test_cases,
@@ -88,19 +97,22 @@ routes
             code_template,
             programming_language,
         } = req.body;
-        if (
-            !(
-                hints &&
-                test_cases &&
-                examples &&
-                description &&
-                title &&
-                points &&
-                code_template &&
-                programming_language
-            )
-        ) {
-            res.status(400).send("Not all needed parameters provided");
+        const missing = [
+            { val: hints, name: "hints" },
+            { val: test_cases, name: "test cases" },
+            { val: examples, name: "examples" },
+            { val: description, name: "description" },
+            { val: title, name: "title" },
+            { val: points, name: "points" },
+            { val: code_template, name: "code template" },
+            { val: programming_language, name: "programming language" },
+        ]
+            .filter((c) => c.val === undefined)
+            .map((c) => c.name);
+        if (missing.length > 0) {
+            res.status(400).send(
+                `Not all needed parameters provided: Missing ${missing}`,
+            );
             return;
         }
         const id: number = +res.locals.exerciseId;

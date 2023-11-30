@@ -37,7 +37,7 @@ routes
         const userId: number = res.locals.jwtPayload.userId;
         const { solution } = req.body;
 
-        const result = await AssignmentController.submitAssignementSolution(
+        const result = await AssignmentController.submitAssignmentSolution(
             id,
             userId,
             solution,
