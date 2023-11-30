@@ -1,23 +1,23 @@
 import { NextFunction, Request, Response } from "express";
 
-function saveExerciseId(req: Request, res: Response, nxt: NextFunction) {
+function saveExerciseId(req: Request, res: Response, next: NextFunction) {
     const id: number = +req.params.exercise_id;
     if (!id) {
         res.status(400).send("Exercise ID not a number");
         return;
     }
     res.locals.exerciseId = id;
-    nxt();
+    next();
 }
 
-function saveAssignmentId(req: Request, res: Response, nxt: NextFunction) {
+function saveAssignmentId(req: Request, res: Response, next: NextFunction) {
     const id: number = +req.params.assignment_id;
     if (!id) {
         res.status(400).send("Assignment ID not a number");
         return;
     }
     res.locals.assignmentId = id;
-    nxt();
+    next();
 }
 
 function saveSessionId(req: Request, res: Response, next: NextFunction) {

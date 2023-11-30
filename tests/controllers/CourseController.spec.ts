@@ -5,38 +5,38 @@ import prisma from "../../src/prisma";
 
 describe("CourseController testing", function () {
     it("Create course: Valid title", async function () {
-        const result = await CourseController.createCourse("Course 2");
+        const result = await CourseController.createCourse("Course 3");
         assert.notEqual(result instanceof Err, true);
-        assert.equal((<any>result).course_id, 2);
+        assert.equal((<any>result).course_id, 3);
         await prisma.course
             .findUniqueOrThrow({ where: { course_id: 2 } })
             .catch(() => assert.fail("course not created"));
     });
 
     it("Rename course: Valid Id", async function () {
-        const result = await CourseController.renameCourse(2, "New title");
+        const result = await CourseController.renameCourse(3, "New title");
         assert.notEqual(result instanceof Err, true);
-        assert.equal((<any>result).course_id, 2);
-        await prisma.course.findUniqueOrThrow({ where: { course_id: 2 } }).then(
+        assert.equal((<any>result).course_id, 3);
+        await prisma.course.findUniqueOrThrow({ where: { course_id: 3 } }).then(
             (r) => assert.equal(r.title, "New title"),
             () => assert.fail("unreachable"),
         );
     });
     it("Rename course: Invalid Id", async function () {
-        const result = await CourseController.renameCourse(2, "New title");
+        const result = await CourseController.renameCourse(1000, "New title");
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "Course not found");
     });
 
     it("Delete course: Valid ID", async function () {
-        const result = await CourseController.deleteCourse(2);
+        const result = await CourseController.deleteCourse(3);
         assert.notEqual(result instanceof Err, true);
-        await prisma.course.findUniqueOrThrow({ where: { course_id: 2 } }).then(
+        await prisma.course.findUniqueOrThrow({ where: { course_id: 3 } }).then(
             () => assert.fail("course still exist"),
             () => {},
         );
-        assert.equal((await prisma.course.findMany()).length, 1);
+        assert.equal((await prisma.course.findMany()).length, 2);
     });
     it("Delete course: Invalid ID", async function () {
         const result = await CourseController.deleteCourse(1000);
@@ -89,7 +89,7 @@ describe("CourseController testing", function () {
     it("Update points: Valid", async function () {
         const result = await CourseController.updatePoints(1, 1, 1);
         assert.notEqual(result instanceof Err, true);
-        assert.equal(result, 15);
+        assert.equal((<any>result).total_points, 15);
     });
     it("Update points: Invalid exercise", async function () {
         const result = await CourseController.updatePoints(1, 1, 1000);
@@ -119,7 +119,7 @@ describe("CourseController testing", function () {
     it("Decrement points: Valid", async function () {
         const result = await CourseController.decrementPoints(1, 1, 10);
         assert.notEqual(result instanceof Err, true);
-        assert.equal(result, 5);
+        assert.equal((<any>result).total_points, 5);
     });
     it("Decrement points: Invalid Course ID", async function () {
         const result = await CourseController.decrementPoints(1000, 1, 10);
