@@ -50,6 +50,37 @@ routes.get(
 );
 
 routes
+    .route("/:course_id/leaderboard/anonymity")
+    .get([enrollmentCheck], async (req: Request, res: Response) => {
+        const userId = +res.locals.jwtPayload.userId;
+        const courseId = +res.locals.jwtPayload.courseId;
+        const result = await CourseController.getAnonymity(userId, courseId);
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send(result);
+    })
+    .post([enrollmentCheck], async (req: Request, res: Response) => {
+        const userId = +res.locals.jwtPayload.userId;
+        const courseId = +res.locals.jwtPayload.courseId;
+        const { anonymity } = req.body;
+        if (anonymity === undefined) {
+            res.status(400).send("Body missing 'anonymity'");
+            return;
+        }
+        const result = await CourseController.setAnonymity(
+            userId,
+            courseId,
+            anonymity,
+        );
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send(result);
+        // TODO: test these
+    });
+
+routes
     .route("/:course_id")
     .all(enrollmentCheck)
     .get(genericCourseIdHandler(CourseController.retrieveFullCourse))

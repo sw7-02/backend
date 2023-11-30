@@ -182,4 +182,48 @@ describe("ExerciseController testing", function () {
         assert.equal((<Err>result).code, 500);
         assert.equal((<Err>result).msg, "Failed deleting session");
     });
+
+    it("Get Anonymity: Valid ID", async function () {
+        let result = await CourseController.getAnonymity(1, 1);
+        assert.notEqual(result instanceof Err, true);
+        assert.equal((<any>result).is_anonymous, false);
+        result = await CourseController.getAnonymity(2, 1);
+        assert.notEqual(result instanceof Err, true);
+        assert.equal((<any>result).is_anonymous, true);
+    });
+    it("Get Anonymity: Invalid User ID", async function () {
+        const result = await CourseController.getAnonymity(1000, 1);
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "Course or User does not exist");
+    });
+    it("Get Anonymity: Invalid Course ID", async function () {
+        const result = await CourseController.getAnonymity(1, 1000);
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "Course or User does not exist");
+    });
+
+    it("Set Anonymity: Valid ID", async function () {
+        await CourseController.setAnonymity(1, 1, true);
+        let result = await CourseController.getAnonymity(1, 1);
+        assert.notEqual(result instanceof Err, true);
+        assert.equal((<any>result).is_anonymous, false);
+        await CourseController.setAnonymity(1, 1, true);
+        result = await CourseController.getAnonymity(1, 1);
+        assert.notEqual(result instanceof Err, true);
+        assert.equal((<any>result).is_anonymous, true);
+    });
+    it("Set Anonymity: Invalid User ID", async function () {
+        const result = await CourseController.setAnonymity(1000, 1, true);
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "Course or User does not exist");
+    });
+    it("Get Anonymity: Invalid Course ID", async function () {
+        const result = await CourseController.setAnonymity(1, 1000, true);
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "Course or User does not exist");
+    });
 });

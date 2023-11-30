@@ -369,4 +369,48 @@ export default class CourseController {
                     return new Err(500, "Failed deleting session");
                 },
             );
+    static getAnonymity = async (
+        userId: number,
+        courseId: number,
+    ): Promise<Result<{ is_anonymous: boolean }>> =>
+        prisma.enrollment
+            .findUniqueOrThrow({
+                where: {
+                    user_id_course_id: {
+                        course_id: courseId,
+                        user_id: userId,
+                    },
+                },
+                select: {
+                    is_anonymous: true,
+                },
+            })
+            .catch((reason) => {
+                console.error(`Failed finding anonymity: ${reason}`);
+                return new Err(404, "Course or User does not exist");
+            });
+    static setAnonymity = async (
+        userId: number,
+        courseId: number,
+        anon: boolean,
+    ): Promise<Result<void>> =>
+        prisma.enrollment
+            .update({
+                where: {
+                    user_id_course_id: {
+                        course_id: courseId,
+                        user_id: userId,
+                    },
+                },
+                data: {
+                    is_anonymous: anon,
+                },
+            })
+            .then(
+                () => {},
+                (reason) => {
+                    console.error(`Failed setting anonymity: ${reason}`);
+                    return new Err(404, "Course or User does not exist");
+                },
+            );
 }
