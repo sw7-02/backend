@@ -5,7 +5,7 @@ import cors from "cors";
 import routes from "./routes";
 import config from "./config";
 
-const app = express();
+export const app = express();
 
 // Call middlewares
 app.use(cors());
@@ -20,4 +20,3 @@ app.listen(config.server.port, () => {
     console.log(`Server started on port ${config.server.port}!`);
 });
 
-module.exports = app;

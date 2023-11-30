@@ -1,18 +1,13 @@
-import supertest from "supertest";
+import * as chai from "chai";
+import chaiHttp from "chai-http"
 import assert from "assert";
+import {app} from "../src/index"
 
-const app = require("../src/index");
-
+chai.use(chaiHttp);
 describe("testing routes", function () {
     it("test route", async function (done) {
-        this.timeout(10000);
-        return await supertest(app)
-            .get("/")
-            .then((res) => {
-                console.log(`right before assert status, ${res.status}`);
-                assert.equal(res.status, 200);
-                console.log(`right after`);
-            })
-            .finally(done);
+        return chai.request(app).get('/').then(res => {
+            chai.expect(res.status).to.eql(200);
+        })
     });
 });
