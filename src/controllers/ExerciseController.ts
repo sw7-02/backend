@@ -363,10 +363,10 @@ export default class ExerciseController {
                         },
                     },
                     title: title,
-                    description: description ?? "Description",
-                    points: points ?? 10,
+                    description: description ?? "",
+                    points: points ?? 0,
                     programming_language: programmingLanguage ?? "Language",
-                    code_template: codeTemplate ?? "Code template",
+                    code_template: codeTemplate ?? "",
                     hints: {
                         createMany: {
                             data:
@@ -380,7 +380,7 @@ export default class ExerciseController {
                             data:
                                 testCases?.map((c) => {
                                     return { code: c };
-                                }) ?? [],
+                                }) ?? [{code: ""}],
                         },
                     },
                     examples: {
