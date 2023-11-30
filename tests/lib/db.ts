@@ -59,6 +59,7 @@ export async function seed() {
             user_id: user1.user_id,
             course_id: course1.course_id,
             user_role: 0,
+            is_anonymous: false,
             total_points: 5,
         },
     });

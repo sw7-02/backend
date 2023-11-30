@@ -173,6 +173,7 @@ CREATE TABLE improved_schema.enrollments (
     course_id integer,
     user_id integer,
     user_role integer,
+    is_anonymous boolean,
     total_points integer
 );
 
