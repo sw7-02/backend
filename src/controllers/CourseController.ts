@@ -115,8 +115,8 @@ export default class CourseController {
                             session_id: true,
                         },
                         orderBy: {
-                            session_id: "asc"
-                        }
+                            session_id: "asc",
+                        },
                     },
                 },
             })
@@ -152,13 +152,13 @@ export default class CourseController {
                                     exercise_id: true,
                                 },
                                 orderBy: {
-                                    exercise_id: "asc"
-                                }
+                                    exercise_id: "asc",
+                                },
                             },
                         },
                         orderBy: {
-                            session_id: "asc"
-                        }
+                            session_id: "asc",
+                        },
                     },
                 },
             })
