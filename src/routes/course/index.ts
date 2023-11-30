@@ -41,7 +41,7 @@ routes
             res.status(400).send("No valid title provided");
             return;
         }
-        const result = CourseController.createCourse(title);
+        const result = CourseController.createCourse(title.trim());
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);
@@ -107,7 +107,7 @@ routes
             return;
         }
         const courseId = +res.locals.courseId;
-        const result = CourseController.renameCourse(courseId, title);
+        const result = CourseController.renameCourse(courseId, title.trim());
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);

@@ -22,6 +22,18 @@ describe("CourseController testing", function () {
             () => assert.fail("unreachable"),
         );
     });
+    it("Rename course: Whitespace", async function () {
+        const result = await CourseController.renameCourse(
+            3,
+            "  Newer title  ",
+        );
+        assert.notEqual(result instanceof Err, true);
+        assert.equal((<any>result).course_id, 3);
+        await prisma.course.findUniqueOrThrow({ where: { course_id: 3 } }).then(
+            (r) => assert.equal(r.title, "Newer title"),
+            () => assert.fail("unreachable"),
+        );
+    });
     it("Rename course: Invalid Id", async function () {
         const result = await CourseController.renameCourse(1000, "New title");
         assert.equal(result instanceof Err, true);

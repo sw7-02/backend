@@ -42,7 +42,7 @@ routes
         const result = await ExerciseController.addExercise(
             res.locals.sessionId,
             {
-                title,
+                title: title.trim(),
                 description,
                 points,
                 programmingLanguage: programming_language,
@@ -83,6 +83,7 @@ routes
         const result = await ExerciseController.patchExercise(id, {
             programmingLanguage: req.body.programming_language,
             codeTemplate: req.body.code_template,
+            title: req.body.title.trim(),
             ...req.body,
         });
         if (result instanceof Err) {
@@ -96,7 +97,7 @@ routes
             { val: req.body.test_cases, name: "test cases" },
             { val: req.body.examples, name: "examples" },
             { val: req.body.description, name: "description" },
-            { val: req.body.title, name: "title" },
+            { val: req.body.title.trim(), name: "title" },
             { val: req.body.points, name: "points" },
             { val: req.body.code_template, name: "code template" },
             {

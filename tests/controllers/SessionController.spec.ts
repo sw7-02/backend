@@ -54,6 +54,20 @@ describe("SessionController testing", function () {
                 () => assert.fail("unreachable"),
             );
     });
+    it("Rename session: Whitespace", async function () {
+        const result = await SessionController.renameSessionFromCourse(
+            2,
+            "  Session rename rename ",
+        );
+        assert.notEqual(result instanceof Err, true);
+        assert.equal((<any>result).session_id, 2);
+        await prisma.session
+            .findUniqueOrThrow({ where: { session_id: 2 } })
+            .then(
+                (r) => assert.equal(r.title, "Session rename rename"),
+                () => assert.fail("unreachable"),
+            );
+    });
     it("Rename session: Invalid Id", async function () {
         const result = await SessionController.renameSessionFromCourse(
             1000,
