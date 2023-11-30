@@ -18,6 +18,6 @@ describe("testing routes", function () {
         }
         console.log(`right before assert status, ${res.status}`);
         assert.equal(res.status, 200);
-        console.log("right after")
+        console.log(`right after`)
     });
 });
