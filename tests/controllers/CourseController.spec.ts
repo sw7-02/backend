@@ -107,7 +107,7 @@ describe("ExerciseController testing", function () {
         assert.equal(user.username, "user1");
         assert.equal(user.total_points, 5);
         user = res[1];
-        assert.equal(user.username, "user2");
+        assert.equal(user.username, "Anonymous");
         assert.equal(user.total_points, 2);
     });
     it("Retrieve leaderboard: Invalid ID", async function () {
