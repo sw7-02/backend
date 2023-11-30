@@ -38,6 +38,9 @@ routes
     .post((req: Request, res: Response) => {
         // TODO: Is teacher check
         res.send("You added a new course (Unimplemented)");
+    })
+    .delete((req: Request, res: Response) => {
+        res.send("You deleted a course (Unimplemented)");
     });
 
 routes.get(
