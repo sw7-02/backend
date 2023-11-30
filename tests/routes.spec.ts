@@ -9,7 +9,6 @@ describe("testing routes", function () {
             .expect(200)
             .end(function (err: any, res: Response) {
                 if (err instanceof Error) done(err);
-                done();
             }); //.expect(200).end(done());
         //assert.equal(res.status, 200);
         /*.then((response: { body: unknown }) => {
