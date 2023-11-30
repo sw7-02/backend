@@ -217,17 +217,17 @@ export default class CourseController {
                 where: {
                     course_id: courseId,
                 },
-                select: {
+                include: {
                     enrollments: {
                         where: {
                             user_role: Role.STUDENT,
                         },
                         select: {
                             total_points: true,
+                            is_anonymous: true,
                             user: {
                                 select: {
                                     username: true,
-                                    is_anonymous: true,
                                 },
                             },
                         },
