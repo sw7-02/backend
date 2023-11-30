@@ -30,6 +30,7 @@ routes
             res.status(result.code).send(result.msg);
         } else res.send(result);
     })
+    // TODO: Remove put and place above
     .put([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
         const { title } = req.body;
         if (!title) {
@@ -54,50 +55,6 @@ routes
                 res.status(result.code).send(result.msg);
             } else res.send(result);
         },
-    ).post(async (req: Request, res: Response) => {
-    const exerciseId: number = +res.locals.exerciseId;
-    const userId: number = res.locals.jwtPayload.userId;
-    const courseId = res.locals.courseId;
-    const { solution, is_anonymous } = req.body;
-
-    const testResult = await ExerciseController.testExercise(
-        exerciseId,
-        solution,
     );
-    if (testResult instanceof Err) {
-        const { code, msg } = testResult;
-        res.status(code).send(msg);
-        return;
-    }
-
-    let points;
-    const resultSubmission = await CourseController.updatePoints(
-        courseId,
-        userId,
-        exerciseId,
-    ).then((result) => {
-        if (!(result instanceof Err)) {
-            points = result;
-            return ExerciseController.submitExerciseSolution(
-                exerciseId,
-                userId,
-                solution,
-                is_anonymous,
-            );
-        } else return result;
-    });
-
-    if (resultSubmission instanceof Err) {
-        if (points)
-            // It found points, but failed in submitting => subtract the points
-            await CourseController.decrementPoints(
-                courseId,
-                userId,
-                points,
-            );
-        const { code, msg } = resultSubmission;
-        res.status(code).send(msg);
-    } else res.send(resultSubmission);
-});
 
 export default routes;

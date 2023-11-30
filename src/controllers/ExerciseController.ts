@@ -416,7 +416,6 @@ export default class ExerciseController {
                 },
             );
     static patchExercise = async (
-        //TODO: Don't remove hints and stuff when patching
         exerciseId: number,
         {
             hints,
@@ -430,70 +429,59 @@ export default class ExerciseController {
         }: _Patch,
     ): Promise<Result<void>> => {
         let hintOrder = 1;
-        let hintsP, testsP, examplesP;
+        let additional = { hints: {}, test_case: {}, examples: {} };
         if (hints)
-            hintsP = [
-                prisma.hint.deleteMany({
-                    where: {
-                        // removes additional, if any
-                        exercise_id: exerciseId,
-                        order: {
-                            gt: hints?.length,
-                        },
+            additional.hints = {
+                deleteMany: {
+                    // removes additional, if any
+                    exercise_id: exerciseId,
+                    order: {
+                        gt: hints.length,
                     },
-                }),
-                prisma.hint.updateMany({
+                },
+                updateMany: {
                     // updates current
                     where: {
                         exercise_id: exerciseId,
                     },
 
                     data: {
-                        description: hints?.at(hintOrder - 1),
+                        description: hints.at(hintOrder - 1),
                         order: hintOrder++,
                     },
-                }),
-                prisma.hint.createMany({
+                },
+                createMany: {
                     // Creates new if needed
                     data: hints.slice(hintOrder - 1).map((h) => {
                         return {
-                            exercise_id: exerciseId,
                             description: h,
                             order: hintOrder++,
                         };
                     }),
-                }),
-            ];
-
+                },
+            };
         if (testCases)
-            testsP = [
-                prisma.testCase.deleteMany({
-                    where: {
-                        // removes additional, if any
-                        exercise_id: exerciseId,
-                    },
-                }),
-                prisma.testCase.createMany({
+            additional.test_case = {
+                deleteMany: {
+                    // removes additional, if any
+                    exercise_id: exerciseId,
+                },
+                createMany: {
                     data: testCases.map((c) => {
-                        return { code: c, exercise_id: exerciseId };
+                        return { code: c };
                     }),
-                }),
-            ];
-
+                },
+            };
         if (examples)
-            examplesP = [
-                prisma.example.deleteMany({
-                    where: {
-                        // removes additional, if any
-                        exercise_id: exerciseId,
-                    },
-                }),
-                prisma.example.createMany({
-                    data: examples.map(({ input, output }) => {
-                        return { input, output, exercise_id: exerciseId };
-                    }),
-                }),
-            ];
+            additional.examples = {
+                deleteMany: {
+                    // removes additional, if any
+                    exercise_id: exerciseId,
+                },
+                createMany: {
+                    data: examples,
+                },
+            };
 
         return prisma.exercise
             .update({
@@ -506,6 +494,9 @@ export default class ExerciseController {
                     programming_language: programmingLanguage,
                     code_template: codeTemplate,
                     points,
+                    hints: additional.hints,
+                    test_case: additional.test_case,
+                    examples: additional.examples,
                 },
             })
             .then(
