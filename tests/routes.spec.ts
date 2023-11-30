@@ -4,7 +4,7 @@ const app = require("../src/index");
 
 describe("testing routes", function () {
     it("test route", async function (done) {
-        let res = await supertest(app).get("/");
+        let res = await supertest(app).get("/").catch(done);
         /*.end(function (err: any, res: Response) {
                 if (err instanceof Error) done(err);
             }); //.expect(200).end(done());
