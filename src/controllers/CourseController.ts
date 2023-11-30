@@ -249,7 +249,9 @@ export default class CourseController {
                     return res.enrollments.map((r) => {
                         return {
                             total_points: r.total_points!!,
-                            username: r.is_anonymous ? "Anonymous" : r.user.username,
+                            username: r.is_anonymous
+                                ? "Anonymous"
+                                : r.user.username,
                         };
                     });
                 },
