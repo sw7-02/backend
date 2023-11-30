@@ -42,6 +42,35 @@ type _CourseOverview = {
 }[];
 
 export default class CourseController {
+    static createCourse = async (title: string): Promise<Result<number>> =>
+        prisma.course
+            .create({
+                data: {
+                    title,
+                },
+            })
+            .then(
+                (r) => r.course_id,
+                (reason) => {
+                    console.error(`Failed creating new course: ${reason}`);
+                    return new Err(500, "Failed creating new course");
+                },
+            );
+    static deleteCourse = async (courseId: number): Promise<Result<void>> =>
+        prisma.course
+            .delete({
+                where: {
+                    course_id: courseId,
+                },
+            })
+            .then(
+                () => {},
+                (reason) => {
+                    console.error(`Failed deleting course: ${reason}`);
+                    return new Err(500, "Failed deleting course");
+                },
+            );
+
     static retrieveCourse = async (
         courseId: number,
     ): Promise<Result<_Course>> =>

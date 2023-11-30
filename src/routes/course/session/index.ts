@@ -22,7 +22,7 @@ routes
             res.status(result.code).send(result.msg);
         } else res.send(result.sessions);
     })
-    .put([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
+    .post([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
         const { title } = req.body;
         if (!title) {
             res.status(400).send("Bad request body");
@@ -35,7 +35,7 @@ routes
         if (result instanceof Err) {
             res.status(result.code).send(result.msg);
         } else res.send(result);
-    });
+    }); // TODO: Rename session
 
 routes
     .route("/:session_id")

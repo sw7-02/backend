@@ -26,11 +26,19 @@ export default async function enrollmentCheck(
                 course_id: courseId,
             },
         },
+        include: {
+            user: {
+                select: {
+                    is_teacher: true
+                }
+            }
+        }
     });
 
     if (r) {
         res.locals.courseId = courseId;
         res.locals.userRole = r.user_role;
+        res.locals.isTeacher = r.user.is_teacher;
         next();
     } else {
         res.status(401).send("No enrollment found");
