@@ -97,19 +97,22 @@ routes
             code_template,
             programming_language,
         } = req.body;
-        if (
-            !(
-                hints &&
-                test_cases &&
-                examples &&
-                description &&
-                title &&
-                points &&
-                code_template &&
-                programming_language
-            )
-        ) {
-            res.status(400).send("Not all needed parameters provided");
+        const missing = [
+            { val: hints, name: "hints" },
+            { val: test_cases, name: "test cases" },
+            { val: examples, name: "examples" },
+            { val: description, name: "description" },
+            { val: title, name: "title" },
+            { val: points, name: "points" },
+            { val: code_template, name: "code template" },
+            { val: programming_language, name: "programming language" },
+        ]
+            .filter((c) => c.val === undefined)
+            .map((c) => c.name);
+        if (missing.length > 0) {
+            res.status(400).send(
+                `Not all needed parameters provided: Missing ${missing}`,
+            );
             return;
         }
         const id: number = +res.locals.exerciseId;
