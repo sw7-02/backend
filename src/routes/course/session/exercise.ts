@@ -80,7 +80,11 @@ routes
     })
     .patch([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
         const id: number = +res.locals.exerciseId;
-        const result = await ExerciseController.patchExercise(id, req.body);
+        const result = await ExerciseController.patchExercise(id, {
+            programmingLanguage: req.body.programming_language,
+            codeTemplate: req.body.code_template,
+            ...req.body,
+        });
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);
