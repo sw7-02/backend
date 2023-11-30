@@ -37,15 +37,4 @@ export default function roleCheck(roles: number[]) {
     };
 }
 
-/*async function isTeacher(req: Request, res: Response, next: NextFunction) {
-        const userId = res.locals.jwtPayload.userId;
-        let user = await prisma.user.findUniqueOrThrow({
-            where: { user_id: userId },
-        });
-
-        if (user.is_teacher == true) {
-            next();
-        } else {
-            res.status(403).send();
-        }
-    }*/
+export  isTeacher = async(req: Request, res: Response, next: NextFunction) => res.locals.isTeacher;
