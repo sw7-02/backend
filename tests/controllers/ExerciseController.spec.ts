@@ -389,12 +389,12 @@ describe("ExerciseController testing", function () {
             0,
         );
         assert.equal(
-            await prisma.example.findMany({ where: { exercise_id: id } }),
-            [],
+            (await prisma.example.findMany({ where: { exercise_id: id } })).length,
+            0,
         );
         assert.equal(
-            await prisma.testCase.findMany({ where: { exercise_id: id } }),
-            [],
+            (await prisma.testCase.findMany({ where: { exercise_id: id } })).length,
+            0,
         );
         id = 3;
         result = await ExerciseController.deleteExercise(id);
@@ -404,16 +404,16 @@ describe("ExerciseController testing", function () {
             null,
         );
         assert.equal(
-            await prisma.hint.findMany({ where: { exercise_id: id } }),
-            [],
+            (await prisma.hint.findMany({ where: { exercise_id: id } })).length,
+            0,
         );
         assert.equal(
-            await prisma.example.findMany({ where: { exercise_id: id } }),
-            [],
+            (await prisma.example.findMany({ where: { exercise_id: id } })).length,
+            0,
         );
         assert.equal(
-            await prisma.testCase.findMany({ where: { exercise_id: id } }),
-            [],
+            (await prisma.testCase.findMany({ where: { exercise_id: id } })).length,
+            0,
         );
     });
     it("Remove exercise: Invalid Exercise ID", async function () {
