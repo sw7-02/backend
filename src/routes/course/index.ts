@@ -62,13 +62,11 @@ routes
     })
     .post((req: Request, res: Response) => {
         // TODO: Role middleware
-        res.send("You have just created a new session");
-        return res.sendStatus(201);
+        res.send("You have just created a new session (Unimplemented)");
     })
     .delete((req: Request, res: Response) => {
         // TODO: Role middleware
-        res.send("You have just updated a course");
-        return res.sendStatus(201);
+        res.send("You have just updated a course (Unimplemented)");
     });
 
 export default routes;
