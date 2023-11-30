@@ -353,8 +353,7 @@ export default class ExerciseController {
         }: _Patch,
     ): Promise<Result<number>> => {
         let order = 1;
-        if (!title)
-            return new Err (400, "No title supplied");
+        if (!title) return new Err(400, "No title supplied");
         return prisma.exercise
             .create({
                 data: {
@@ -414,7 +413,19 @@ export default class ExerciseController {
                 },
             })
             .then(
-                () => {},
+                async () => {
+                    await Promise.all([
+                        prisma.hint.deleteMany({
+                            where: { exercise_id: exerciseId },
+                        }),
+                        prisma.example.deleteMany({
+                            where: { exercise_id: exerciseId },
+                        }),
+                        prisma.testCase.deleteMany({
+                            where: { exercise_id: exerciseId },
+                        }),
+                    ]);
+                },
                 (r) => {
                     console.error(
                         `Failure deleting exercise ${exerciseId}: ${r}`,

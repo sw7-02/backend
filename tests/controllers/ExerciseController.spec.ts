@@ -389,11 +389,13 @@ describe("ExerciseController testing", function () {
             0,
         );
         assert.equal(
-            (await prisma.example.findMany({ where: { exercise_id: id } })).length,
+            (await prisma.example.findMany({ where: { exercise_id: id } }))
+                .length,
             0,
         );
         assert.equal(
-            (await prisma.testCase.findMany({ where: { exercise_id: id } })).length,
+            (await prisma.testCase.findMany({ where: { exercise_id: id } }))
+                .length,
             0,
         );
         id = 3;
@@ -408,11 +410,13 @@ describe("ExerciseController testing", function () {
             0,
         );
         assert.equal(
-            (await prisma.example.findMany({ where: { exercise_id: id } })).length,
+            (await prisma.example.findMany({ where: { exercise_id: id } }))
+                .length,
             0,
         );
         assert.equal(
-            (await prisma.testCase.findMany({ where: { exercise_id: id } })).length,
+            (await prisma.testCase.findMany({ where: { exercise_id: id } }))
+                .length,
             0,
         );
     });
