@@ -351,7 +351,7 @@ export default class ExerciseController {
             testCases,
             examples,
         }: _Patch,
-    ): Promise<Result<number>> => {
+    ): Promise<Result<{ exercise_id: number }>> => {
         let order = 1;
         if (!title) return new Err(400, "No title supplied");
         return prisma.exercise
@@ -397,7 +397,7 @@ export default class ExerciseController {
                 },
             })
             .then(
-                (e) => e.exercise_id,
+                (e) => e,
                 (r) => {
                     console.error(`Failure trying to add exercise: ${r}`);
                     return new Err(404, "Session does not exist");

@@ -121,7 +121,6 @@ describe("ExerciseController testing", function () {
         assert.equal(pre!.programming_language, "JavaScript");
         assert.equal(pre!.code_template, "Your code template here");
 
-        const hints = ["Hint 1", "Hint 2", "Hint 3"];
         let result = await ExerciseController.patchExercise(1, {
             title: "1",
             description: "Description 1",
@@ -312,7 +311,7 @@ describe("ExerciseController testing", function () {
         const ex = await prisma.exercise
             .findUniqueOrThrow({
                 where: {
-                    exercise_id: <number>result,
+                    exercise_id: (<any>result).exercise_id,
                 },
                 include: { hints: true, examples: true, test_case: true },
             })
@@ -342,7 +341,7 @@ describe("ExerciseController testing", function () {
         const ex = await prisma.exercise
             .findUniqueOrThrow({
                 where: {
-                    exercise_id: <number>result,
+                    exercise_id: (<any>result).exercise_id,
                 },
                 include: { hints: true, examples: true, test_case: true },
             })

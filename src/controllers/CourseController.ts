@@ -11,7 +11,7 @@ type _SessionIdentifier = {
     title: string;
 };
 
-type _Session = {
+export type _Session = {
     session_id: number;
     title: string;
     exercises: _ExerciseIdentifier[];
@@ -42,7 +42,9 @@ type _CourseOverview = {
 }[];
 
 export default class CourseController {
-    static createCourse = async (title: string): Promise<Result<number>> =>
+    static createCourse = async (
+        title: string,
+    ): Promise<Result<{ course_id: number }>> =>
         prisma.course
             .create({
                 data: {
@@ -50,7 +52,9 @@ export default class CourseController {
                 },
             })
             .then(
-                (r) => r.course_id,
+                ({ course_id, ..._ }) => {
+                    return { course_id };
+                },
                 (reason) => {
                     console.error(`Failed creating new course: ${reason}`);
                     return new Err(500, "Failed creating new course");
@@ -68,6 +72,29 @@ export default class CourseController {
                 (reason) => {
                     console.error(`Failed deleting course: ${reason}`);
                     return new Err(500, "Failed deleting course");
+                },
+            );
+
+    static renameCourse = async (
+        courseId: number,
+        newTitle: string,
+    ): Promise<Result<{ course_id: number }>> =>
+        prisma.course
+            .update({
+                where: {
+                    course_id: courseId,
+                },
+                data: {
+                    title: newTitle,
+                },
+            })
+            .then(
+                ({ course_id, ..._ }) => {
+                    return { course_id };
+                },
+                (reason) => {
+                    console.error(`Failed renaming course: ${reason}`);
+                    return new Err(404, "Course not found");
                 },
             );
 
@@ -141,7 +168,7 @@ export default class CourseController {
         courseId: number,
         userId: number,
         exerciseId: number,
-    ): Promise<Result<number>> {
+    ): Promise<Result<{ total_points: number }>> {
         let points = await prisma.exercise
             .findUniqueOrThrow({
                 where: {
@@ -152,7 +179,7 @@ export default class CourseController {
                 },
             })
             .then(
-                (r) => r.points,
+                (points) => points,
                 (reason) => {
                     console.error(`Failed getting exercise: ${reason}`);
                     return new Err(404, "Invalid exercise ID");
@@ -173,7 +200,7 @@ export default class CourseController {
                 },
                 data: {
                     total_points: {
-                        increment: points,
+                        increment: points.points,
                     } || {
                         set: points,
                     },
@@ -187,7 +214,7 @@ export default class CourseController {
                     if (!r.total_points) {
                         console.error(`User with null points: ${userId}`);
                         return new Err(500, "Internal error");
-                    } else return r.total_points;
+                    } else return { total_points: r.total_points! };
                 },
                 (reason) => {
                     console.error(`Failed finding enrollment: ${reason}`);
@@ -203,7 +230,7 @@ export default class CourseController {
         courseId: number,
         userId: number,
         points: number,
-    ): Promise<Result<number>> {
+    ): Promise<Result<{ total_points: number }>> {
         return prisma.enrollment
             .update({
                 where: {
@@ -223,10 +250,10 @@ export default class CourseController {
             })
             .then(
                 (r) => {
-                    if (!r.total_points) {
+                    if (r.total_points === null) {
                         console.error(`User with null points: ${userId}`);
                         return new Err(500, "Internal error");
-                    } else return r.total_points;
+                    } else return { total_points: r.total_points! };
                 },
                 (reason) => {
                     console.error(`Failed finding enrollment: ${reason}`);
@@ -330,77 +357,6 @@ export default class CourseController {
                 },
             );
 
-    static retrieveSessionFromCourse = async (
-        sessionId: number,
-    ): Promise<Result<_Session>> =>
-        prisma.session
-            .findUniqueOrThrow({
-                where: {
-                    session_id: sessionId,
-                },
-                select: {
-                    session_id: true,
-                    title: true,
-                    exercises: {
-                        select: {
-                            exercise_id: true,
-                            title: true,
-                        },
-                    },
-                },
-            })
-            .then(
-                (r) => r,
-                (reason) => {
-                    console.error(`Failed getting session: ${reason}`);
-                    return new Err(404, "Session does not exist");
-                },
-            );
-
-    static insertSessionFromCourse = async (
-        courseId: number,
-        title: string,
-    ): Promise<Result<{ session_id: number }>> =>
-        prisma.session
-            .create({
-                data: {
-                    title,
-                    course: {
-                        connect: {
-                            course_id: courseId,
-                        },
-                    },
-                },
-                select: {
-                    session_id: true,
-                },
-            })
-            .then(
-                (r) => r,
-                (reason) => {
-                    console.error(
-                        `Failed adding session to course ${courseId}: ${reason}`,
-                    );
-                    return new Err(400, "Failed adding new session");
-                },
-            );
-
-    static deleteSessionFromCourse = async (
-        sessionId: number,
-    ): Promise<Result<void>> =>
-        prisma.session
-            .delete({
-                where: {
-                    session_id: sessionId,
-                },
-            })
-            .then(
-                () => {},
-                (reason) => {
-                    console.error(`Failed deleting session: ${reason}`);
-                    return new Err(500, "Failed deleting session");
-                },
-            );
     static getAnonymity = async (
         userId: number,
         courseId: number,
