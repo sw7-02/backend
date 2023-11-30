@@ -87,25 +87,18 @@ routes
         } else res.send(result);
     })
     .put([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
-        const {
-            hints,
-            test_cases,
-            examples,
-            description,
-            title,
-            points,
-            code_template,
-            programming_language,
-        } = req.body;
         const missing = [
-            { val: hints, name: "hints" },
-            { val: test_cases, name: "test cases" },
-            { val: examples, name: "examples" },
-            { val: description, name: "description" },
-            { val: title, name: "title" },
-            { val: points, name: "points" },
-            { val: code_template, name: "code template" },
-            { val: programming_language, name: "programming language" },
+            { val: req.body.hints, name: "hints" },
+            { val: req.body.test_cases, name: "test cases" },
+            { val: req.body.examples, name: "examples" },
+            { val: req.body.description, name: "description" },
+            { val: req.body.title, name: "title" },
+            { val: req.body.points, name: "points" },
+            { val: req.body.code_template, name: "code template" },
+            {
+                val: req.body.programming_language,
+                name: "programming language",
+            },
         ]
             .filter((c) => c.val === undefined)
             .map((c) => c.name);
@@ -116,7 +109,11 @@ routes
             return;
         }
         const id: number = +res.locals.exerciseId;
-        const result = await ExerciseController.patchExercise(id, req.body);
+        const result = await ExerciseController.patchExercise(id, {
+            programmingLanguage: req.body.programming_language,
+            codeTemplate: req.body.code_template,
+            ...req.body,
+        });
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);
