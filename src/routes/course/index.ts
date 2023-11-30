@@ -5,7 +5,7 @@ import validateJWT from "../../middlewares/validateJWT";
 import CourseController from "../../controllers/CourseController";
 import { Err, Result, Role } from "../../lib";
 import enrollmentCheck from "../../middlewares/enrollmentCheck";
-import roleCheck from "../../middlewares/roleCheck";
+import roleCheck, { isTeacher } from "../../middlewares/roleCheck";
 
 const routes = Router()
     .use(Router.json())
@@ -35,8 +35,7 @@ routes
             res.status(code).send(msg);
         } else res.send(result);
     })
-    .post((req: Request, res: Response) => {
-        //TODO: Is-teacher
+    .post([isTeacher], (req: Request, res: Response) => {
         const title: string = req.body.title;
         if (!title) {
             res.status(400).send("No valid title provided");
@@ -104,8 +103,7 @@ routes
     .put([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
         res.send("You have just updated a course (Unimplemented)");
     })
-    .delete((req: Request, res: Response) => {
-        //TODO: Is_Teacher check
+    .delete([isTeacher], (req: Request, res: Response) => {
         const courseId = +res.locals.courseId;
         const result = CourseController.deleteCourse(courseId);
         if (result instanceof Err) {
