@@ -29,8 +29,7 @@ describe("ExerciseController testing", function () {
 
         assert.equal(res.hints.length, 1);
         console.log(res.hints);
-        assert.equal(res.hints[0].description, "Hint 1 description");
-        assert.equal(res.hints[0].order, 1);
+        assert.equal(res.hints[0], "Hint 1 description");
 
         assert.equal(res.test_case.length, 1);
         assert.equal(res.test_case[0].code, "Test case 1 code");
@@ -216,7 +215,6 @@ describe("ExerciseController testing", function () {
         assert.equal(fix!.hints[0].order, 1);
     });
     it("Patch exercise: New Examples", async function () {
-        console.log(await prisma.example.findMany());
         const pre = await prisma.exercise
             .findFirstOrThrow({
                 where: { exercise_id: 1 },
@@ -236,7 +234,6 @@ describe("ExerciseController testing", function () {
         ];
         let result = await ExerciseController.patchExercise(1, { examples });
         assert.notEqual(result instanceof Err, true);
-        console.log(await prisma.example.findMany());
 
         const post = await prisma.exercise
             .findFirst({
@@ -257,7 +254,6 @@ describe("ExerciseController testing", function () {
             ],
         });
         assert.notEqual(result instanceof Err, true);
-        console.log(await prisma.example.findMany());
 
         const fix = await prisma.exercise
             .findFirst({
