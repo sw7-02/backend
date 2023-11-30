@@ -42,19 +42,20 @@ routes
         const result = await ExerciseController.addExercise(
             res.locals.sessionId,
             {
-            title,
-            description,
-            points,
-            programmingLanguage: programming_language,
-            codeTemplate: code_template,
-            hints,
-            testCases: test_cases,
-            examples,}
+                title,
+                description,
+                points,
+                programmingLanguage: programming_language,
+                codeTemplate: code_template,
+                hints,
+                testCases: test_cases,
+                examples,
+            },
         );
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);
-        } else res.status(200).send({exercise_id: result});
+        } else res.status(200).send({ exercise_id: result });
     });
 
 routes
@@ -119,51 +120,52 @@ routes
                 res.status(code).send(msg);
             } else res.send();
         },
-    ).post(async (req: Request, res: Response) => {
-    const exerciseId: number = +res.locals.exerciseId;
-    const userId: number = res.locals.jwtPayload.userId;
-    const courseId = res.locals.courseId;
-    const { solution, is_anonymous } = req.body;
+    )
+    .post(async (req: Request, res: Response) => {
+        const exerciseId: number = +res.locals.exerciseId;
+        const userId: number = res.locals.jwtPayload.userId;
+        const courseId = res.locals.courseId;
+        const { solution, is_anonymous } = req.body;
 
-    const testResult = await ExerciseController.testExercise(
-        exerciseId,
-        solution,
-    );
-    if (testResult instanceof Err) {
-        const { code, msg } = testResult;
-        res.status(code).send(msg);
-        return;
-    }
+        const testResult = await ExerciseController.testExercise(
+            exerciseId,
+            solution,
+        );
+        if (testResult instanceof Err) {
+            const { code, msg } = testResult;
+            res.status(code).send(msg);
+            return;
+        }
 
-    let points;
-    const resultSubmission = await CourseController.updatePoints(
-        courseId,
-        userId,
-        exerciseId,
-    ).then((result) => {
-        if (!(result instanceof Err)) {
-            points = result;
-            return ExerciseController.submitExerciseSolution(
-                exerciseId,
-                userId,
-                solution,
-                is_anonymous,
-            );
-        } else return result;
+        let points;
+        const resultSubmission = await CourseController.updatePoints(
+            courseId,
+            userId,
+            exerciseId,
+        ).then((result) => {
+            if (!(result instanceof Err)) {
+                points = result;
+                return ExerciseController.submitExerciseSolution(
+                    exerciseId,
+                    userId,
+                    solution,
+                    is_anonymous,
+                );
+            } else return result;
+        });
+
+        if (resultSubmission instanceof Err) {
+            if (points)
+                // It found points, but failed in submitting => subtract the points
+                await CourseController.decrementPoints(
+                    courseId,
+                    userId,
+                    points,
+                );
+            const { code, msg } = resultSubmission;
+            res.status(code).send(msg);
+        } else res.send(resultSubmission);
     });
-
-    if (resultSubmission instanceof Err) {
-        if (points)
-            // It found points, but failed in submitting => subtract the points
-            await CourseController.decrementPoints(
-                courseId,
-                userId,
-                points,
-            );
-        const { code, msg } = resultSubmission;
-        res.status(code).send(msg);
-    } else res.send(resultSubmission);
-});
 
 routes.post("/:exercise_id/test", async (req: Request, res: Response) => {
     const id: number = +res.locals.exerciseId;

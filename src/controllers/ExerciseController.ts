@@ -350,7 +350,7 @@ export default class ExerciseController {
             hints,
             testCases,
             examples,
-        }: _Patch
+        }: _Patch,
     ): Promise<Result<number>> => {
         let order = 1;
         return prisma.exercise
@@ -368,23 +368,26 @@ export default class ExerciseController {
                     code_template: codeTemplate ?? "Code template",
                     hints: {
                         createMany: {
-                            data: hints?.map((h) => {
-                                return { description: h, order: order++ };
-                            }) ?? [],
+                            data:
+                                hints?.map((h) => {
+                                    return { description: h, order: order++ };
+                                }) ?? [],
                         },
                     },
                     test_case: {
                         createMany: {
-                            data: testCases?.map((c) => {
-                                return { code: c };
-                            }) ?? [],
+                            data:
+                                testCases?.map((c) => {
+                                    return { code: c };
+                                }) ?? [],
                         },
                     },
                     examples: {
                         createMany: {
-                            data: examples?.map(({ input, output }) => {
-                                return { input, output };
-                            }) ?? [],
+                            data:
+                                examples?.map(({ input, output }) => {
+                                    return { input, output };
+                                }) ?? [],
                         },
                     },
                 },

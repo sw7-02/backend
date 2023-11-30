@@ -210,9 +210,11 @@ describe("ExerciseController testing", function () {
                 include: { examples: true },
             })
             .catch(() => assert.fail("Exercise gone"));
-        assert.equal(pre!.examples.length, 1);
+        assert.equal(pre!.examples.length, 2);
         assert.equal(pre!.examples[0].input, "[1, 2, 3]");
         assert.equal(pre!.examples[0].output, "6");
+        assert.equal(pre!.examples[1].input, "[3, 4, 7]");
+        assert.equal(pre!.examples[1].output, "14");
 
         const examples = [
             { input: "1", output: "2" },
@@ -236,7 +238,10 @@ describe("ExerciseController testing", function () {
         }
 
         result = await ExerciseController.patchExercise(1, {
-            examples: [{ input: "[1, 2, 3]", output: "6" }],
+            examples: [
+                { input: "[1, 2, 3]", output: "6" },
+                { input: "[3, 4, 7]", output: "14" },
+            ],
         });
         assert.notEqual(result instanceof Err, true);
         console.log(await prisma.example.findMany());
@@ -247,9 +252,11 @@ describe("ExerciseController testing", function () {
                 include: { examples: true },
             })
             .catch(() => assert.fail("Exercise gone"));
-        assert.equal(fix!.examples.length, 1);
+        assert.equal(fix!.examples.length, 2);
         assert.equal(fix!.examples[0].input, "[1, 2, 3]");
         assert.equal(fix!.examples[0].output, "6");
+        assert.equal(fix!.examples[1].input, "[3, 4, 7]");
+        assert.equal(fix!.examples[1].output, "14");
     });
     it("Patch exercise: New Test Cases", async function () {
         const pre = await prisma.exercise
