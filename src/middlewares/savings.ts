@@ -31,6 +31,4 @@ function saveSessionId(req: Request, res: Response, next: NextFunction) {
     next();
 }
 
-//TODO: Test
-
 export { saveSessionId, saveAssignmentId, saveExerciseId };
