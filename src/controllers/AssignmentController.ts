@@ -81,7 +81,7 @@ export default class AssignmentController {
                 },
             );
 
-    static submitAssignementSolution = async (
+    static submitAssignmentSolution = async (
         assignmentId: number,
         userId: number,
         solution: string,

@@ -44,7 +44,7 @@ routes
 
         // TODO: Test code (if assignments should be tested?)
 
-        const result = await AssignmentController.submitAssignementSolution(
+        const result = await AssignmentController.submitAssignmentSolution(
             id,
             userId,
             solution,
@@ -66,7 +66,7 @@ routes.get(
         }
         const result =
             await AssignmentController.retrieveAllAssignmentSolutions(
-                res.locals.courseId,
+                id,
             );
         if (result instanceof Err) {
             const { code, msg } = result;
