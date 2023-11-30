@@ -46,7 +46,7 @@ export default class CourseController {
         title: string,
     ): Promise<Result<{ course_id: number }>> => {
         title = title.trim();
-        if (!title) return new Err(404, "Title is needed");
+        if (!title) return new Err(406, "Title is needed");
         else
             return prisma.course
                 .create({

@@ -320,7 +320,7 @@ describe("ExerciseController testing", function () {
             codeTemplate: "template ",
         });
         assert.equal(result instanceof Err, true);
-        assert.equal((<Err>result).code, 400);
+        assert.equal((<Err>result).code, 406);
         assert.equal((<Err>result).msg, "No programming language supplied");
     });
 

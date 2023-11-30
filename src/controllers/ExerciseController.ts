@@ -357,7 +357,7 @@ export default class ExerciseController {
         programmingLanguage = programmingLanguage?.trim();
         if (!title) return new Err(406, "No title supplied");
         if (programmingLanguage !== undefined && !programmingLanguage)
-            return new Err(406, "No programmingLanguage supplied");
+            return new Err(406, "No programming language supplied");
         return prisma.exercise
             .create({
                 data: {

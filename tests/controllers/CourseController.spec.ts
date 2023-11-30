@@ -16,7 +16,7 @@ describe("CourseController testing", function () {
         const result = await CourseController.createCourse("   ");
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 406);
-        assert.equal((<Err>result).msg, "Title needed");
+        assert.equal((<Err>result).msg, "Title is needed");
     });
 
     it("Rename course: Valid Id", async function () {
