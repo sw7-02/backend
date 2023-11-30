@@ -94,6 +94,7 @@ export default class AuthController {
         password: string,
     ): Promise<Result<AuthRes>> => {
         const valid = (username: string) =>
+            username.length > 0 &&
             username === username.trim() &&
             !numberRegEx.test(username.charAt(0)) &&
             !specialCharRegEx.test(username);
