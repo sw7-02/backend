@@ -44,22 +44,27 @@ type _CourseOverview = {
 export default class CourseController {
     static createCourse = async (
         title: string,
-    ): Promise<Result<{ course_id: number }>> =>
-        prisma.course
-            .create({
-                data: {
-                    title: title.trim(),
-                },
-            })
-            .then(
-                ({ course_id, ..._ }) => {
-                    return { course_id };
-                },
-                (reason) => {
-                    console.error(`Failed creating new course: ${reason}`);
-                    return new Err(500, "Failed creating new course");
-                },
-            );
+    ): Promise<Result<{ course_id: number }>> => {
+        title = title.trim();
+        if (!title) return new Err(404, "Title is needed");
+        else
+            return prisma.course
+                .create({
+                    data: {
+                        title: title.trim(),
+                    },
+                })
+                .then(
+                    ({ course_id, ..._ }) => {
+                        return { course_id };
+                    },
+                    (reason) => {
+                        console.error(`Failed creating new course: ${reason}`);
+                        return new Err(500, "Failed creating new course");
+                    },
+                );
+    };
+
     static deleteCourse = async (courseId: number): Promise<Result<void>> =>
         prisma.course
             .delete({
@@ -78,25 +83,29 @@ export default class CourseController {
     static renameCourse = async (
         courseId: number,
         newTitle: string,
-    ): Promise<Result<{ course_id: number }>> =>
-        prisma.course
-            .update({
-                where: {
-                    course_id: courseId,
-                },
-                data: {
-                    title: newTitle.trim(),
-                },
-            })
-            .then(
-                ({ course_id, ..._ }) => {
-                    return { course_id };
-                },
-                (reason) => {
-                    console.error(`Failed renaming course: ${reason}`);
-                    return new Err(404, "Course not found");
-                },
-            );
+    ): Promise<Result<{ course_id: number }>> => {
+        newTitle = newTitle.trim();
+        if (!newTitle) return new Err(406, "Title is needed");
+        else
+            return prisma.course
+                .update({
+                    where: {
+                        course_id: courseId,
+                    },
+                    data: {
+                        title: newTitle.trim(),
+                    },
+                })
+                .then(
+                    ({ course_id, ..._ }) => {
+                        return { course_id };
+                    },
+                    (reason) => {
+                        console.error(`Failed renaming course: ${reason}`);
+                        return new Err(404, "Course not found");
+                    },
+                );
+    };
 
     static retrieveCourse = async (
         courseId: number,

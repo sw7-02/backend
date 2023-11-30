@@ -353,7 +353,11 @@ export default class ExerciseController {
         }: _Patch,
     ): Promise<Result<{ exercise_id: number }>> => {
         let order = 1;
-        if (!title) return new Err(400, "No title supplied");
+        title = title?.trim();
+        programmingLanguage = programmingLanguage?.trim();
+        if (!title) return new Err(406, "No title supplied");
+        if (programmingLanguage !== undefined && !programmingLanguage)
+            return new Err(406, "No programmingLanguage supplied");
         return prisma.exercise
             .create({
                 data: {
@@ -362,11 +366,10 @@ export default class ExerciseController {
                             session_id: sessionId,
                         },
                     },
-                    title: title.trim(),
+                    title: title,
                     description: description?.trim() ?? "Description",
                     points: points ?? 10,
-                    programming_language:
-                        programmingLanguage?.trim() ?? "Language",
+                    programming_language: programmingLanguage ?? "Language",
                     code_template: codeTemplate?.trim() ?? "Code template",
                     hints: {
                         createMany: {
@@ -453,6 +456,13 @@ export default class ExerciseController {
             codeTemplate,
         }: _Patch,
     ): Promise<Result<void>> => {
+        title = title?.trim();
+        programmingLanguage = programmingLanguage?.trim();
+        if (title !== undefined && !title)
+            return new Err(406, "No title supplied");
+        if (programmingLanguage !== undefined && !programmingLanguage)
+            return new Err(406, "No programming language supplied");
+
         let hintOrder = 1;
         let additional = { hints: {}, test_case: {}, examples: {} };
         if (hints)
@@ -519,9 +529,9 @@ export default class ExerciseController {
                     exercise_id: exerciseId,
                 },
                 data: {
-                    title: title?.trim(),
+                    title: title,
                     description: description?.trim(),
-                    programming_language: programmingLanguage?.trim(),
+                    programming_language: programmingLanguage,
                     code_template: codeTemplate?.trim(),
                     points,
                     hints: additional.hints,

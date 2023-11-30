@@ -299,6 +299,30 @@ describe("ExerciseController testing", function () {
         assert.equal(fix!.test_case.length, 1);
         assert.equal(fix!.test_case[0].code, "Test case 1 code");
     });
+    it("Patch exercise: Invalid title", async function () {
+        const result = await ExerciseController.patchExercise(1, {
+            title: "   ",
+            description: "Description 1",
+            points: 1,
+            programmingLanguage: " Java",
+            codeTemplate: "template ",
+        });
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 406);
+        assert.equal((<Err>result).msg, "No title supplied");
+    });
+    it("Patch exercise: Invalid Language", async function () {
+        const result = await ExerciseController.patchExercise(1, {
+            title: " 1  ",
+            description: "Description 1",
+            points: 1,
+            programmingLanguage: "",
+            codeTemplate: "template ",
+        });
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 400);
+        assert.equal((<Err>result).msg, "No programming language supplied");
+    });
 
     it("Add exercise: Only title", async function () {
         const result = await ExerciseController.addExercise(1, {
@@ -365,6 +389,23 @@ describe("ExerciseController testing", function () {
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 404);
         assert.equal((<Err>result).msg, "Session does not exist");
+    });
+    it("Add exercise: Invalid title", async function () {
+        const result = await ExerciseController.addExercise(1, {
+            title: "",
+        });
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 406);
+        assert.equal((<Err>result).msg, "No title supplied");
+    });
+    it("Add exercise: Invalid language", async function () {
+        const result = await ExerciseController.addExercise(1, {
+            title: "1",
+            programmingLanguage: "   ",
+        });
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 406);
+        assert.equal((<Err>result).msg, "No programming language supplied");
     });
 
     it("Remove exercise: Valid Exercise ID", async function () {

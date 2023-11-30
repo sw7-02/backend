@@ -39,6 +39,12 @@ describe("SessionController testing", function () {
         assert.equal((<Err>result).code, 400);
         assert.equal((<Err>result).msg, "Failed adding new session");
     });
+    it("Insert session: Invalid title", async function () {
+        const result = await SessionController.insertSessionFromCourse(1, "");
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 406);
+        assert.equal((<Err>result).msg, "Title missing");
+    });
 
     it("Rename session: Valid id", async function () {
         const result = await SessionController.renameSessionFromCourse(

@@ -93,6 +93,15 @@ export default class AuthController {
         username: string,
         password: string,
     ): Promise<Result<AuthRes>> => {
+        function valid(username: string) {
+            return (
+                !numberRegEx.test(username.charAt(0)) &&
+                !specialCharRegEx.test(username) &&
+                username === username.trim()
+            );
+        }
+
+        if (!valid(username)) return new Err(404, "Username invalid");
         return prisma.user
             .findFirstOrThrow({
                 where: { username },
