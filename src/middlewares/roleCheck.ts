@@ -4,7 +4,7 @@ import prisma from "../prisma";
 export default function roleCheck(roles: number[]) {
     return async (req: Request, res: Response, next: NextFunction) => {
         const user_id = res.locals.jwtPayload.userId;
-        const course_id = res.locals.course_id;
+        const course_id = res.locals.courseId;
         await prisma.enrollment
             .findUniqueOrThrow({
                 where: {
