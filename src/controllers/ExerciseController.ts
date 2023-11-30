@@ -350,9 +350,10 @@ export default class ExerciseController {
             hints,
             testCases,
             examples,
-        }: _Patch
+        }: _Patch,
     ): Promise<Result<number>> => {
         let order = 1;
+        if (!title) return new Err(400, "No title supplied");
         return prisma.exercise
             .create({
                 data: {
@@ -361,30 +362,33 @@ export default class ExerciseController {
                             session_id: sessionId,
                         },
                     },
-                    title: title ?? "UNREACHABLE",
+                    title: title,
                     description: description ?? "Description",
                     points: points ?? 10,
                     programming_language: programmingLanguage ?? "Language",
                     code_template: codeTemplate ?? "Code template",
                     hints: {
                         createMany: {
-                            data: hints?.map((h) => {
-                                return { description: h, order: order++ };
-                            }) ?? [],
+                            data:
+                                hints?.map((h) => {
+                                    return { description: h, order: order++ };
+                                }) ?? [],
                         },
                     },
                     test_case: {
                         createMany: {
-                            data: testCases?.map((c) => {
-                                return { code: c };
-                            }) ?? [],
+                            data:
+                                testCases?.map((c) => {
+                                    return { code: c };
+                                }) ?? [],
                         },
                     },
                     examples: {
                         createMany: {
-                            data: examples?.map(({ input, output }) => {
-                                return { input, output };
-                            }) ?? [],
+                            data:
+                                examples?.map(({ input, output }) => {
+                                    return { input, output };
+                                }) ?? [],
                         },
                     },
                 },
@@ -409,7 +413,19 @@ export default class ExerciseController {
                 },
             })
             .then(
-                () => {},
+                async () => {
+                    await Promise.all([
+                        prisma.hint.deleteMany({
+                            where: { exercise_id: exerciseId },
+                        }),
+                        prisma.example.deleteMany({
+                            where: { exercise_id: exerciseId },
+                        }),
+                        prisma.testCase.deleteMany({
+                            where: { exercise_id: exerciseId },
+                        }),
+                    ]);
+                },
                 (r) => {
                     console.error(
                         `Failure deleting exercise ${exerciseId}: ${r}`,
@@ -474,6 +490,7 @@ export default class ExerciseController {
                     }),
                 },
             };
+        console.log(examples?.length);
         if (examples)
             additional.examples = {
                 deleteMany: {

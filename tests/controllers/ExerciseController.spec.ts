@@ -6,8 +6,6 @@ import prisma from "../../src/prisma";
 describe("ExerciseController testing", function () {
     it("Retrieve all exercises: Valid session", async function () {
         const result = await ExerciseController.retrieveAllExercises(1);
-        console.log(result);
-        console.log(await prisma.session.findMany());
         assert.notEqual(result instanceof Err, true);
         assert.equal((<[]>result).length, 1);
     });
@@ -20,8 +18,6 @@ describe("ExerciseController testing", function () {
 
     it("Retrieve specific exercise: Valid id", async function () {
         const result = await ExerciseController.retrieveExercise(1);
-        console.log(result);
-        console.log(await prisma.exercise.findMany());
         assert.notEqual(result instanceof Err, true);
         const res = <any>result;
         assert.equal(res.exercise_id, 1);
@@ -30,7 +26,20 @@ describe("ExerciseController testing", function () {
         assert.equal(res.points, 10);
         assert.equal(res.programming_language, "JavaScript");
         assert.equal(res.code_template, "Your code template here");
-        //TODO: Hints, test_cases, and examples
+
+        assert.equal(res.hints.length, 1);
+        console.log(res.hints);
+        assert.equal(res.hints[0].description, "Hint 1 description");
+        assert.equal(res.hints[0].order, 1);
+
+        assert.equal(res.test_case.length, 1);
+        assert.equal(res.test_case[0].code, "Test case 1 code");
+
+        assert.equal(res.examples.length, 2);
+        assert.equal(res.hints[0].input, "[1, 2, 3]");
+        assert.equal(res.hints[0].output, "6");
+        assert.equal(res.hints[1].input, "[3, 4, 7]");
+        assert.equal(res.hints[1].output, "14");
     });
     it("Retrieve specific exercise: Invalid id", async function () {
         const result = await ExerciseController.retrieveExercise(1000);
@@ -207,15 +216,18 @@ describe("ExerciseController testing", function () {
         assert.equal(fix!.hints[0].order, 1);
     });
     it("Patch exercise: New Examples", async function () {
+        console.log(await prisma.example.findMany());
         const pre = await prisma.exercise
             .findFirstOrThrow({
                 where: { exercise_id: 1 },
                 include: { examples: true },
             })
             .catch(() => assert.fail("Exercise gone"));
-        assert.equal(pre!.examples.length, 1);
+        assert.equal(pre!.examples.length, 2);
         assert.equal(pre!.examples[0].input, "[1, 2, 3]");
         assert.equal(pre!.examples[0].output, "6");
+        assert.equal(pre!.examples[1].input, "[3, 4, 7]");
+        assert.equal(pre!.examples[1].output, "14");
 
         const examples = [
             { input: "1", output: "2" },
@@ -224,6 +236,7 @@ describe("ExerciseController testing", function () {
         ];
         let result = await ExerciseController.patchExercise(1, { examples });
         assert.notEqual(result instanceof Err, true);
+        console.log(await prisma.example.findMany());
 
         const post = await prisma.exercise
             .findFirst({
@@ -238,9 +251,13 @@ describe("ExerciseController testing", function () {
         }
 
         result = await ExerciseController.patchExercise(1, {
-            examples: [{ input: "[1, 2, 3]", output: "6" }],
+            examples: [
+                { input: "[1, 2, 3]", output: "6" },
+                { input: "[3, 4, 7]", output: "14" },
+            ],
         });
         assert.notEqual(result instanceof Err, true);
+        console.log(await prisma.example.findMany());
 
         const fix = await prisma.exercise
             .findFirst({
@@ -248,9 +265,11 @@ describe("ExerciseController testing", function () {
                 include: { examples: true },
             })
             .catch(() => assert.fail("Exercise gone"));
-        assert.equal(fix!.examples.length, 1);
+        assert.equal(fix!.examples.length, 2);
         assert.equal(fix!.examples[0].input, "[1, 2, 3]");
         assert.equal(fix!.examples[0].output, "6");
+        assert.equal(fix!.examples[1].input, "[3, 4, 7]");
+        assert.equal(fix!.examples[1].output, "14");
     });
     it("Patch exercise: New Test Cases", async function () {
         const pre = await prisma.exercise
@@ -291,6 +310,123 @@ describe("ExerciseController testing", function () {
         assert.equal(fix!.test_case[0].code, "Test case 1 code");
     });
 
-    // TODO: Add/Remove exercise (not in routes, ignored for now in testing)
-    // TODO: Testing code
+    it("Add exercise: Only title", async function () {
+        const result = await ExerciseController.addExercise(1, {
+            title: "Exercise 2",
+        });
+        assert.notEqual(result instanceof Err, true);
+        assert.equal(result, 2);
+        const ex = await prisma.exercise
+            .findUniqueOrThrow({
+                where: {
+                    exercise_id: <number>result,
+                },
+                include: { hints: true, examples: true, test_case: true },
+            })
+            .catch(() => assert.fail("unreachable"));
+        assert.equal(ex.title, "Exercise 2");
+        assert.equal(ex.description, "Description");
+        assert.equal(ex.points, 10);
+        assert.equal(ex.code_template, "Code template");
+        assert.equal(ex.programming_language, "Language");
+        assert.equal(ex.hints.length, 0);
+        assert.equal(ex.examples.length, 0);
+        assert.equal(ex.test_case.length, 0);
+    });
+    it("Add exercise: With properties", async function () {
+        const result = await ExerciseController.addExercise(1, {
+            title: "Exercise 3",
+            description: "Desc",
+            points: 1,
+            programmingLanguage: "C",
+            codeTemplate: "something",
+            hints: ["hint"],
+            examples: [{ input: "2", output: "0" }],
+            testCases: ["test"],
+        });
+        assert.notEqual(result instanceof Err, true);
+        assert.equal(result, 3);
+        const ex = await prisma.exercise
+            .findUniqueOrThrow({
+                where: {
+                    exercise_id: <number>result,
+                },
+                include: { hints: true, examples: true, test_case: true },
+            })
+            .catch(() => assert.fail("unreachable"));
+        assert.equal(ex.title, "Exercise 3");
+        assert.equal(ex.description, "Desc");
+        assert.equal(ex.points, 1);
+        assert.equal(ex.code_template, "something");
+        assert.equal(ex.programming_language, "C");
+        assert.equal(ex.hints.length, 1);
+        assert.equal(ex.hints[0].description, "hint");
+        assert.equal(ex.hints[0].order, 1);
+        assert.equal(ex.examples.length, 1);
+        assert.equal(ex.examples[0].input, "2");
+        assert.equal(ex.examples[0].output, "0");
+        assert.equal(ex.test_case.length, 1);
+        assert.equal(ex.test_case[0].code, "test");
+    });
+    it("Add exercise: Invalid Session ID", async function () {
+        const result = await ExerciseController.addExercise(1000, {
+            title: "Exercise 100",
+        });
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "Session does not exist");
+    });
+
+    it("Remove exercise: Valid Exercise ID", async function () {
+        let id = 2;
+        let result = await ExerciseController.deleteExercise(id);
+        assert.notEqual(result instanceof Err, true);
+        assert.equal(
+            await prisma.exercise.findFirst({ where: { exercise_id: id } }),
+            null,
+        );
+        assert.equal(
+            (await prisma.hint.findMany({ where: { exercise_id: id } })).length,
+            0,
+        );
+        assert.equal(
+            (await prisma.example.findMany({ where: { exercise_id: id } }))
+                .length,
+            0,
+        );
+        assert.equal(
+            (await prisma.testCase.findMany({ where: { exercise_id: id } }))
+                .length,
+            0,
+        );
+        id = 3;
+        result = await ExerciseController.deleteExercise(id);
+        assert.notEqual(result instanceof Err, true);
+        assert.equal(
+            await prisma.exercise.findFirst({ where: { exercise_id: id } }),
+            null,
+        );
+        assert.equal(
+            (await prisma.hint.findMany({ where: { exercise_id: id } })).length,
+            0,
+        );
+        assert.equal(
+            (await prisma.example.findMany({ where: { exercise_id: id } }))
+                .length,
+            0,
+        );
+        assert.equal(
+            (await prisma.testCase.findMany({ where: { exercise_id: id } }))
+                .length,
+            0,
+        );
+    });
+    it("Remove exercise: Invalid Exercise ID", async function () {
+        const result = await ExerciseController.deleteExercise(1000);
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 404);
+        assert.equal((<Err>result).msg, "Exercise does not exist");
+    });
+
+    // TODO: Test runner
 });
