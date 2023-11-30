@@ -4,9 +4,9 @@ const app = require("../src/index");
 
 describe("testing routes", function () {
     it("test route", async function (done) {
-        const res = await supertest(app)
+        supertest(app)
             .get("/")
-            .end((err: any, res: any) => {
+            .end((err: any) => {
                 if (err instanceof Error) done(err);
                 done();
             }); //.expect(200).end(done());
