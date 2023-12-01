@@ -587,15 +587,13 @@ export default class ExerciseController {
         };
         const result = await executeTest(data);
 
-        if (result instanceof Err)
-            //OK
-            return result;
+        if (result instanceof Err) return result;
 
         if (result.length === 0) return;
 
         const fails = {
             count: result.length,
-            failed_visible_tests: result, // TODO: Transform object maybe
+            failed_visible_tests: result,
         };
         return new Err(69, fails);
 
@@ -631,10 +629,9 @@ async function executeTest(
             //responseType: "json",
         })
         .then(
+            () => [], // If good, send empty array (no errors)
             (r) => {
-                return [];
-            },
-            (r) => {
+                const d = r.data.toJSON();
                 console.log("bad");
                 console.log(r);
                 console.log(r.data);

@@ -133,7 +133,6 @@ routes
                 res.status(code).send(msg);
             } else res.send();
         },
-        [enrollmentCheck],
     )
     .post(async (req: Request, res: Response) => {
         const exerciseId: number = +res.locals.exerciseId;
@@ -143,6 +142,7 @@ routes
 
         const testResult = await ExerciseController.testExercise(
             exerciseId,
+            userId,
             solution,
         );
         if (testResult instanceof Err) {
@@ -185,14 +185,19 @@ routes.post(
     "/:exercise_id/test",
     [saveExerciseId],
     async (req: Request, res: Response) => {
-        const id: number = +res.locals.exerciseId;
+        const exerciseId: number = +res.locals.exerciseId;
+        const userId: number = +res.locals.jwtPayload.userId;
         const { solution } = req.body;
         if (!solution) {
             res.status(400).send("No solution provided");
             return;
         }
 
-        const result = await ExerciseController.testExercise(id, solution);
+        const result = await ExerciseController.testExercise(
+            exerciseId,
+            userId,
+            solution,
+        );
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);
