@@ -8,7 +8,7 @@ describe("testing routes", function () {
     const server = http.createServer(app);
     const request = chai.request(server);
 
-    after(done => server.close(done));
+    after((done) => server.close(done));
 
     it("test route", async function () {
         return chai
