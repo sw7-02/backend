@@ -44,6 +44,27 @@ describe("AuthController testing", function () {
             `Password not valid: Not enough special characters, there should be at least 1 special character`,
         );
     });
+    it("Signup invalid username: empty", async function () {
+        const res = await AuthController.signUp("", "password@1000");
+        assert.equal(res instanceof Err, true);
+        const { code, msg } = <Err>res;
+        assert.equal(code, 406);
+        assert.equal(msg, "Username invalid");
+    });
+    it("Signup invalid username: start number", async function () {
+        const res = await AuthController.signUp("4user", "password@1000");
+        assert.equal(res instanceof Err, true);
+        const { code, msg } = <Err>res;
+        assert.equal(code, 406);
+        assert.equal(msg, "Username invalid");
+    });
+    it("Signup invalid username: contains special character", async function () {
+        const res = await AuthController.signUp("us$r4", "password@1000");
+        assert.equal(res instanceof Err, true);
+        const { code, msg } = <Err>res;
+        assert.equal(code, 406);
+        assert.equal(msg, "Username invalid");
+    });
 
     it("Login Existing User", async function () {
         const res = await AuthController.login("user1", "password1@");

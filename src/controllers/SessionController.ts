@@ -33,30 +33,34 @@ export default class SessionController {
     static insertSessionFromCourse = async (
         courseId: number,
         title: string,
-    ): Promise<Result<{ session_id: number }>> =>
-        prisma.session
-            .create({
-                data: {
-                    title,
-                    course: {
-                        connect: {
-                            course_id: courseId,
+    ): Promise<Result<{ session_id: number }>> => {
+        title = title.trim();
+        if (!title) return new Err(406, "Title missing");
+        else
+            return prisma.session
+                .create({
+                    data: {
+                        title: title,
+                        course: {
+                            connect: {
+                                course_id: courseId,
+                            },
                         },
                     },
-                },
-                select: {
-                    session_id: true,
-                },
-            })
-            .then(
-                (r) => r,
-                (reason) => {
-                    console.error(
-                        `Failed adding session to course ${courseId}: ${reason}`,
-                    );
-                    return new Err(400, "Failed adding new session");
-                },
-            );
+                    select: {
+                        session_id: true,
+                    },
+                })
+                .then(
+                    (r) => r,
+                    (reason) => {
+                        console.error(
+                            `Failed adding session to course ${courseId}: ${reason}`,
+                        );
+                        return new Err(400, "Failed adding new session");
+                    },
+                );
+    };
 
     static deleteSessionFromCourse = async (
         sessionId: number,
@@ -78,23 +82,27 @@ export default class SessionController {
     static renameSessionFromCourse = async (
         sessionId: number,
         newTitle: string,
-    ): Promise<Result<{ session_id: number }>> =>
-        prisma.session
-            .update({
-                where: {
-                    session_id: sessionId,
-                },
-                data: {
-                    title: newTitle,
-                },
-            })
-            .then(
-                ({ session_id, ..._ }) => {
-                    return { session_id };
-                },
-                (reason) => {
-                    console.error(`Failed renaming session: ${reason}`);
-                    return new Err(404, "Session not found");
-                },
-            );
+    ): Promise<Result<{ session_id: number }>> => {
+        newTitle = newTitle.trim();
+        if (!newTitle) return new Err(406, "Title missing");
+        else
+            return prisma.session
+                .update({
+                    where: {
+                        session_id: sessionId,
+                    },
+                    data: {
+                        title: newTitle.trim(),
+                    },
+                })
+                .then(
+                    ({ session_id, ..._ }) => {
+                        return { session_id };
+                    },
+                    (reason) => {
+                        console.error(`Failed renaming session: ${reason}`);
+                        return new Err(404, "Session not found");
+                    },
+                );
+    };
 }

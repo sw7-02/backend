@@ -9,8 +9,14 @@ describe("CourseController testing", function () {
         assert.notEqual(result instanceof Err, true);
         assert.equal((<any>result).course_id, 3);
         await prisma.course
-            .findUniqueOrThrow({ where: { course_id: 2 } })
+            .findUniqueOrThrow({ where: { course_id: 3 } })
             .catch(() => assert.fail("course not created"));
+    });
+    it("Create course: Invalid title", async function () {
+        const result = await CourseController.createCourse("   ");
+        assert.equal(result instanceof Err, true);
+        assert.equal((<Err>result).code, 406);
+        assert.equal((<Err>result).msg, "Title is needed");
     });
 
     it("Rename course: Valid Id", async function () {
@@ -19,6 +25,18 @@ describe("CourseController testing", function () {
         assert.equal((<any>result).course_id, 3);
         await prisma.course.findUniqueOrThrow({ where: { course_id: 3 } }).then(
             (r) => assert.equal(r.title, "New title"),
+            () => assert.fail("unreachable"),
+        );
+    });
+    it("Rename course: Whitespace", async function () {
+        const result = await CourseController.renameCourse(
+            3,
+            "  Newer title  ",
+        );
+        assert.notEqual(result instanceof Err, true);
+        assert.equal((<any>result).course_id, 3);
+        await prisma.course.findUniqueOrThrow({ where: { course_id: 3 } }).then(
+            (r) => assert.equal(r.title, "Newer title"),
             () => assert.fail("unreachable"),
         );
     });

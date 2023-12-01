@@ -94,7 +94,7 @@ export default class AssignmentController {
                         assignment_id: assignmentId,
                     },
                 },
-                update: { solution, feedback: "" },
+                update: { solution: solution.trim(), feedback: "" },
                 create: {
                     user: {
                         connect: {
@@ -106,7 +106,7 @@ export default class AssignmentController {
                             assignment_id: assignmentId,
                         },
                     },
-                    solution,
+                    solution: solution.trim(),
                     feedback: "",
                 },
             })
@@ -183,7 +183,7 @@ export default class AssignmentController {
                     assignment_solution_id: assignmentSolutionId,
                 },
                 data: {
-                    feedback,
+                    feedback: feedback.trim(),
                 },
             })
             .then(

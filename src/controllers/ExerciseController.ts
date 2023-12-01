@@ -353,7 +353,11 @@ export default class ExerciseController {
         }: _Patch,
     ): Promise<Result<{ exercise_id: number }>> => {
         let order = 1;
-        if (!title) return new Err(400, "No title supplied");
+        title = title?.trim();
+        programmingLanguage = programmingLanguage?.trim();
+        if (!title) return new Err(406, "No title supplied");
+        if (programmingLanguage !== undefined && !programmingLanguage)
+            return new Err(406, "No programming language supplied");
         return prisma.exercise
             .create({
                 data: {
@@ -363,15 +367,18 @@ export default class ExerciseController {
                         },
                     },
                     title: title,
-                    description: description ?? "",
-                    points: points ?? 0,
+                    description: description?.trim() ?? "Description",
+                    points: points ?? 10,
                     programming_language: programmingLanguage ?? "Language",
-                    code_template: codeTemplate ?? "",
+                    code_template: codeTemplate?.trim() ?? "Code template",
                     hints: {
                         createMany: {
                             data:
                                 hints?.map((h) => {
-                                    return { description: h, order: order++ };
+                                    return {
+                                        description: h.trim(),
+                                        order: order++,
+                                    };
                                 }) ?? [],
                         },
                     },
@@ -379,15 +386,18 @@ export default class ExerciseController {
                         createMany: {
                             data:
                                 testCases?.map((c) => {
-                                    return { code: c };
-                                }) ?? [{code: ""}],
+                                    return { code: c.trim() };
+                                }) ?? [],
                         },
                     },
                     examples: {
                         createMany: {
                             data:
                                 examples?.map(({ input, output }) => {
-                                    return { input, output };
+                                    return {
+                                        input: input.trim(),
+                                        output: output.trim(),
+                                    };
                                 }) ?? [],
                         },
                     },
@@ -446,6 +456,13 @@ export default class ExerciseController {
             codeTemplate,
         }: _Patch,
     ): Promise<Result<void>> => {
+        title = title?.trim();
+        programmingLanguage = programmingLanguage?.trim();
+        if (title !== undefined && !title)
+            return new Err(406, "No title supplied");
+        if (programmingLanguage !== undefined && !programmingLanguage)
+            return new Err(406, "No programming language supplied");
+
         let hintOrder = 1;
         let additional = { hints: {}, test_case: {}, examples: {} };
         if (hints)
@@ -472,7 +489,7 @@ export default class ExerciseController {
                     // Creates new if needed
                     data: hints.slice(hintOrder - 1).map((h) => {
                         return {
-                            description: h,
+                            description: h.trim(),
                             order: hintOrder++,
                         };
                     }),
@@ -486,7 +503,7 @@ export default class ExerciseController {
                 },
                 createMany: {
                     data: testCases.map((c) => {
-                        return { code: c };
+                        return { code: c.trim() };
                     }),
                 },
             };
@@ -497,7 +514,12 @@ export default class ExerciseController {
                     exercise_id: exerciseId,
                 },
                 createMany: {
-                    data: examples,
+                    data: examples.map((io) => {
+                        return {
+                            input: io.input.trim(),
+                            output: io.output.trim(),
+                        };
+                    }),
                 },
             };
 
@@ -507,10 +529,10 @@ export default class ExerciseController {
                     exercise_id: exerciseId,
                 },
                 data: {
-                    title,
-                    description,
+                    title: title,
+                    description: description?.trim(),
                     programming_language: programmingLanguage,
-                    code_template: codeTemplate,
+                    code_template: codeTemplate?.trim(),
                     points,
                     hints: additional.hints,
                     test_case: additional.test_case,
@@ -560,7 +582,7 @@ export default class ExerciseController {
         if (testCases instanceof Err) return testCases;
 
         const data: Test = {
-            code: solution,
+            code: solution.trim(),
             language: testCases.programming_language,
             test_cases: testCases.test_case.map((tc) => {
                 const { test_case_id, code } = tc;
