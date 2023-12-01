@@ -61,7 +61,7 @@ jobs:
           PGPASSWORD=postgres psql -U postgres -f ./tests/lib/schema.sql postgresql://postgres:postgres@localhost:5432/improved
       - run: npm ci
       - run: npm run build --if-present
-      - run: npm test
+      - run: CI=true npm test
 
   fmt:
     runs-on: ubuntu-latest
