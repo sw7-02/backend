@@ -43,6 +43,7 @@ jobs:
     env:
       JWT_SECRET: "@@TEST_SECRET$$"
       DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/improved?schema=improved_schema"
+      CI: true
 
     steps:
       - uses: actions/checkout@v3
