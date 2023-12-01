@@ -10,15 +10,13 @@ describe("testing routes", function () {
         request.close(), done();
     });
 
-    it("test route", async function () {
+    it("test route", (done) => {
         return chai
             .request(app)
             .get("/")
-            .then((res) => {
+            .end((err, res) => {
                 chai.expect(res.status).to.eql(200);
-            },
-            (err?:any) =>{
-                console.log(err);
+                done();
         });
     });
 });
