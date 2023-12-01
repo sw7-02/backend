@@ -22,7 +22,20 @@ export const isTeacher = async (
     res: Response,
     next: NextFunction,
 ) => {
-    if (res.locals.isTeacher) next();
+    const isTeacher =
+        res.locals.isTeacher !== undefined
+            ? res.locals.isTeacher
+            : prisma.user
+                  .findUniqueOrThrow({
+                      where: {
+                          user_id: res.locals.jwtPayload.userId,
+                      },
+                      select: {
+                          is_teacher: true,
+                      },
+                  })
+                  .then((r) => r.is_teacher);
+    if (isTeacher) next();
     else {
         res.status(401).send("You are not a teacher");
         return;
