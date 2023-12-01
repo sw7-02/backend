@@ -122,12 +122,6 @@ routes.post("/:exercise_id", async (req: Request, res: Response) => {
     } else res.send(resultSubmission);
 });
 
-routes.put("/:exercise_id", (req: Request, res: Response) => {
-    // TODO: We have the post?
-    res.send("You have updated your exercise solution");
-    return res.sendStatus(201);
-});
-
 // exercise solutions
 // TODO: Role check middleware
 routes.get(

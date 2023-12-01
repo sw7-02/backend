@@ -49,7 +49,7 @@ model Course {
   @@map("courses")
 }
 
-model Assignment {
+model Assignment { //TODO: visibility?
   assignment_id        Int      @id @default(autoincrement())
   course_id            Int
   title                String
@@ -69,11 +69,12 @@ model AssignmentSolution {
   assignment_id          Int
   user_id                Int
   solution               String
-  feedback               String //TODO: line-specefic feedback like when reviewing on GH?
+  feedback               String? //TODO: line-specefic feedback like when reviewing on GH?
 
   assignment Assignment @relation(fields: [assignment_id], references: [assignment_id])
   user       User       @relation(fields: [user_id], references: [user_id])
 
+  @@unique([user_id, assignment_id])
   @@map("assignment_solutions")
 }
 

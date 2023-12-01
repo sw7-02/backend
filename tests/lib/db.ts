@@ -92,7 +92,7 @@ export async function seed() {
             title: "Assignment 1",
             description: "Description of Assignment 1",
             code_template: "Your code template here",
-            due_date: new Date(),
+            due_date: new Date("2023-12-21"),
             course_id: course1.course_id,
             programming_language: "JavaScript",
         },
@@ -103,6 +103,13 @@ export async function seed() {
             user_id: user1.user_id,
             solution: "Sample solution 1",
             feedback: "Feedback for solution 1",
+        },
+    });
+    const assignmentSolution2 = await prisma.assignmentSolution.create({
+        data: {
+            assignment_id: assignment1.assignment_id,
+            user_id: user2.user_id,
+            solution: "solution from user2",
         },
     });
 
