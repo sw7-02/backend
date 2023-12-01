@@ -35,13 +35,13 @@ routes
             res.status(code).send(msg);
         } else res.send(result);
     })
-    .post([isTeacher], (req: Request, res: Response) => {
+    .post([isTeacher], async (req: Request, res: Response) => {
         const title: string = req.body.title;
         if (!title) {
             res.status(400).send("No valid title provided");
             return;
         }
-        const result = CourseController.createCourse(title);
+        const result = await CourseController.createCourse(title);
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);
