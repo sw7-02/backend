@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import roleCheck from "../../src/middlewares/roleCheck";
+import roleCheck, { isTeacher } from "../../src/middlewares/roleCheck";
 import prisma from "../../src/prisma";
 import { Request, Response } from "express";
 import httpMocks from "node-mocks-http";
@@ -206,6 +206,25 @@ describe("RoleCheck testing", function () {
         assert.equal(
             response.statusCode,
             200,
+            "Status code not accepted, roleChecker failed to grant TA access",
+        );
+    });
+
+    it("Is teacher works", async function () {
+        response.locals.isTeacher = true;
+        await isTeacher(request, response, nxtFunc);
+        assert.equal(
+            response.statusCode,
+            200,
+            "Status code not accepted, roleChecker failed to grant TA access",
+        );
+    });
+    it("Is teacher fails", async function () {
+        response.locals.isTeacher = false;
+        await isTeacher(request, response, nxtFunc);
+        assert.equal(
+            response.statusCode,
+            401,
             "Status code not accepted, roleChecker failed to grant TA access",
         );
     });
