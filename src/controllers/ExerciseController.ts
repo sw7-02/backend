@@ -616,27 +616,99 @@ type ExerciseTest = {
 type TestResponse = {
     testCaseId: number;
     reason: string;
-    responseCode: number;
+    responseCode: ResponseCode;
 };
 
-async function executeTest(
-    data: ExerciseTest,
-): Promise<Result<TestResponse[], Err>> {
+enum ResponseCode {
+    UNKNOWN_FAILURE_CODE = 4,
+    TIMEOUT_CODE = 3,
+    COMPILATION_ERROR_CODE = 2,
+    TEST_FAILED_CODE = 1,
+    TEST_PASSED_CODE = 0,
+}
+
+async function executeTest(data: ExerciseTest): Promise<Result<string[]>> {
     return axios
         .post(config.server.test_runner, JSON.stringify(data), {
-            timeout: 5000,
-            validateStatus: (s) => [200, 202].includes(s),
+            timeout: 10000,
+            //validateStatus: (s) => [200, 202].includes(s),
             //responseType: "json",
         })
         .then(
-            () => [], // If good, send empty array (no errors)
-            (r) => {
-                const d = r.data.toJSON();
-                console.log("bad");
-                console.log(r);
-                console.log(r.data);
-                //TODO: Validate correct format, else return Err (Compile error, language not supported, other errors)
-                return r.data.toJSON();
+            (response) => {
+                const testsResponses = response.data.toJSON() as TestResponse[];
+                let failures: string[] = [];
+                for (const {
+                    testCaseId,
+                    reason,
+                    responseCode,
+                } of testsResponses) {
+                    if (
+                        testCaseId === undefined ||
+                        reason === undefined ||
+                        responseCode === undefined
+                    )
+                        return new Err(
+                            500,
+                            "Internal error: Test runner response missing",
+                        );
+                    switch (responseCode) {
+                        case ResponseCode.TEST_PASSED_CODE:
+                            continue;
+                        case ResponseCode.TEST_FAILED_CODE:
+                            failures.push(reason);
+                            break;
+                        default:
+                            return new Err(
+                                500,
+                                "Internal error: Test runner returned unexpected",
+                            );
+                    }
+                }
+                return failures;
+            }, // If good, test can have failed
+            (error) => {
+                const testResponse = error.data.toJSON() as TestResponse[];
+                if (testResponse.length !== 1)
+                    return new Err(
+                        500,
+                        "Internal Error: Test runner returned multiple results when a single was expected",
+                    );
+                const { testCaseId, reason, responseCode } = testResponse[0];
+                if (
+                    testCaseId === undefined ||
+                    reason === undefined ||
+                    responseCode === undefined
+                )
+                    return new Err(
+                        500,
+                        "Internal error: Test runner response missing",
+                    );
+                switch (responseCode) {
+                    case ResponseCode.COMPILATION_ERROR_CODE:
+                        return new Err(400, {
+                            msg: "Compilation error",
+                            description: reason,
+                        });
+                    case ResponseCode.TIMEOUT_CODE:
+                        return new Err(400, "Code timed out");
+                    case ResponseCode.UNKNOWN_FAILURE_CODE:
+                        return new Err(
+                            500,
+                            "Internal error: Test runner returned unknown error",
+                        );
+                    case ResponseCode.TEST_FAILED_CODE:
+                    case ResponseCode.TEST_PASSED_CODE:
+                        return new Err(
+                            500,
+                            "Internal error: Test runner returned unexpected output",
+                        );
+                    default:
+                        return new Err(
+                            500,
+                            "Internal error: Test runner returned unknown response code",
+                        );
+                }
             },
         );
 }
