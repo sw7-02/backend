@@ -4,7 +4,7 @@ import { app } from "../src/index";
 
 chai.use(chaiHttp);
 describe("testing routes", function () {
-    const request = chai.request(app);
+    //const request = chai.request(app);
 
     it("test route", (done) => {
         done()
