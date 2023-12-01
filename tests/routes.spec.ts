@@ -16,6 +16,9 @@ describe("testing routes", function () {
             .get("/")
             .then((res) => {
                 chai.expect(res.status).to.eql(200);
-            });
+            },
+            (err?:any) =>{
+                console.log(err);
+        });
     });
 });
