@@ -150,6 +150,7 @@ export async function seed() {
             input: "[1, 2, 3]",
             output: "6",
             exercise_id: exercise1.exercise_id,
+            example_id: 1,
         },
     });
 
@@ -158,6 +159,7 @@ export async function seed() {
             input: "[3, 4, 7]",
             output: "14",
             exercise_id: exercise1.exercise_id,
+            example_id: 2,
         },
     });
 
