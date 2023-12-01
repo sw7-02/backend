@@ -7,11 +7,8 @@ describe("testing routes", function () {
     //const request = chai.request(app);
 
     it("test route", (done) => {
-        let server = app.listen()
-        app.removeAllListeners()
-        server.closeAllConnections()
-        server.close()
-        done()
+        let server = app.listen();
+        server.close(() => done());
         /*return chai
             .request(app)
             .get("/")
