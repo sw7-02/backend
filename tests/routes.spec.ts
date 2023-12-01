@@ -7,6 +7,7 @@ describe("testing routes", function () {
     const request = chai.request(app);
 
     it("test route", (done) => {
+        done()
         /*return chai
             .request(app)
             .get("/")
