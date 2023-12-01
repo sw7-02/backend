@@ -8,7 +8,7 @@ describe("testing routes", function () {
 
     it("test route", (done) => {
         let server = app.listen()
-       server.close();
+        app.removeAllListeners()
         done()
         /*return chai
             .request(app)
