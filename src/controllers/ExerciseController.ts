@@ -588,16 +588,13 @@ export default class ExerciseController {
         const result = await executeTest(data);
 
         if (result instanceof Err) return result;
-
-        if (result.length === 0) return;
+        else if (result.length === 0) return;
 
         const fails = {
             count: result.length,
             failed_visible_tests: result,
         };
-        return new Err(69, fails);
-
-        // TODO: object to return should be total num of errors, and outputs from the failed
+        return new Err(400, fails);
     };
 }
 
