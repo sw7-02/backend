@@ -4,11 +4,11 @@ import config from "../config";
 import { generateJWTToken } from "../lib";
 
 /// Checks given JWT in the header of the requests, serves a new with a deadline of the provided config
-export const validateJWT = (
+export default function validateJWT(
     req: Request,
     res: Response,
     next: NextFunction,
-) => {
+) {
     //Get the jwt token from the header
     const token = <string>req.headers["auth"];
     let jwtPayload;
@@ -29,4 +29,4 @@ export const validateJWT = (
 
     //Call the next middleware or controller
     next();
-};
+}

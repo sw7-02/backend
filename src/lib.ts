@@ -1,17 +1,18 @@
 import * as jwt from "jsonwebtoken";
 import config from "./config";
+import axios from "axios";
 
 class Err {
     code: number;
-    msg: string;
+    msg: string | object;
 
-    constructor(code: number, msg: string) {
+    constructor(code: number, msg: string | object) {
         this.code = code;
         this.msg = msg;
     }
 }
 
-type Result<T> = T | Err;
+type Result<T, E = Err> = T | E;
 
 type JWTPayload = {
     userId: number;

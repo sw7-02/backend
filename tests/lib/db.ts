@@ -1,6 +1,4 @@
-import { PrismaClient, Prisma } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
-import config from "../../src/config";
 import prisma from "../../src/prisma";
 
 //const prisma = new PrismaClient();
@@ -29,6 +27,7 @@ export async function seed() {
             username: "teacher",
             user_password: await bcrypt.hash("teacher1@", salt),
             pw_salt: salt,
+            is_teacher: true,
         },
     });
 
@@ -58,6 +57,7 @@ export async function seed() {
             user_id: user1.user_id,
             course_id: course1.course_id,
             user_role: 0,
+            is_anonymous: false,
             total_points: 5,
         },
     });
@@ -129,7 +129,6 @@ export async function seed() {
     const testCase1 = await prisma.testCase.create({
         data: {
             code: "Test case 1 code",
-            is_visible: true,
             exercise_id: exercise1.exercise_id,
         },
     });
@@ -140,6 +139,25 @@ export async function seed() {
             description: "Hint 1 description",
             order: 1,
             exercise_id: exercise1.exercise_id,
+        },
+    });
+
+    // Create sample examples
+    const example1 = await prisma.example.create({
+        data: {
+            input: "[1, 2, 3]",
+            output: "6",
+            exercise_id: exercise1.exercise_id,
+            example_id: 1,
+        },
+    });
+
+    const example2 = await prisma.example.create({
+        data: {
+            input: "[3, 4, 7]",
+            output: "14",
+            exercise_id: exercise1.exercise_id,
+            example_id: 2,
         },
     });
 

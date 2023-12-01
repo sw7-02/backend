@@ -15,6 +15,7 @@ model Enrollment {
   course_id     Int
   user_id       Int
   user_role     Int  @default(0)
+  is_anonymous  Boolean  @default(true)
   total_points  Int?
 
   course Course @relation(fields: [course_id], references: [course_id])
@@ -49,7 +50,7 @@ model Course {
   @@map("courses")
 }
 
-model Assignment { //TODO: visibility?
+model Assignment { //FW: visibility?
   assignment_id        Int      @id @default(autoincrement())
   course_id            Int
   title                String
@@ -69,7 +70,7 @@ model AssignmentSolution {
   assignment_id          Int
   user_id                Int
   solution               String
-  feedback               String? //TODO: line-specefic feedback like when reviewing on GH?
+  feedback               String? //FW: line-specefic feedback like when reviewing on GH?
 
   assignment Assignment @relation(fields: [assignment_id], references: [assignment_id])
   user       User       @relation(fields: [user_id], references: [user_id])
@@ -99,6 +100,7 @@ model Exercise {
   code_template        String
 
   session   Session            @relation(fields: [session_id], references: [session_id])
+  examples  Example[]
   test_case TestCase[]
   hints     Hint[]
   solutions ExerciseSolution[]
@@ -106,11 +108,20 @@ model Exercise {
   @@map("exercises")
 }
 
+model Example {
+  example_id Int @id @default(autoincrement())
+  exercise_id Int
+  input String
+  output String @map("_output")
+  exercise Exercise @relation(fields: [exercise_id], references: [exercise_id])
+  @@map("examples")
+}
+
 model TestCase {
   test_case_id Int     @id @default(autoincrement())
   exercise_id  Int
   code         String
-  is_visible   Boolean
+  // is_visible   Boolean
 
   exercise Exercise @relation(fields: [exercise_id], references: [exercise_id])
 
@@ -125,7 +136,7 @@ model Hint {
 
   exercise Exercise @relation(fields: [exercise_id], references: [exercise_id])
 
-  @@unique([hint_id, order])
+  @@unique([exercise_id, order])
   @@map("hints")
 }
 

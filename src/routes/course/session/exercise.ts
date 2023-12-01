@@ -1,136 +1,238 @@
 import Router, { Request, Response } from "express";
 import ExerciseController from "../../../controllers/ExerciseController";
-import { Err } from "../../../lib";
+import { Err, Role } from "../../../lib";
 import CourseController from "../../../controllers/CourseController";
+import roleCheck from "../../../middlewares/roleCheck";
+import prisma from "../../../prisma";
+import { saveExerciseId } from "../../../middlewares/savings";
+
+// FW: get-hint endpoint and decrement potential point-gain for specific exercise
 
 const routes = Router();
 
 // enables passing json bodies.
 routes.use(Router.json());
 
-routes.get("/", async (req: Request, res: Response) => {
-    const result = await ExerciseController.retrieveAllExercises(
-        res.locals.sessionId,
-    );
-    if (result instanceof Err) {
-        const { code, msg } = result;
-        res.status(code).send(msg);
-    } else res.send(result);
-});
-
-//TODO: Role middleware
-routes.post("/", async (req: Request, res: Response) => {
-    //TODO: Adding hints and/or test cases?
-    const {
-        title,
-        description,
-        points,
-        programming_language,
-        code_template,
-        hints,
-    } = req.body;
-    if (
-        !(
-            title &&
-            description &&
-            points &&
-            programming_language &&
-            code_template
-        )
-    ) {
-        res.status(400).send("Not all necessary parameters was provided");
-    }
-    const result = await ExerciseController.addExercise(
-        res.locals.sessionId,
-        title,
-        description,
-        points,
-        programming_language,
-        code_template,
-        hints,
-    );
-    if (result instanceof Err) {
-        const { code, msg } = result;
-        res.status(code).send(msg);
-    } else res.send(result);
-});
-
-routes.get("/:exercise_id", async (req: Request, res: Response) => {
-    const id: number = +req.params.exercise_id;
-    if (!id) {
-        res.status(400).send("ID not a number");
-        return;
-    }
-    const result = await ExerciseController.retrieveExercise(id);
-    if (result instanceof Err) {
-        const { code, msg } = result;
-        res.status(code).send(msg);
-    } else res.send(result);
-});
-
-//TODO: Role middleware
-routes.delete("/:exercise_id", async (req: Request, res: Response) => {
-    const id: number = +req.params.exercise_id;
-    if (!id) {
-        res.status(400).send("ID not a number");
-        return;
-    }
-    const result = await ExerciseController.deleteExercise(id);
-    if (result instanceof Err) {
-        const { code, msg } = result;
-        res.status(code).send(msg);
-    } else res.send();
-});
-
-// submit exercise solution
-routes.post("/:exercise_id", async (req: Request, res: Response) => {
-    const exerciseId: number = +req.params.exercise_id;
-    if (!exerciseId) {
-        res.status(400).send("ID not a number");
-        return;
-    }
-
-    // TODO: test the solution beforehand
-
-    const userId: number = res.locals.jwtPayload.userId;
-    const courseId = res.locals.courseId;
-    const { solution, is_anonymous } = req.body;
-
-    let points;
-    const resultSubmission = await CourseController.updatePoints(
-        courseId,
-        userId,
-        exerciseId,
-    ).then((result) => {
-        if (!(result instanceof Err)) {
-            points = result;
-            return ExerciseController.submitExerciseSolution(
-                exerciseId,
-                userId,
-                solution,
-                is_anonymous,
-            );
-        } else return result;
+routes
+    .route("/")
+    .get(async (req: Request, res: Response) => {
+        const result = await ExerciseController.retrieveAllExercises(
+            res.locals.sessionId,
+        );
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send(result);
+    })
+    .post([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
+        const {
+            title,
+            description,
+            points,
+            programming_language,
+            code_template,
+            test_cases,
+            examples,
+            hints,
+        } = req.body;
+        if (!req.body.title) {
+            res.status(400).send("Title not provided provided");
+            return;
+        }
+        const result = await ExerciseController.addExercise(
+            res.locals.sessionId,
+            {
+                title,
+                description,
+                points,
+                programmingLanguage: programming_language,
+                codeTemplate: code_template,
+                hints,
+                testCases: test_cases,
+                examples,
+            },
+        );
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.status(200).send({ exercise_id: result });
     });
 
-    if (resultSubmission instanceof Err) {
-        if (points)
-            // It found points, but failed in submitting => subtract the points
-            await CourseController.decrementPoints(courseId, userId, points);
-        const { code, msg } = resultSubmission;
-        res.status(code).send(msg);
-    } else res.send(resultSubmission);
-});
+routes
+    .route("/:exercise_id")
+    .all(saveExerciseId)
+    .get(async (req: Request, res: Response) => {
+        const id: number = +res.locals.exerciseId;
+        if ([Role.TEACHER, Role.TA].includes(res.locals.userRole)) {
+            const result = await ExerciseController.retrieveExerciseFull(id);
+            if (result instanceof Err) {
+                const { code, msg } = result;
+                res.status(code).send(msg);
+            } else res.send(result);
+        } else {
+            // Student
+            const result = await ExerciseController.retrieveExercise(id);
+            if (result instanceof Err) {
+                const { code, msg } = result;
+                res.status(code).send(msg);
+            } else res.send(result);
+        }
+    })
+    .patch([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
+        const id: number = +res.locals.exerciseId;
+        const result = await ExerciseController.patchExercise(id, {
+            programmingLanguage: req.body.programming_language,
+            codeTemplate: req.body.code_template,
+            ...req.body,
+        });
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send(result);
+    })
+    .put([roleCheck([Role.TEACHER])], async (req: Request, res: Response) => {
+        const missing = [
+            { val: req.body.hints, name: "hints" },
+            { val: req.body.test_cases, name: "test cases" },
+            { val: req.body.examples, name: "examples" },
+            { val: req.body.description, name: "description" },
+            { val: req.body.title, name: "title" },
+            { val: req.body.points, name: "points" },
+            { val: req.body.code_template, name: "code template" },
+            {
+                val: req.body.programming_language,
+                name: "programming language",
+            },
+        ]
+            .filter((c) => c.val === undefined)
+            .map((c) => c.name);
+        if (missing.length > 0) {
+            res.status(400).send(
+                `Not all needed parameters provided: Missing ${missing}`,
+            );
+            return;
+        }
+        const id: number = +res.locals.exerciseId;
+        const result = await ExerciseController.patchExercise(id, {
+            programmingLanguage: req.body.programming_language,
+            codeTemplate: req.body.code_template,
+            ...req.body,
+        });
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send(result);
+    })
+    .delete(
+        [roleCheck([Role.TEACHER])],
+        async (req: Request, res: Response) => {
+            const id: number = +res.locals.exerciseId;
+            const result = await ExerciseController.deleteExercise(id);
+            if (result instanceof Err) {
+                const { code, msg } = result;
+                res.status(code).send(msg);
+            } else res.send();
+        },
+    )
+    .post(async (req: Request, res: Response) => {
+        const exerciseId: number = +res.locals.exerciseId;
+        const userId: number = res.locals.jwtPayload.userId;
+        const courseId = res.locals.courseId;
+        const { solution, is_anonymous } = req.body;
+
+        const testResult = await ExerciseController.testExercise(
+            exerciseId,
+            userId,
+            solution,
+        );
+        if (testResult instanceof Err) {
+            const { code, msg } = testResult;
+            res.status(code).send(msg);
+            return;
+        }
+
+        let points;
+        const resultSubmission = await CourseController.updatePoints(
+            courseId,
+            userId,
+            exerciseId,
+        ).then((result) => {
+            if (!(result instanceof Err)) {
+                points = result;
+                return ExerciseController.submitExerciseSolution(
+                    exerciseId,
+                    userId,
+                    solution,
+                    is_anonymous,
+                );
+            } else return result;
+        });
+
+        if (resultSubmission instanceof Err) {
+            if (points)
+                // It found points, but failed in submitting => subtract the points
+                await CourseController.decrementPoints(
+                    courseId,
+                    userId,
+                    points,
+                );
+            const { code, msg } = resultSubmission;
+            res.status(code).send(msg);
+        } else res.send(resultSubmission);
+    });
+
+routes.post(
+    "/:exercise_id/test",
+    [saveExerciseId],
+    async (req: Request, res: Response) => {
+        const exerciseId: number = +res.locals.exerciseId;
+        const userId: number = +res.locals.jwtPayload.userId;
+        const { solution } = req.body;
+        if (!solution) {
+            res.status(400).send("No solution provided");
+            return;
+        }
+
+        const result = await ExerciseController.testExercise(
+            exerciseId,
+            userId,
+            solution,
+        );
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send(result);
+    },
+);
 
 // exercise solutions
-// TODO: Role check middleware
 routes.get(
     ":exercise_id/exercise-solutions",
+    saveExerciseId,
     async (req: Request, res: Response) => {
-        const exerciseId: number = +req.params.exercise_id;
-        if (!exerciseId) {
-            res.status(400).send("ID not a number");
-            return;
+        const exerciseId: number = +res.locals.exerciseId;
+        const userId = res.locals.jwtPayload.userId;
+        const role = +res.locals.userRole;
+
+        if (![Role.TEACHER, Role.TA].includes(role)) {
+            const hasSubmitted = await prisma.exerciseSolution
+                .findFirstOrThrow({
+                    where: {
+                        exercise_id: exerciseId,
+                        user_id: userId,
+                    },
+                })
+                .then(
+                    () => true,
+                    () => false,
+                );
+
+            if (!hasSubmitted) {
+                res.status(403).send(
+                    "You need to submit an exercise yourself before you can see the others",
+                );
+                return;
+            }
         }
 
         const result =

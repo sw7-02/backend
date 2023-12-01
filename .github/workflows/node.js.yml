@@ -62,6 +62,12 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage
+          path: ./coverage
+          if-no-files-found: error
 
   fmt:
     runs-on: ubuntu-latest
