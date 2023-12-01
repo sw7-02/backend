@@ -11,7 +11,7 @@ type _SessionIdentifier = {
     title: string;
 };
 
-type _Session = {
+export type _Session = {
     session_id: number;
     title: string;
     exercises: _ExerciseIdentifier[];
@@ -42,6 +42,67 @@ type _CourseOverview = {
 }[];
 
 export default class CourseController {
+    static createCourse = async (
+        title: string,
+    ): Promise<Result<{ course_id: number }>> => {
+        title = title.trim();
+        if (!title) return new Err(406, "Title is needed");
+        else
+            return prisma.course
+                .create({
+                    data: {
+                        title: title,
+                    },
+                    select: {
+                        course_id: true,
+                    },
+                })
+                .catch((reason) => {
+                    console.error(`Failed creating new course: ${reason}`);
+                    return new Err(500, "Failed creating new course");
+                });
+    };
+
+    static deleteCourse = async (courseId: number): Promise<Result<void>> =>
+        prisma.course
+            .delete({
+                where: {
+                    course_id: courseId,
+                },
+            })
+            .then(
+                () => {},
+                (reason) => {
+                    console.error(`Failed deleting course: ${reason}`);
+                    return new Err(500, "Failed deleting course");
+                },
+            );
+
+    static renameCourse = async (
+        courseId: number,
+        newTitle: string,
+    ): Promise<Result<{ course_id: number }>> => {
+        newTitle = newTitle.trim();
+        if (!newTitle) return new Err(406, "Title is needed");
+        else
+            return prisma.course
+                .update({
+                    where: {
+                        course_id: courseId,
+                    },
+                    data: {
+                        title: newTitle,
+                    },
+                    select: {
+                        course_id: true,
+                    },
+                })
+                .catch((reason) => {
+                    console.error(`Failed renaming course: ${reason}`);
+                    return new Err(404, "Course not found");
+                });
+    };
+
     static retrieveCourse = async (
         courseId: number,
     ): Promise<Result<_Course>> =>
@@ -58,19 +119,19 @@ export default class CourseController {
                             title: true,
                             session_id: true,
                         },
+                        orderBy: {
+                            session_id: "asc",
+                        },
                     },
                 },
             })
-            .then(
-                (res) => res,
-                (r) => {
-                    console.error(`Failure getting sessions: ${r}`);
-                    return new Err(
-                        404,
-                        "Failed getting sessions: Invalid course ID",
-                    );
-                },
-            );
+            .catch((r) => {
+                console.error(`Failure getting sessions: ${r}`);
+                return new Err(
+                    404,
+                    "Failed getting sessions: Invalid course ID",
+                );
+            });
 
     static retrieveFullCourse = async (
         courseId: number,
@@ -92,27 +153,30 @@ export default class CourseController {
                                     title: true,
                                     exercise_id: true,
                                 },
+                                orderBy: {
+                                    exercise_id: "asc",
+                                },
                             },
+                        },
+                        orderBy: {
+                            session_id: "asc",
                         },
                     },
                 },
             })
-            .then(
-                (res) => res,
-                (r) => {
-                    console.error(`Failure getting sessions: ${r}`);
-                    return new Err(
-                        404,
-                        "Failed getting sessions: Invalid course ID",
-                    );
-                },
-            );
+            .catch((r) => {
+                console.error(`Failure getting sessions: ${r}`);
+                return new Err(
+                    404,
+                    "Failed getting sessions: Invalid course ID",
+                );
+            });
 
     static updatePoints = async function (
         courseId: number,
         userId: number,
         exerciseId: number,
-    ): Promise<Result<number>> {
+    ): Promise<Result<{ total_points: number }>> {
         let points = await prisma.exercise
             .findUniqueOrThrow({
                 where: {
@@ -122,13 +186,10 @@ export default class CourseController {
                     points: true,
                 },
             })
-            .then(
-                (r) => r.points,
-                (reason) => {
-                    console.error(`Failed getting exercise: ${reason}`);
-                    return new Err(404, "Invalid exercise ID");
-                },
-            );
+            .catch((reason) => {
+                console.error(`Failed getting exercise: ${reason}`);
+                return new Err(404, "Invalid exercise ID");
+            });
         if (points instanceof Err) {
             console.error(`Failed getting points: ${points.msg}`);
             return points;
@@ -144,7 +205,7 @@ export default class CourseController {
                 },
                 data: {
                     total_points: {
-                        increment: points,
+                        increment: points.points,
                     } || {
                         set: points,
                     },
@@ -158,7 +219,7 @@ export default class CourseController {
                     if (!r.total_points) {
                         console.error(`User with null points: ${userId}`);
                         return new Err(500, "Internal error");
-                    } else return r.total_points;
+                    } else return { total_points: r.total_points! };
                 },
                 (reason) => {
                     console.error(`Failed finding enrollment: ${reason}`);
@@ -174,7 +235,7 @@ export default class CourseController {
         courseId: number,
         userId: number,
         points: number,
-    ): Promise<Result<number>> {
+    ): Promise<Result<{ total_points: number }>> {
         return prisma.enrollment
             .update({
                 where: {
@@ -194,10 +255,10 @@ export default class CourseController {
             })
             .then(
                 (r) => {
-                    if (!r.total_points) {
+                    if (r.total_points === null) {
                         console.error(`User with null points: ${userId}`);
                         return new Err(500, "Internal error");
-                    } else return r.total_points;
+                    } else return { total_points: r.total_points! };
                 },
                 (reason) => {
                     console.error(`Failed finding enrollment: ${reason}`);
@@ -211,23 +272,25 @@ export default class CourseController {
 
     static retrieveLeaderboard = async (
         courseId: number,
+        userId: number,
     ): Promise<Result<_Leaderboard>> =>
         prisma.course
             .findUniqueOrThrow({
                 where: {
                     course_id: courseId,
                 },
-                select: {
+                include: {
                     enrollments: {
                         where: {
                             user_role: Role.STUDENT,
                         },
                         select: {
                             total_points: true,
+                            is_anonymous: true,
+                            user_id: true,
                             user: {
                                 select: {
                                     username: true,
-                                    //TODO: Anon?
                                 },
                             },
                         },
@@ -249,7 +312,10 @@ export default class CourseController {
                     return res.enrollments.map((r) => {
                         return {
                             total_points: r.total_points!!,
-                            username: r.user.username,
+                            username: r.is_anonymous
+                                ? "Anonymous" +
+                                  (r.user_id === userId ? " (you)" : "")
+                                : r.user.username,
                         };
                     });
                 },
@@ -293,6 +359,51 @@ export default class CourseController {
                 (reason) => {
                     console.error(`Failed getting courses: ${reason}`);
                     return new Err(404, "User does not exist");
+                },
+            );
+
+    static getAnonymity = async (
+        userId: number,
+        courseId: number,
+    ): Promise<Result<{ is_anonymous: boolean }>> =>
+        prisma.enrollment
+            .findUniqueOrThrow({
+                where: {
+                    user_id_course_id: {
+                        course_id: courseId,
+                        user_id: userId,
+                    },
+                },
+                select: {
+                    is_anonymous: true,
+                },
+            })
+            .catch((reason) => {
+                console.error(`Failed finding anonymity: ${reason}`);
+                return new Err(404, "Course or User does not exist");
+            });
+    static setAnonymity = async (
+        userId: number,
+        courseId: number,
+        anon: boolean,
+    ): Promise<Result<void>> =>
+        prisma.enrollment
+            .update({
+                where: {
+                    user_id_course_id: {
+                        course_id: courseId,
+                        user_id: userId,
+                    },
+                },
+                data: {
+                    is_anonymous: anon,
+                },
+            })
+            .then(
+                () => {},
+                (reason) => {
+                    console.error(`Failed setting anonymity: ${reason}`);
+                    return new Err(404, "Course or User does not exist");
                 },
             );
 }

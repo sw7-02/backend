@@ -1,5 +1,7 @@
 import prisma from "../prisma";
 import { Err, Result } from "../lib";
+import axios from "axios";
+import config from "../config";
 
 type _Exercise = {
     exercise_id: number;
@@ -9,13 +11,40 @@ type _Exercise = {
     programming_language: string;
     points: number;
     hints: string[];
-    test_case: string[];
+    examples: _Example[];
+};
+
+type _ExerciseFull = {
+    exercise_id: number;
+    title: string;
+    description: string;
+    code_template: string;
+    programming_language: string;
+    points: number;
+    hints: string[];
+    examples: _Example[];
+    test_cases: string[];
 };
 
 type _ExerciseSolution = {
     solution: string;
     is_pinned: boolean;
     username: string;
+};
+
+type _Example = {
+    input: string;
+    output: string;
+};
+type _Patch = {
+    title?: string;
+    description?: string;
+    programmingLanguage?: string;
+    points?: number;
+    codeTemplate?: string;
+    hints?: string[];
+    testCases?: string[];
+    examples?: _Example[];
 };
 
 export default class ExerciseController {
@@ -42,12 +71,10 @@ export default class ExerciseController {
                                 },
                             },
                             points: true,
-                            test_case: {
-                                where: {
-                                    is_visible: true,
-                                },
+                            examples: {
                                 select: {
-                                    code: true,
+                                    input: true,
+                                    output: true,
                                 },
                             },
                         },
@@ -69,7 +96,7 @@ export default class ExerciseController {
                                 hints,
                                 code_template,
                                 points,
-                                test_case,
+                                examples,
                             } = r;
                             return {
                                 exercise_id,
@@ -79,7 +106,7 @@ export default class ExerciseController {
                                 code_template,
                                 points,
                                 hints: hints.map((h) => h.description),
-                                test_case: test_case.map((t) => t.code),
+                                examples,
                             };
                         });
                 },
@@ -112,10 +139,75 @@ export default class ExerciseController {
                         },
                     },
                     points: true,
-                    test_case: {
-                        where: {
-                            is_visible: true,
+                    examples: {
+                        select: {
+                            input: true,
+                            output: true,
                         },
+                    },
+                },
+            })
+            .then(
+                (res) => {
+                    const {
+                        exercise_id,
+                        title,
+                        description,
+                        programming_language,
+                        hints,
+                        code_template,
+                        points,
+                        examples,
+                    } = res;
+                    return {
+                        exercise_id,
+                        title,
+                        description,
+                        programming_language,
+                        code_template,
+                        points,
+                        hints: hints.map((h) => h.description),
+                        examples,
+                    };
+                },
+                (r) => {
+                    console.error(
+                        `Failure getting exercise ${exerciseId}: ${r}`,
+                    );
+                    return new Err(404, "Exercise does not exist");
+                },
+            );
+
+    static retrieveExerciseFull = async (
+        exerciseId: number,
+    ): Promise<Result<_ExerciseFull>> =>
+        prisma.exercise
+            .findUniqueOrThrow({
+                where: {
+                    exercise_id: exerciseId,
+                },
+                select: {
+                    exercise_id: true,
+                    title: true,
+                    description: true,
+                    programming_language: true,
+                    code_template: true,
+                    hints: {
+                        select: {
+                            description: true,
+                        },
+                        orderBy: {
+                            order: "asc",
+                        },
+                    },
+                    points: true,
+                    examples: {
+                        select: {
+                            input: true,
+                            output: true,
+                        },
+                    },
+                    test_case: {
                         select: {
                             code: true,
                         },
@@ -132,6 +224,7 @@ export default class ExerciseController {
                         hints,
                         code_template,
                         points,
+                        examples,
                         test_case,
                     } = res;
                     return {
@@ -142,7 +235,8 @@ export default class ExerciseController {
                         code_template,
                         points,
                         hints: hints.map((h) => h.description),
-                        test_case: test_case.map((t) => t.code),
+                        examples,
+                        test_cases: test_case.map((t) => t.code),
                     };
                 },
                 (r) => {
@@ -247,15 +341,23 @@ export default class ExerciseController {
 
     static addExercise = async (
         sessionId: number,
-        title: string,
-        description: string,
-        points: number,
-        programmingLanguage: string,
-        codeTemplate: string,
-        hints: string[] = [],
-        testCases: string[] = [],
-    ): Promise<Result<number>> => {
-        let order = 1; //TODO: zero-index?
+        {
+            title,
+            description,
+            points,
+            programmingLanguage,
+            codeTemplate,
+            hints,
+            testCases,
+            examples,
+        }: _Patch,
+    ): Promise<Result<{ exercise_id: number }>> => {
+        let order = 1;
+        title = title?.trim();
+        programmingLanguage = programmingLanguage?.trim();
+        if (!title) return new Err(406, "No title supplied");
+        if (programmingLanguage !== undefined && !programmingLanguage)
+            return new Err(406, "No programming language supplied");
         return prisma.exercise
             .create({
                 data: {
@@ -264,23 +366,39 @@ export default class ExerciseController {
                             session_id: sessionId,
                         },
                     },
-                    title,
-                    description,
-                    points,
-                    programming_language: programmingLanguage,
-                    code_template: codeTemplate,
+                    title: title,
+                    description: description?.trim() ?? "Description",
+                    points: points ?? 10,
+                    programming_language: programmingLanguage ?? "Language",
+                    code_template: codeTemplate?.trim() ?? "Code template",
                     hints: {
                         createMany: {
-                            data: hints.map((h) => {
-                                return { description: h, order: order++ };
-                            }),
+                            data:
+                                hints?.map((h) => {
+                                    return {
+                                        description: h.trim(),
+                                        order: order++,
+                                    };
+                                }) ?? [],
                         },
                     },
                     test_case: {
                         createMany: {
-                            data: testCases.map((c) => {
-                                return { code: c, is_visible: false }; // TODO: get if visible
-                            }),
+                            data:
+                                testCases?.map((c) => {
+                                    return { code: c.trim() };
+                                }) ?? [],
+                        },
+                    },
+                    examples: {
+                        createMany: {
+                            data:
+                                examples?.map(({ input, output }) => {
+                                    return {
+                                        input: input.trim(),
+                                        output: output.trim(),
+                                    };
+                                }) ?? [],
                         },
                     },
                 },
@@ -288,13 +406,10 @@ export default class ExerciseController {
                     exercise_id: true,
                 },
             })
-            .then(
-                (e) => e.exercise_id,
-                (r) => {
-                    console.error(`Failure trying to add exercise: ${r}`);
-                    return new Err(404, "Session does not exist");
-                },
-            );
+            .catch((r) => {
+                console.error(`Failure trying to add exercise: ${r}`);
+                return new Err(404, "Session does not exist");
+            });
     };
 
     static deleteExercise = async (exerciseId: number): Promise<Result<void>> =>
@@ -305,7 +420,19 @@ export default class ExerciseController {
                 },
             })
             .then(
-                () => {},
+                async () => {
+                    await Promise.all([
+                        prisma.hint.deleteMany({
+                            where: { exercise_id: exerciseId },
+                        }),
+                        prisma.example.deleteMany({
+                            where: { exercise_id: exerciseId },
+                        }),
+                        prisma.testCase.deleteMany({
+                            where: { exercise_id: exerciseId },
+                        }),
+                    ]);
+                },
                 (r) => {
                     console.error(
                         `Failure deleting exercise ${exerciseId}: ${r}`,
@@ -313,4 +440,203 @@ export default class ExerciseController {
                     return new Err(404, "Exercise does not exist");
                 },
             );
+    static patchExercise = async (
+        exerciseId: number,
+        {
+            hints,
+            testCases,
+            examples,
+            description,
+            title,
+            points,
+            programmingLanguage,
+            codeTemplate,
+        }: _Patch,
+    ): Promise<Result<void>> => {
+        title = title?.trim();
+        programmingLanguage = programmingLanguage?.trim();
+        if (title !== undefined && !title)
+            return new Err(406, "No title supplied");
+        if (programmingLanguage !== undefined && !programmingLanguage)
+            return new Err(406, "No programming language supplied");
+
+        let hintOrder = 1;
+        let additional = { hints: {}, test_case: {}, examples: {} };
+        if (hints)
+            additional.hints = {
+                deleteMany: {
+                    // removes additional, if any
+                    exercise_id: exerciseId,
+                    order: {
+                        gt: hints.length,
+                    },
+                },
+                updateMany: {
+                    // updates current
+                    where: {
+                        exercise_id: exerciseId,
+                    },
+
+                    data: {
+                        description: hints.at(hintOrder - 1),
+                        order: hintOrder++,
+                    },
+                },
+                createMany: {
+                    // Creates new if needed
+                    data: hints.slice(hintOrder - 1).map((h) => {
+                        return {
+                            description: h.trim(),
+                            order: hintOrder++,
+                        };
+                    }),
+                },
+            };
+        if (testCases)
+            additional.test_case = {
+                deleteMany: {
+                    // removes additional, if any
+                    exercise_id: exerciseId,
+                },
+                createMany: {
+                    data: testCases.map((c) => {
+                        return { code: c.trim() };
+                    }),
+                },
+            };
+        if (examples)
+            additional.examples = {
+                deleteMany: {
+                    // removes additional, if any
+                    exercise_id: exerciseId,
+                },
+                createMany: {
+                    data: examples.map((io) => {
+                        return {
+                            input: io.input.trim(),
+                            output: io.output.trim(),
+                        };
+                    }),
+                },
+            };
+
+        return prisma.exercise
+            .update({
+                where: {
+                    exercise_id: exerciseId,
+                },
+                data: {
+                    title: title,
+                    description: description?.trim(),
+                    programming_language: programmingLanguage,
+                    code_template: codeTemplate?.trim(),
+                    points,
+                    hints: additional.hints,
+                    test_case: additional.test_case,
+                    examples: additional.examples,
+                },
+            })
+            .then(
+                () => {},
+                (r) => {
+                    console.error(
+                        `Failure patching exercise ${exerciseId}: ${r}`,
+                    );
+                    return new Err(404, "Exercise does not exist");
+                },
+            );
+    };
+
+    static testExercise = async (
+        exerciseId: number,
+        userId: number,
+        solution: string,
+    ): Promise<Result<void>> => {
+        const testCases = await prisma.exercise
+            .findUniqueOrThrow({
+                where: {
+                    exercise_id: exerciseId,
+                },
+                select: {
+                    programming_language: true,
+                    test_case: {
+                        select: {
+                            code: true,
+                            test_case_id: true,
+                        },
+                    },
+                },
+            })
+            .catch((r) => {
+                console.error(
+                    `Failure getting test cases from exercise ${exerciseId}: ${r}`,
+                );
+                return new Err(404, "Exercise does not exist");
+            });
+
+        if (testCases instanceof Err) return testCases;
+
+        const data: ExerciseTest = {
+            code: solution.trim(),
+            language: testCases.programming_language,
+            testCases: testCases.test_case.map((tc) => {
+                const { test_case_id, code } = tc;
+                return { testCaseId: test_case_id, code };
+            }),
+            userId,
+        };
+        const result = await executeTest(data);
+
+        if (result instanceof Err) return result;
+
+        if (result.length === 0) return;
+
+        const fails = {
+            count: result.length,
+            failed_visible_tests: result,
+        };
+        return new Err(69, fails);
+
+        // TODO: object to return should be total num of errors, and outputs from the failed
+    };
+}
+
+type TestCase = {
+    testCaseId: number;
+    code: string;
+};
+
+type ExerciseTest = {
+    language: string;
+    code: string;
+    userId: number;
+    testCases: TestCase[];
+};
+
+type TestResponse = {
+    testCaseId: number;
+    reason: string;
+    responseCode: number;
+};
+
+async function executeTest(
+    data: ExerciseTest,
+): Promise<Result<TestResponse[], Err>> {
+    return axios
+        .post(config.server.test_runner, JSON.stringify(data), {
+            timeout: 5000,
+            validateStatus: (s) => [200, 202].includes(s),
+            //responseType: "json",
+        })
+        .then(
+            () => [], // If good, send empty array (no errors)
+            (r) => {
+                const d = r.data.toJSON();
+                console.log("bad");
+                console.log(r);
+                console.log(r.data);
+                //TODO: Validate correct format, else return Err (Compile error, language not supported, other errors)
+                return r.data.toJSON();
+            },
+        );
 }

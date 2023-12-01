@@ -25,7 +25,7 @@ type _AssignmentSolution = {
 export default class AssignmentController {
     static retrieveAllAssignments = async (
         courseId: number,
-    ): Promise<Result<_AssignmentIdentifier[]>> => // TODO: Identifier?
+    ): Promise<Result<_AssignmentIdentifier[]>> =>
         prisma.course
             .findUniqueOrThrow({
                 where: {
@@ -71,15 +71,12 @@ export default class AssignmentController {
                     programming_language: true,
                 },
             })
-            .then(
-                (res) => res,
-                (r) => {
-                    console.error(
-                        `Failure getting assignment ${assignmentId}: ${r}`,
-                    );
-                    return new Err(404, "Assignment does not exist");
-                },
-            );
+            .catch((r) => {
+                console.error(
+                    `Failure getting assignment ${assignmentId}: ${r}`,
+                );
+                return new Err(404, "Assignment does not exist");
+            });
 
     static submitAssignmentSolution = async (
         assignmentId: number,
@@ -94,7 +91,7 @@ export default class AssignmentController {
                         assignment_id: assignmentId,
                     },
                 },
-                update: { solution, feedback: "" },
+                update: { solution: solution.trim(), feedback: "" },
                 create: {
                     user: {
                         connect: {
@@ -106,7 +103,7 @@ export default class AssignmentController {
                             assignment_id: assignmentId,
                         },
                     },
-                    solution,
+                    solution: solution.trim(),
                     feedback: "",
                 },
             })
@@ -116,7 +113,7 @@ export default class AssignmentController {
                     console.error(
                         `Failure submitting assignment ${assignmentId}: ${r}`,
                     );
-                    return new Err(404, "User or Assignment doesn't exist"); //TODO: What happens?
+                    return new Err(404, "User or Assignment doesn't exist");
                 },
             );
 
@@ -183,7 +180,7 @@ export default class AssignmentController {
                     assignment_solution_id: assignmentSolutionId,
                 },
                 data: {
-                    feedback,
+                    feedback: feedback.trim(),
                 },
             })
             .then(

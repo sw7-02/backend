@@ -4,7 +4,7 @@ import prisma from "../prisma";
 export default function roleCheck(roles: number[]) {
     return async (req: Request, res: Response, next: NextFunction) => {
         const user_id = res.locals.jwtPayload.userId;
-        const course_id = res.locals.course_id;
+        const course_id = res.locals.courseId;
         await prisma.enrollment
             .findUniqueOrThrow({
                 where: {
@@ -37,15 +37,8 @@ export default function roleCheck(roles: number[]) {
     };
 }
 
-/*async function isTeacher(req: Request, res: Response, next: NextFunction) {
-        const userId = res.locals.jwtPayload.userId;
-        let user = await prisma.user.findUniqueOrThrow({
-            where: { user_id: userId },
-        });
-
-        if (user.is_teacher == true) {
-            next();
-        } else {
-            res.status(403).send();
-        }
-    }*/
+export const isTeacher = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => res.locals.isTeacher;

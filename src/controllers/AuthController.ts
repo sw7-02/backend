@@ -42,11 +42,16 @@ function genPass(pw: string, username: string): PW {
     return { hash: bcrypt.hashSync(pw, salt), salt };
 }
 
+export type AuthRes = {
+    jwt_token: string;
+    is_teacher: boolean;
+};
+
 export default class AuthController {
     static login = async (
         username: string,
         password: string,
-    ): Promise<Result<string>> => {
+    ): Promise<Result<AuthRes>> => {
         const valid = validatePassword(password);
         if (valid instanceof Err)
             return new Err(valid.code, `Password not valid: ${valid.msg}`);
@@ -58,20 +63,24 @@ export default class AuthController {
                     user_id: true,
                     username: true,
                     user_password: true,
+                    is_teacher: true,
                 },
             })
             .then(
-                ({ user_id, username, user_password }) => {
+                ({ user_id, username, user_password, is_teacher }) => {
                     if (!bcrypt.compareSync(password, user_password)) {
                         console.error(
                             `Attempt login on user ${username} (wrong password)`,
                         );
                         return new Err(401, "Wrong password");
                     }
-                    return generateJWTToken({
-                        userId: user_id,
-                        username,
-                    });
+                    return {
+                        jwt_token: generateJWTToken({
+                            userId: user_id,
+                            username,
+                        }),
+                        is_teacher,
+                    };
                 },
                 (e) => {
                     console.error(`Fail logging in user ${username}: ${e}`);
@@ -83,7 +92,14 @@ export default class AuthController {
     static signUp = async (
         username: string,
         password: string,
-    ): Promise<Result<string>> => {
+    ): Promise<Result<AuthRes>> => {
+        const valid = (username: string) =>
+            username.length > 0 &&
+            username === username.trim() &&
+            !numberRegEx.test(username.charAt(0)) &&
+            !specialCharRegEx.test(username);
+
+        if (!valid(username)) return new Err(406, "Username invalid");
         return prisma.user
             .findFirstOrThrow({
                 where: { username },
@@ -105,7 +121,10 @@ export default class AuthController {
                             pw_salt: salt,
                         },
                     });
-                    return generateJWTToken({ userId, username });
+                    return {
+                        jwt_token: generateJWTToken({ userId, username }),
+                        is_teacher: false,
+                    };
                 },
             );
     };
