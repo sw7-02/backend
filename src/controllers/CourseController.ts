@@ -123,7 +123,7 @@ export default class CourseController {
             if (e instanceof Err) return e;
             e.forEach(transactions.push);
         }
-        // TODO: Same for assignments and both solutions
+        // TODO: Same for assignments, assigmentsolutions (on assignments), exercise solutions (on exercises) and enrollments
 
         transactions.push(prisma.course.delete(cond));
         return transactions;

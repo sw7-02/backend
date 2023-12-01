@@ -191,6 +191,7 @@ describe("CourseController testing", function () {
 
     it("Retrieve enrolled courses: Valid ID", async function () {
         const result = await CourseController.retrieveEnrolledCourses(1);
+
         assert.notEqual(result instanceof Err, true);
         const res = <any[]>result;
         assert.equal(res.length, 2);
