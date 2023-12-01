@@ -67,7 +67,7 @@ export default class SessionController {
         const c = prisma.session.delete(cond);
         const e = prisma.exercise.deleteMany(cond);
 
-        return await prisma.$transaction([e, c]).then(
+        return prisma.$transaction([e, c]).then(
             () => {},
             (reason) => {
                 console.error(`Failed deleting session: ${reason}`);

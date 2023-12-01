@@ -115,7 +115,7 @@ routes
             res.status(code).send(msg);
         } else res.send(result);
     })
-    .delete([isTeacher], (req: Request, res: Response) => {
+    .delete([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
         const courseId = +res.locals.courseId;
         const result = CourseController.deleteCourse(courseId);
         if (result instanceof Err) {

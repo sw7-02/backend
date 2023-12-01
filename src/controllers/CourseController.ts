@@ -1,5 +1,6 @@
 import prisma from "../prisma";
 import { Err, Result, Role } from "../lib";
+import SessionController from "./SessionController";
 
 type _ExerciseIdentifier = {
     title: string;
@@ -76,13 +77,25 @@ export default class CourseController {
                 course_id: courseId,
             },
         };
+        // TODO: remove solutions?
+        // TODO: Recursive with controller funcs
+        let arr = prisma.session
+            .findMany(cond)
+            .then((res) =>
+                res.map((r) =>
+                    SessionController.deleteSessionFromCourse(r.session_id),
+                ),
+            );
         const c = prisma.course.delete(cond);
         const e1 = prisma.enrollment.deleteMany(cond);
         const e2 = prisma.assignment.deleteMany(cond);
-        await prisma.$transaction([e1, e2, c]).catch((reason) => {
-            console.error(`Failed deleting course: ${reason}`);
-            return new Err(500, "Failed deleting course");
-        });
+        return prisma.$transaction([e1, e2, c]).then(
+            () => {},
+            (reason) => {
+                console.error(`Failed deleting course: ${reason}`);
+                return new Err(500, "Failed deleting course");
+            },
+        );
     };
 
     static renameCourse = async (
