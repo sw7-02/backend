@@ -11,6 +11,7 @@ describe("testing routes", function () {
         request.get('/')
         console.log(`request ${request}`);
         request.close();
+        app.delete;
         console.log(`request 2 ${request}`);
         done()
         /*return chai
