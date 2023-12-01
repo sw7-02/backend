@@ -51,18 +51,16 @@ export default class CourseController {
             return prisma.course
                 .create({
                     data: {
-                        title: title.trim(),
+                        title: title,
+                    },
+                    select: {
+                        course_id: true,
                     },
                 })
-                .then(
-                    ({ course_id, ..._ }) => {
-                        return { course_id };
-                    },
-                    (reason) => {
-                        console.error(`Failed creating new course: ${reason}`);
-                        return new Err(500, "Failed creating new course");
-                    },
-                );
+                .catch((reason) => {
+                    console.error(`Failed creating new course: ${reason}`);
+                    return new Err(500, "Failed creating new course");
+                });
     };
 
     static deleteCourse = async (courseId: number): Promise<Result<void>> =>
@@ -93,18 +91,16 @@ export default class CourseController {
                         course_id: courseId,
                     },
                     data: {
-                        title: newTitle.trim(),
+                        title: newTitle,
+                    },
+                    select: {
+                        course_id: true,
                     },
                 })
-                .then(
-                    ({ course_id, ..._ }) => {
-                        return { course_id };
-                    },
-                    (reason) => {
-                        console.error(`Failed renaming course: ${reason}`);
-                        return new Err(404, "Course not found");
-                    },
-                );
+                .catch((reason) => {
+                    console.error(`Failed renaming course: ${reason}`);
+                    return new Err(404, "Course not found");
+                });
     };
 
     static retrieveCourse = async (
@@ -129,16 +125,13 @@ export default class CourseController {
                     },
                 },
             })
-            .then(
-                (res) => res,
-                (r) => {
-                    console.error(`Failure getting sessions: ${r}`);
-                    return new Err(
-                        404,
-                        "Failed getting sessions: Invalid course ID",
-                    );
-                },
-            );
+            .catch((r) => {
+                console.error(`Failure getting sessions: ${r}`);
+                return new Err(
+                    404,
+                    "Failed getting sessions: Invalid course ID",
+                );
+            });
 
     static retrieveFullCourse = async (
         courseId: number,
@@ -171,16 +164,13 @@ export default class CourseController {
                     },
                 },
             })
-            .then(
-                (res) => res,
-                (r) => {
-                    console.error(`Failure getting sessions: ${r}`);
-                    return new Err(
-                        404,
-                        "Failed getting sessions: Invalid course ID",
-                    );
-                },
-            );
+            .catch((r) => {
+                console.error(`Failure getting sessions: ${r}`);
+                return new Err(
+                    404,
+                    "Failed getting sessions: Invalid course ID",
+                );
+            });
 
     static updatePoints = async function (
         courseId: number,
@@ -196,13 +186,10 @@ export default class CourseController {
                     points: true,
                 },
             })
-            .then(
-                (points) => points,
-                (reason) => {
-                    console.error(`Failed getting exercise: ${reason}`);
-                    return new Err(404, "Invalid exercise ID");
-                },
-            );
+            .catch((reason) => {
+                console.error(`Failed getting exercise: ${reason}`);
+                return new Err(404, "Invalid exercise ID");
+            });
         if (points instanceof Err) {
             console.error(`Failed getting points: ${points.msg}`);
             return points;

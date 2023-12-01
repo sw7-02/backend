@@ -67,7 +67,8 @@ routes.get(
 
 routes
     .route("/:course_id/leaderboard/anonymity")
-    .get([enrollmentCheck], async (req: Request, res: Response) => {
+    .all([enrollmentCheck])
+    .get(async (req: Request, res: Response) => {
         const userId = +res.locals.jwtPayload.userId;
         const courseId = +res.locals.courseId;
         const result = await CourseController.getAnonymity(userId, courseId);
@@ -76,7 +77,7 @@ routes
             res.status(code).send(msg);
         } else res.send(result);
     })
-    .post([enrollmentCheck], async (req: Request, res: Response) => {
+    .post(async (req: Request, res: Response) => {
         const userId = +res.locals.jwtPayload.userId;
         const courseId = +res.locals.courseId;
         const { anonymity } = req.body;
@@ -93,7 +94,6 @@ routes
             const { code, msg } = result;
             res.status(code).send(msg);
         } else res.send(result);
-        // TODO: test these
     });
 
 routes

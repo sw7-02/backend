@@ -6,7 +6,7 @@ import roleCheck from "../../../middlewares/roleCheck";
 import prisma from "../../../prisma";
 import { saveExerciseId } from "../../../middlewares/savings";
 
-// TODO: (FW) get-hint endpoint and decrement potential point-gain for specific exercise
+// FW: get-hint endpoint and decrement potential point-gain for specific exercise
 
 const routes = Router();
 
@@ -133,6 +133,7 @@ routes
                 res.status(code).send(msg);
             } else res.send();
         },
+        [enrollmentCheck],
     )
     .post(async (req: Request, res: Response) => {
         const exerciseId: number = +res.locals.exerciseId;
@@ -180,20 +181,24 @@ routes
         } else res.send(resultSubmission);
     });
 
-routes.post("/:exercise_id/test", async (req: Request, res: Response) => {
-    const id: number = +res.locals.exerciseId;
-    const { solution } = req.body;
-    if (!solution) {
-        res.status(400).send("No solution provided");
-        return;
-    }
+routes.post(
+    "/:exercise_id/test",
+    [saveExerciseId],
+    async (req: Request, res: Response) => {
+        const id: number = +res.locals.exerciseId;
+        const { solution } = req.body;
+        if (!solution) {
+            res.status(400).send("No solution provided");
+            return;
+        }
 
-    const result = await ExerciseController.testExercise(id, solution);
-    if (result instanceof Err) {
-        const { code, msg } = result;
-        res.status(code).send(msg);
-    } else res.send(result);
-});
+        const result = await ExerciseController.testExercise(id, solution);
+        if (result instanceof Err) {
+            const { code, msg } = result;
+            res.status(code).send(msg);
+        } else res.send(result);
+    },
+);
 
 // exercise solutions
 routes.get(
@@ -206,13 +211,16 @@ routes.get(
 
         if (![Role.TEACHER, Role.TA].includes(role)) {
             const hasSubmitted = await prisma.exerciseSolution
-                .findFirst({
+                .findFirstOrThrow({
                     where: {
                         exercise_id: exerciseId,
                         user_id: userId,
                     },
                 })
-                .then((r) => true);
+                .then(
+                    () => true,
+                    () => false,
+                );
 
             if (!hasSubmitted) {
                 res.status(403).send(

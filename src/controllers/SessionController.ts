@@ -22,13 +22,10 @@ export default class SessionController {
                     },
                 },
             })
-            .then(
-                (r) => r,
-                (reason) => {
-                    console.error(`Failed getting session: ${reason}`);
-                    return new Err(404, "Session does not exist");
-                },
-            );
+            .catch((reason) => {
+                console.error(`Failed getting session: ${reason}`);
+                return new Err(404, "Session does not exist");
+            });
 
     static insertSessionFromCourse = async (
         courseId: number,
@@ -51,15 +48,12 @@ export default class SessionController {
                         session_id: true,
                     },
                 })
-                .then(
-                    (r) => r,
-                    (reason) => {
-                        console.error(
-                            `Failed adding session to course ${courseId}: ${reason}`,
-                        );
-                        return new Err(400, "Failed adding new session");
-                    },
-                );
+                .catch((reason) => {
+                    console.error(
+                        `Failed adding session to course ${courseId}: ${reason}`,
+                    );
+                    return new Err(400, "Failed adding new session");
+                });
     };
 
     static deleteSessionFromCourse = async (
@@ -92,17 +86,15 @@ export default class SessionController {
                         session_id: sessionId,
                     },
                     data: {
-                        title: newTitle.trim(),
+                        title: newTitle,
+                    },
+                    select: {
+                        session_id: true,
                     },
                 })
-                .then(
-                    ({ session_id, ..._ }) => {
-                        return { session_id };
-                    },
-                    (reason) => {
-                        console.error(`Failed renaming session: ${reason}`);
-                        return new Err(404, "Session not found");
-                    },
-                );
+                .catch((reason) => {
+                    console.error(`Failed renaming session: ${reason}`);
+                    return new Err(404, "Session not found");
+                });
     };
 }

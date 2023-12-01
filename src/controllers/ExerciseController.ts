@@ -406,13 +406,10 @@ export default class ExerciseController {
                     exercise_id: true,
                 },
             })
-            .then(
-                (e) => e,
-                (r) => {
-                    console.error(`Failure trying to add exercise: ${r}`);
-                    return new Err(404, "Session does not exist");
-                },
-            );
+            .catch((r) => {
+                console.error(`Failure trying to add exercise: ${r}`);
+                return new Err(404, "Session does not exist");
+            });
     };
 
     static deleteExercise = async (exerciseId: number): Promise<Result<void>> =>
@@ -552,6 +549,7 @@ export default class ExerciseController {
 
     static testExercise = async (
         exerciseId: number,
+        userId: number,
         solution: string,
     ): Promise<Result<void>> => {
         const testCases = await prisma.exercise
@@ -569,25 +567,23 @@ export default class ExerciseController {
                     },
                 },
             })
-            .then(
-                (res) => res,
-                (r) => {
-                    console.error(
-                        `Failure getting test cases from exercise ${exerciseId}: ${r}`,
-                    );
-                    return new Err(404, "Exercise does not exist");
-                },
-            );
+            .catch((r) => {
+                console.error(
+                    `Failure getting test cases from exercise ${exerciseId}: ${r}`,
+                );
+                return new Err(404, "Exercise does not exist");
+            });
 
         if (testCases instanceof Err) return testCases;
 
-        const data: Test = {
+        const data: ExerciseTest = {
             code: solution.trim(),
             language: testCases.programming_language,
-            test_cases: testCases.test_case.map((tc) => {
+            testCases: testCases.test_case.map((tc) => {
                 const { test_case_id, code } = tc;
-                return { test_case_id, code };
+                return { testCaseId: test_case_id, code };
             }),
+            userId,
         };
         const result = await executeTest(data);
 
@@ -608,27 +604,31 @@ export default class ExerciseController {
 }
 
 type TestCase = {
-    test_case_id: number;
+    testCaseId: number;
     code: string;
 };
 
-type Test = {
+type ExerciseTest = {
     language: string;
     code: string;
-    test_cases: TestCase[];
+    userId: number;
+    testCases: TestCase[];
 };
 
-type FailReason = {
-    test_case_id: number;
+type TestResponse = {
+    testCaseId: number;
     reason: string;
+    responseCode: number;
 };
 
-async function executeTest(data: Test): Promise<Result<FailReason[], Err>> {
+async function executeTest(
+    data: ExerciseTest,
+): Promise<Result<TestResponse[], Err>> {
     return axios
         .post(config.server.test_runner, JSON.stringify(data), {
             timeout: 5000,
             validateStatus: (s) => [200, 202].includes(s),
-            responseType: "json",
+            //responseType: "json",
         })
         .then(
             (r) => {

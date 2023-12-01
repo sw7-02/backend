@@ -71,15 +71,12 @@ export default class AssignmentController {
                     programming_language: true,
                 },
             })
-            .then(
-                (res) => res,
-                (r) => {
-                    console.error(
-                        `Failure getting assignment ${assignmentId}: ${r}`,
-                    );
-                    return new Err(404, "Assignment does not exist");
-                },
-            );
+            .catch((r) => {
+                console.error(
+                    `Failure getting assignment ${assignmentId}: ${r}`,
+                );
+                return new Err(404, "Assignment does not exist");
+            });
 
     static submitAssignmentSolution = async (
         assignmentId: number,
