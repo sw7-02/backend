@@ -83,6 +83,7 @@ routes
         const result = await ExerciseController.patchExercise(id, {
             programmingLanguage: req.body.programming_language,
             codeTemplate: req.body.code_template,
+            testCases: req.body.test_cases,
             ...req.body,
         });
         if (result instanceof Err) {
@@ -116,6 +117,7 @@ routes
         const result = await ExerciseController.patchExercise(id, {
             programmingLanguage: req.body.programming_language,
             codeTemplate: req.body.code_template,
+            testCases: req.body.test_cases,
             ...req.body,
         });
         if (result instanceof Err) {
