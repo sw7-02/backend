@@ -43,7 +43,6 @@ jobs:
     env:
       JWT_SECRET: "@@TEST_SECRET$$"
       DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/improved?schema=improved_schema"
-      CI: true
 
     steps:
       - uses: actions/checkout@v3
@@ -62,7 +61,7 @@ jobs:
           PGPASSWORD=postgres psql -U postgres -f ./tests/lib/schema.sql postgresql://postgres:postgres@localhost:5432/improved
       - run: npm ci
       - run: npm run build --if-present
-      - run: CI=true npm test
+      - run: npm test
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
