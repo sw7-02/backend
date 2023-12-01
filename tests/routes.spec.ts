@@ -8,9 +8,9 @@ describe("testing routes", function () {
 
     it("test route", (done) => {
         let request = chai.request(app);
-        console.log("request");
+        console.log("request ${request}");
         request.close();
-        console.log("closed?")
+        console.log(`closed? ${request}`)
         done()
         /*return chai
             .request(app)
