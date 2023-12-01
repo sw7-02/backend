@@ -58,20 +58,23 @@ export default class SessionController {
 
     static deleteSessionFromCourse = async (
         sessionId: number,
-    ): Promise<Result<void>> =>
-        prisma.session
-            .delete({
-                where: {
-                    session_id: sessionId,
-                },
-            })
-            .then(
-                () => {},
-                (reason) => {
-                    console.error(`Failed deleting session: ${reason}`);
-                    return new Err(500, "Failed deleting session");
-                },
-            );
+    ): Promise<Result<void>> => {
+        const cond = {
+            where: {
+                session_id: sessionId,
+            },
+        };
+        const c = prisma.session.delete(cond);
+        const e = prisma.exercise.deleteMany(cond);
+
+        return await prisma.$transaction([e, c]).then(
+            () => {},
+            (reason) => {
+                console.error(`Failed deleting session: ${reason}`);
+                return new Err(500, "Failed deleting session");
+            },
+        );
+    };
 
     static renameSessionFromCourse = async (
         sessionId: number,

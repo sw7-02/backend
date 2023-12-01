@@ -71,17 +71,15 @@ export default class CourseController {
     };
 
     static deleteCourse = async (courseId: number): Promise<Result<void>> => {
-        const c = prisma.course.delete({
+        const cond = {
             where: {
                 course_id: courseId,
             },
-        });
-        const e = prisma.enrollment.deleteMany({
-            where: {
-                course_id: courseId,
-            },
-        });
-        await prisma.$transaction([e, c]).catch((reason) => {
+        };
+        const c = prisma.course.delete(cond);
+        const e1 = prisma.enrollment.deleteMany(cond);
+        const e2 = prisma.assignment.deleteMany(cond);
+        await prisma.$transaction([e1, e2, c]).catch((reason) => {
             console.error(`Failed deleting course: ${reason}`);
             return new Err(500, "Failed deleting course");
         });

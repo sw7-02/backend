@@ -412,34 +412,40 @@ export default class ExerciseController {
             });
     };
 
-    static deleteExercise = async (exerciseId: number): Promise<Result<void>> =>
-        prisma.exercise
-            .delete({
-                where: {
-                    exercise_id: exerciseId,
-                },
-            })
-            .then(
-                async () => {
-                    await Promise.all([
-                        prisma.hint.deleteMany({
-                            where: { exercise_id: exerciseId },
-                        }),
-                        prisma.example.deleteMany({
-                            where: { exercise_id: exerciseId },
-                        }),
-                        prisma.testCase.deleteMany({
-                            where: { exercise_id: exerciseId },
-                        }),
-                    ]);
-                },
-                (r) => {
-                    console.error(
-                        `Failure deleting exercise ${exerciseId}: ${r}`,
-                    );
-                    return new Err(404, "Exercise does not exist");
-                },
-            );
+    static deleteExercise = async (
+        exerciseId: number,
+    ): Promise<Result<void>> => {
+        const cond = {
+            where: {
+                exercise_id: exerciseId,
+            },
+        };
+        const c = prisma.exercise.delete(cond);
+        const e1 = prisma.hint.deleteMany(cond);
+        const e2 = prisma.example.deleteMany(cond);
+        const e3 = prisma.testCase.deleteMany(cond);
+
+        return await prisma.$transaction([e1, e2, e3, c]).then(
+            async () => {
+                await Promise.all([
+                    prisma.hint.deleteMany({
+                        where: { exercise_id: exerciseId },
+                    }),
+                    prisma.example.deleteMany({
+                        where: { exercise_id: exerciseId },
+                    }),
+                    prisma.testCase.deleteMany({
+                        where: { exercise_id: exerciseId },
+                    }),
+                ]);
+            },
+            (r) => {
+                console.error(`Failure deleting exercise ${exerciseId}: ${r}`);
+                return new Err(404, "Exercise does not exist");
+            },
+        );
+    };
+
     static patchExercise = async (
         exerciseId: number,
         {
