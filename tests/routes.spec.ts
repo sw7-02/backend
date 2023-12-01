@@ -4,7 +4,7 @@ import { app } from "../src/index";
 
 chai.use(chaiHttp);
 describe("testing routes", function () {
-    it("test route", async function (done) {
+    it("test route", async function () {
         return chai
             .request(app)
             .get("/")
