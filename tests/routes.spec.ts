@@ -1,14 +1,13 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
 import { app } from "../src/index";
-import http from "http";
+
 
 chai.use(chaiHttp);
 describe("testing routes", function () {
-    const server = http.createServer(app);
-    const request = chai.request(server);
+    const request = chai.request(app);
 
-    after((done) => server.close(done));
+    after(() => request.close());
 
     it("test route", async function () {
         return chai
