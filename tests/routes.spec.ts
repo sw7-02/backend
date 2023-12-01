@@ -7,6 +7,7 @@ describe("testing routes", function () {
     //const request = chai.request(app);
 
     it("test route", (done) => {
+        let request = chai.request(app).close();
         done()
         /*return chai
             .request(app)
