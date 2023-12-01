@@ -22,16 +22,17 @@ export default function roleCheck(roles: number[]) {
                     if (roles.includes(user_role)) {
                         next();
                     } else {
-                        res.status(401).send(
-                            "You don't have the authorized role for this action",
-                        );
+                        res.statusMessage =
+                            "You don't have the authorized role for this action";
+                        res.status(401).send();
                     }
                 },
                 (e) => {
                     console.error(
                         `Fail role check for ${res.locals.jwtPayload.username}: ${e}`,
                     );
-                    res.status(401).send("Enrollment does not exist");
+                    res.statusMessage = "Enrollment does not exist";
+                    res.status(404).send();
                 },
             );
     };
