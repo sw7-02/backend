@@ -9,6 +9,8 @@ describe("testing routes", function () {
     it("test route", (done) => {
         let server = app.listen()
         app.removeAllListeners()
+        server.closeAllConnections()
+        server.close()
         done()
         /*return chai
             .request(app)
