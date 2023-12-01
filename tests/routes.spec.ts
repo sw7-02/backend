@@ -13,7 +13,7 @@ describe("testing routes", function () {
             .end((err, res) => {
                 chai.expect(res.status).to.eql(200);
                 request.close();
-                done();
+                return done();
         });
     });
 });
