@@ -6,7 +6,7 @@ chai.use(chaiHttp);
 describe("testing routes", function () {
     const request = chai.request(app);
 
-    after(() => request.close());
+    after((done) => {request.close(), done()});
 
     it("test route", async function () {
         return chai
