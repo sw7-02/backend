@@ -26,7 +26,7 @@ export const isTeacher = async (
         res.locals.isTeacher !== undefined
             ? res.locals.isTeacher
             : prisma.user
-                  .findUniqueOrThrow({
+                  .findUnique({
                       where: {
                           user_id: res.locals.jwtPayload.userId,
                       },
@@ -34,7 +34,7 @@ export const isTeacher = async (
                           is_teacher: true,
                       },
                   })
-                  .then((r) => r.is_teacher);
+                  .then((r) => r?.is_teacher);
     if (isTeacher) next();
     else {
         res.status(401).send("You are not a teacher");

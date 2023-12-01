@@ -44,6 +44,7 @@ type _CourseOverview = {
 export default class CourseController {
     static createCourse = async (
         title: string,
+        teacherId: number,
     ): Promise<Result<{ course_id: number }>> => {
         title = title.trim();
         if (!title) return new Err(406, "Title is needed");
@@ -52,6 +53,12 @@ export default class CourseController {
                 .create({
                     data: {
                         title: title,
+                        enrollments: {
+                            create: {
+                                user_id: teacherId,
+                                user_role: Role.TEACHER,
+                            },
+                        },
                     },
                     select: {
                         course_id: true,

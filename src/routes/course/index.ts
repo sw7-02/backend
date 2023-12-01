@@ -41,7 +41,8 @@ routes
             res.status(400).send("No valid title provided");
             return;
         }
-        const result = await CourseController.createCourse(title);
+        const userId = res.locals.jwtPayload.userId;
+        const result = await CourseController.createCourse(title, userId);
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);
