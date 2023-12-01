@@ -70,20 +70,22 @@ export default class CourseController {
                 });
     };
 
-    static deleteCourse = async (courseId: number): Promise<Result<void>> =>
-        prisma.course
-            .delete({
-                where: {
-                    course_id: courseId,
-                },
-            })
-            .then(
-                () => {},
-                (reason) => {
-                    console.error(`Failed deleting course: ${reason}`);
-                    return new Err(500, "Failed deleting course");
-                },
-            );
+    static deleteCourse = async (courseId: number): Promise<Result<void>> => {
+        const c = prisma.course.delete({
+            where: {
+                course_id: courseId,
+            },
+        });
+        const e = prisma.enrollment.deleteMany({
+            where: {
+                course_id: courseId,
+            },
+        });
+        await prisma.$transaction([e, c]).catch((reason) => {
+            console.error(`Failed deleting course: ${reason}`);
+            return new Err(500, "Failed deleting course");
+        });
+    };
 
     static renameCourse = async (
         courseId: number,
