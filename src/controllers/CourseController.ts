@@ -1,6 +1,7 @@
 import prisma from "../prisma";
 import { Err, Result, Role } from "../lib";
 import SessionController from "./SessionController";
+import ExerciseController from "./ExerciseController";
 
 type _ExerciseIdentifier = {
     title: string;
@@ -72,30 +73,60 @@ export default class CourseController {
     };
 
     static deleteCourse = async (courseId: number): Promise<Result<void>> => {
-        const cond = {
-            where: {
-                course_id: courseId,
-            },
-        };
-        // TODO: remove solutions?
-        // TODO: Recursive with controller funcs
-        let arr = prisma.session
-            .findMany(cond)
-            .then((res) =>
-                res.map((r) =>
-                    SessionController.deleteSessionFromCourse(r.session_id),
-                ),
-            );
-        const c = prisma.course.delete(cond);
-        const e1 = prisma.enrollment.deleteMany(cond);
-        const e2 = prisma.assignment.deleteMany(cond);
-        return prisma.$transaction([e1, e2, c]).then(
+        const transactions = await this.deleteCourseTransactions(courseId);
+        if (transactions instanceof Err) return transactions;
+        return prisma.$transaction(transactions).then(
             () => {},
             (reason) => {
                 console.error(`Failed deleting course: ${reason}`);
                 return new Err(500, "Failed deleting course");
             },
         );
+    };
+
+    static deleteCourseTransactions = async (courseId: number) => {
+        const cond = {
+            where: {
+                course_id: courseId,
+            },
+        };
+        const sessions = await prisma.session.findMany(cond).then(
+            (res) => res.map((r) => r.session_id),
+            (reason) => {
+                console.error(
+                    `Failed getting sessions for course to be deleted: ${reason}`,
+                );
+                return new Err(
+                    500,
+                    "Failed getting sessions for course to be deleted",
+                );
+            },
+        );
+        if (sessions instanceof Err) return sessions;
+        const assignmens = await prisma.session.findMany(cond).then(
+            (res) => res.map((r) => r.session_id),
+            (reason) => {
+                console.error(
+                    `Failed getting sessions for course to be deleted: ${reason}`,
+                );
+                return new Err(
+                    500,
+                    "Failed getting sessions for course to be deleted",
+                );
+            },
+        );
+        if (assignmens instanceof Err) return assignmens;
+
+        let transactions = [];
+        for (const num of sessions) {
+            const e = await SessionController.deleteSessionTransactions(num);
+            if (e instanceof Err) return e;
+            e.forEach(transactions.push);
+        }
+        // TODO: Same for assignments and both solutions
+
+        transactions.push(prisma.course.delete(cond));
+        return transactions;
     };
 
     static renameCourse = async (
