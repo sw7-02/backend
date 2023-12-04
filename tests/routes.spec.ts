@@ -8,6 +8,7 @@ import httpMocks from "node-mocks-http";
 chai.use(chaiHttp);
 let response: Response;
 let request: Request;
+let jwtToken: any;
 describe("testing routes", function () {
     //const request = chai.request(app);
     beforeEach("Reset request and response", () => {
@@ -55,11 +56,24 @@ describe("testing routes", function () {
     });
 
     it("login", async function () {
-        let user = { username: "user2", password: "password1@" };
+        let user = { username: "user1", password: "password1@" };
         return chai
             .request(app)
             .post("/login")
             .send(user)
+            .then((res) => {
+                assert.equal(res.status, 200);
+                console.log(res.body.token);
+                jwtToken = res.body.token;
+            });
+    });
+
+    it("login", async function () {
+        let user = { username: "user1", password: "password1@" };
+        return chai
+            .request(app)
+            .get("/course")
+            .set("Authorization", "Bearer " + jwtToken)
             .then((res) => {
                 assert.equal(res.status, 200);
             });
