@@ -362,7 +362,9 @@ export default class CourseController {
             })
             .then(
                 (res) => {
-                    const b = res.enrollments.find((r) => r.total_points === null);
+                    const b = res.enrollments.find(
+                        (r) => r.total_points === null,
+                    );
                     if (b) {
                         console.error(
                             `User with null points: ${b.user.username}`,

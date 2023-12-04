@@ -6,20 +6,6 @@ import prisma from "../../src/prisma";
 export async function seed() {
     // Create sample users
     let salt = bcrypt.genSaltSync(5);
-    const user1 = await prisma.user.create({
-        data: {
-            username: "user1",
-            user_password: await bcrypt.hash("password1@", salt),
-        },
-    });
-
-    salt = bcrypt.genSaltSync(5);
-    const user2 = await prisma.user.create({
-        data: {
-            username: "user2",
-            user_password: await bcrypt.hash("password2@", salt),
-        },
-    });
     const teacher = await prisma.user.create({
         data: {
             username: "teacher",
@@ -27,23 +13,142 @@ export async function seed() {
             is_teacher: true,
         },
     });
+    const user1 = await prisma.user.create({
+        data: {
+            username: "user1",
+            user_password: await bcrypt.hash("password1@", salt),
+        },
+    });
+    const user2 = await prisma.user.create({
+        data: {
+            username: "user2",
+            user_password: await bcrypt.hash("password2@", salt),
+        },
+    });
+    const user3 = await prisma.user.create({
+        data: {
+            username: "user3",
+            user_password: await bcrypt.hash("password3@", salt),
+        },
+    });
+    const user4 = await prisma.user.create({
+        data: {
+            username: "user4",
+            user_password: await bcrypt.hash("password4@", salt),
+        },
+    });
+    const user5 = await prisma.user.create({
+        data: {
+            username: "user5",
+            user_password: await bcrypt.hash("password5@", salt),
+        },
+    });
+    const user6 = await prisma.user.create({
+        data: {
+            username: "user6",
+            user_password: await bcrypt.hash("password6@", salt),
+        },
+    });
+    const user7 = await prisma.user.create({
+        data: {
+            username: "user7",
+            user_password: await bcrypt.hash("password7@", salt),
+        },
+    });
 
     // Create sample courses
     const course1 = await prisma.course.create({
         data: {
-            title: "Course 1",
+            title: "Imperativ programmering",
         },
     });
     const course2 = await prisma.course.create({
         data: {
-            title: "Course 2",
+            title: "Programming Paradigms",
+        },
+    });
+    const course3 = await prisma.course.create({
+        data: {
+            title: "Object-Oriented Programming",
         },
     });
 
     // Create sample sessions
     const session1 = await prisma.session.create({
         data: {
-            title: "Session 1",
+            title: "Introduction",
+            course_id: course1.course_id,
+        },
+    });
+    const session2 = await prisma.session.create({
+        data: {
+            title: "Selektive kontrolstrukturer",
+            course_id: course1.course_id,
+        },
+    });
+    const session3 = await prisma.session.create({
+        data: {
+            title: "Iterative kontrolstrukturer",
+            course_id: course1.course_id,
+        },
+    });
+    const session4 = await prisma.session.create({
+        data: {
+            title: "Funktion og top-down programmering",
+            course_id: course1.course_id,
+        },
+    });
+    const session5 = await prisma.session.create({
+        data: {
+            title: "Funktioner og parametre",
+            course_id: course1.course_id,
+        },
+    });
+    const session6 = await prisma.session.create({
+        data: {
+            title: "Arrays og pointere",
+            course_id: course1.course_id,
+        },
+    });
+    const session7 = await prisma.session.create({
+        data: {
+            title: "Datatyper og test",
+            course_id: course1.course_id,
+        },
+    });
+    const session8 = await prisma.session.create({
+        data: {
+            title: "Tegn og tekststrengee",
+            course_id: course1.course_id,
+        },
+    });
+    const session9 = await prisma.session.create({
+        data: {
+            title: "Datastrukturer - structs",
+            course_id: course1.course_id,
+        },
+    });
+    const session10 = await prisma.session.create({
+        data: {
+            title: "Rekursion",
+            course_id: course1.course_id,
+        },
+    });
+    const session11 = await prisma.session.create({
+        data: {
+            title: "Input/output og filer",
+            course_id: course1.course_id,
+        },
+    });
+    const session12 = await prisma.session.create({
+        data: {
+            title: "Dynamiske datastrukturer - lister og træer",
+            course_id: course1.course_id,
+        },
+    });
+    const session13 = await prisma.session.create({
+        data: {
+            title: "Dynamiske datastrukturer - lister og træer",
             course_id: course1.course_id,
         },
     });
@@ -55,22 +160,82 @@ export async function seed() {
             course_id: course1.course_id,
             user_role: 0,
             is_anonymous: false,
-            total_points: 5,
+            total_points: 79,
         },
     });
-    // Create sample teacher enrollment
     await prisma.enrollment.create({
         data: {
             user_id: user2.user_id,
             course_id: course1.course_id,
             user_role: 0,
-            total_points: 2,
+            is_anonymous: false,
+            total_points: 67,
+        },
+    });
+    await prisma.enrollment.create({
+        data: {
+            user_id: user3.user_id,
+            course_id: course1.course_id,
+            user_role: 0,
+            is_anonymous: false,
+            total_points: 50,
+        },
+    });
+    await prisma.enrollment.create({
+        data: {
+            user_id: user4.user_id,
+            course_id: course1.course_id,
+            user_role: 0,
+            is_anonymous: false,
+            total_points: 19,
+        },
+    });
+    await prisma.enrollment.create({
+        data: {
+            user_id: user5.user_id,
+            course_id: course1.course_id,
+            user_role: 0,
+            is_anonymous: false,
+            total_points: 42,
+        },
+    });
+    await prisma.enrollment.create({
+        data: {
+            user_id: user6.user_id,
+            course_id: course1.course_id,
+            user_role: 0,
+            is_anonymous: false,
+            total_points: 1,
+        },
+    });
+    await prisma.enrollment.create({
+        data: {
+            user_id: user7.user_id,
+            course_id: course1.course_id,
+            user_role: 0,
+            is_anonymous: false,
+            total_points: 0,
+        },
+    });
+    // Create sample teacher enrollment
+    await prisma.enrollment.create({
+        data: {
+            user_id: teacher.user_id,
+            course_id: course1.course_id,
+            user_role: 1,
         },
     });
     await prisma.enrollment.create({
         data: {
             user_id: teacher.user_id,
-            course_id: course1.course_id,
+            course_id: course2.course_id,
+            user_role: 1,
+        },
+    });
+    await prisma.enrollment.create({
+        data: {
+            user_id: teacher.user_id,
+            course_id: course3.course_id,
             user_role: 1,
         },
     });
@@ -113,47 +278,111 @@ export async function seed() {
     // Create sample exercises
     const exercise1 = await prisma.exercise.create({
         data: {
-            title: "Exercise 1",
-            description: "Description of Exercise 1",
-            points: 10,
-            programming_language: "JavaScript",
-            code_template: "Your code template here",
+            title: "Hello world",
+            description:
+                "Write a program that prints 'Hello World' to the console.",
+            points: 3,
+            programming_language: "C",
+            code_template: "",
             session_id: session1.session_id,
+        },
+    });
+    const exercise2 = await prisma.exercise.create({
+        data: {
+            title: "Add two numbers",
+            description:
+                "Write a program that adds two numbers and returns the result.",
+            points: 5,
+            programming_language: "C",
+            code_template: "int addTwoNumbers(int a, int b) {\n\n}",
+            session_id: session7.session_id,
         },
     });
 
     // Create sample test cases
     const testCase1 = await prisma.testCase.create({
         data: {
-            code: "Test case 1 code",
+            code: `void testPrintHelloWorld() {
+                // Redirect stdout to capture the printed output
+                freopen("test_output.txt", "w", stdout);
+
+                // Call the function to be tested
+                printHelloWorld();
+
+                // Close the redirected stdout
+                fclose(stdout);
+
+                // Open the redirected stdout for reading
+                FILE *fp = fopen("test_output.txt", "r");
+                if (fp != NULL) {
+                    char buffer[100];
+                    // Read the printed output
+                    fgets(buffer, sizeof(buffer), fp);
+                    // Check if the output matches the expected string
+                    CU_ASSERT_STRING_EQUAL(buffer, "Hello, World!\n");
+                    // Close the file
+                    fclose(fp);
+                } else {
+                    CU_FAIL("Failed to open test_output.txt");
+                }
+            }`,
             exercise_id: exercise1.exercise_id,
+        },
+    });
+    const testCase2 = await prisma.testCase.create({
+        data: {
+            code: `void testAddTwoNumbers(void) {
+                CU_ASSERT(addTwoNumbers(1, 2) == 2);
+            }`,
+            exercise_id: exercise2.exercise_id,
         },
     });
 
     // Create sample hints
     const hint1 = await prisma.hint.create({
         data: {
-            description: "Hint 1 description",
+            description:
+                "You can use the printf function to print to the console.",
             order: 1,
             exercise_id: exercise1.exercise_id,
+        },
+    });
+    const hint2 = await prisma.hint.create({
+        data: {
+            description: "Use quotation marks to print a string.",
+            order: 1,
+            exercise_id: exercise1.exercise_id,
+        },
+    });
+    const hint3 = await prisma.hint.create({
+        data: {
+            description: "Use the + operator to add two numbers.",
+            order: 1,
+            exercise_id: exercise2.exercise_id,
+        },
+    });
+    const hint4 = await prisma.hint.create({
+        data: {
+            description: "Use the return keyword to return the result.",
+            order: 1,
+            exercise_id: exercise2.exercise_id,
         },
     });
 
     // Create sample examples
     const example1 = await prisma.example.create({
         data: {
-            input: "[1, 2, 3]",
-            output: "6",
-            exercise_id: exercise1.exercise_id,
+            input: "addTwoNumbers(2, 2)",
+            output: "4",
+            exercise_id: exercise2.exercise_id,
             example_id: 1,
         },
     });
-
     const example2 = await prisma.example.create({
         data: {
-            input: "[3, 4, 7]",
-            output: "14",
-            exercise_id: exercise1.exercise_id,
+            input: "addTwoNumbers(4, 5)",
+            output: "9",
+            exercise_id: exercise2.exercise_id,
             example_id: 2,
         },
     });
