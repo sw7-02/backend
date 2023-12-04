@@ -54,11 +54,11 @@ describe("testing routes", function () {
             });
     });
 
-    it("Get", async function () {
-        let jwtPayload = { userId: 1, username: "user1" };
+    it("login", async function () {
+        let user = { username: "user1", password: "password1@" };
         return chai
             .request(app)
-            .get("/course/" + jwtPayload)
+            .get("/login" + user)
             .then((res) => {
                 assert.equal(res.status, 200);
                 //assert.equal(res.text, "u made a DELETE request");
