@@ -10,7 +10,6 @@ export async function seed() {
         data: {
             username: "user1",
             user_password: await bcrypt.hash("password1@", salt),
-            pw_salt: salt,
         },
     });
 
@@ -19,14 +18,12 @@ export async function seed() {
         data: {
             username: "user2",
             user_password: await bcrypt.hash("password2@", salt),
-            pw_salt: salt,
         },
     });
     const teacher = await prisma.user.create({
         data: {
             username: "teacher",
             user_password: await bcrypt.hash("teacher1@", salt),
-            pw_salt: salt,
             is_teacher: true,
         },
     });
