@@ -472,7 +472,7 @@ export default class ExerciseController {
         if (programmingLanguage !== undefined && !programmingLanguage)
             return new Err(406, "No programming language supplied");
 
-        let hintOrder = 1;
+        let hintOrder = 0;
         let additional = { hints: {}, test_case: {}, examples: {} };
         if (hints)
             additional.hints = {
@@ -489,13 +489,13 @@ export default class ExerciseController {
                         exercise_id: exerciseId,
                     },
 
-                    data: hints.map((h) => {
-                        return { description: h.trim() };
-                    }),
+                    data: {
+                        description: hints[hintOrder].trim(),
+                    },
                 },
                 createMany: {
                     // Creates new if needed
-                    data: hints.map((h) => {
+                    data: hints.slice(hintOrder).map((h) => {
                         return { description: h.trim() };
                     }),
                 },
