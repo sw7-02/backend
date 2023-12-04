@@ -1,11 +1,18 @@
+import { Request, Response } from "express";
 import chai from "chai";
 import chaiHttp from "chai-http";
 import { app } from "../src/index";
 import * as assert from "assert";
+import httpMocks from "node-mocks-http";
 
 chai.use(chaiHttp);
+let response: Response;
+let request: Request;
 describe("testing routes", function () {
     //const request = chai.request(app);
+    beforeEach("Reset request and response", () => {
+        response = httpMocks.createResponse();
+    });
 
     it("Simple GET request", async function () {
         return chai
@@ -47,4 +54,14 @@ describe("testing routes", function () {
             });
     });
 
+    it("Get", async function () {
+        //response.locals = { jwtPayload: { userId: 1, username: "user1" } };
+        return chai
+            .request(app)
+            .get("/course/")
+            .then((res) => {
+                assert.equal(res.status, 200);
+                //assert.equal(res.text, "u made a DELETE request");
+            });
+    });
 });
