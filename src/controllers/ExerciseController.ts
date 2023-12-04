@@ -452,20 +452,6 @@ export default class ExerciseController {
         return [solutions, e1, e2, e3, c];
     };
 
-    static deleteExerciseSolutionTransactions = (exerciseId: number) => {
-        const cond = {
-            where: {
-                exercise_id: exerciseId,
-            },
-        };
-        const c = prisma.exercise.delete(cond);
-        const e1 = prisma.hint.deleteMany(cond);
-        const e2 = prisma.example.deleteMany(cond);
-        const e3 = prisma.testCase.deleteMany(cond);
-
-        return [e1, e2, e3, c];
-    };
-
     static patchExercise = async (
         exerciseId: number,
         {
@@ -503,10 +489,9 @@ export default class ExerciseController {
                         exercise_id: exerciseId,
                     },
 
-                    data: {
-                        description: hints.at(hintOrder - 1),
-                        order: hintOrder++,
-                    },
+                    data: hints.map((h) => {
+                        return { description: h };
+                    }),
                 },
                 createMany: {
                     // Creates new if needed

@@ -123,16 +123,16 @@ export default class CourseController {
             if (e instanceof Err) return e;
             e.forEach(transactions.push);
         }
-        const enrollments = await prisma.enrollment.findMany({
+        const enrollments = prisma.enrollment.deleteMany({
             where: {
                 course_id: courseId,
             },
         });
-        for (const e in enrollments) transactions.push(e);
+        //for (const e of enrollments) transactions.push(e);
 
-        // TODO: Same for assignments, assigmentsolutions (on assignments), exercise solutions (on exercises)
+        // TODO (FW?): Same for assignments and assigment solutions
 
-        transactions.push(prisma.course.delete(cond));
+        transactions.push(enrollments, prisma.course.delete(cond));
         return transactions;
     };
 

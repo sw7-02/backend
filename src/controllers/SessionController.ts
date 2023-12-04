@@ -95,7 +95,7 @@ export default class SessionController {
         let exercises = [];
 
         for (const num of e) {
-            ExerciseController.deleteExerciseTransactions(num).forEach(
+            (await ExerciseController.deleteExerciseTransactions(num)).forEach(
                 exercises.push,
             );
         }
