@@ -479,23 +479,7 @@ export default class ExerciseController {
                 deleteMany: {
                     // removes additional, if any
                     exercise_id: exerciseId,
-                    /*order: {
-                        gt: hints.length,
-                    },*/
                 },
-                /*
-                updateMany: {
-                    // updates current
-                    where: {
-                        exercise_id: exerciseId,
-                    },
-
-                    data: {
-                        description: hints.at(hintOrder),
-                        order: ++hintOrder,
-                    },
-                },
-                 */
                 createMany: {
                     // Creates new if needed
                     data: hints.slice(hintOrder).map((h) => {
