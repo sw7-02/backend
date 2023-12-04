@@ -663,6 +663,8 @@ async function executeTest(data: ExerciseTest): Promise<Result<string[]>> {
                 return failures;
             }, // If good, test can have failed
             (error) => {
+                console.log(error);
+                //TODO: Handle if not json
                 const testResponse = error.data.toJSON() as TestResponse[];
                 if (testResponse.length !== 1)
                     return new Err(

@@ -56,7 +56,6 @@ export async function seed() {
         },
     });
 
-
     // Create sample courses
     const course1 = await prisma.course.create({
         data: {
@@ -79,7 +78,7 @@ export async function seed() {
         data: {
             title: "Introduction",
             course_id: course1.course_id,
-        }
+        },
     });
     const session2 = await prisma.session.create({
         data: {
@@ -280,7 +279,8 @@ export async function seed() {
     const exercise1 = await prisma.exercise.create({
         data: {
             title: "Hello world",
-            description: "Write a program that prints 'Hello World' to the console.",
+            description:
+                "Write a program that prints 'Hello World' to the console.",
             points: 3,
             programming_language: "C",
             code_template: "",
@@ -320,7 +320,8 @@ export async function seed() {
     const exercise2 = await prisma.exercise.create({
         data: {
             title: "Add two numbers",
-            description: "Write a program that adds two numbers and returns the result.",
+            description:
+                "Write a program that adds two numbers and returns the result.",
             points: 5,
             programming_language: "C",
             code_template: "int addTwoNumbers(int a, int b) {\n\n}",
@@ -401,7 +402,8 @@ export async function seed() {
     // Create sample hints
     const hint1 = await prisma.hint.create({
         data: {
-            description: "You can use the printf function to print to the console.",
+            description:
+                "You can use the printf function to print to the console.",
             order: 1,
             exercise_id: exercise1.exercise_id,
         },

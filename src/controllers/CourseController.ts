@@ -76,7 +76,7 @@ export default class CourseController {
         const transactions = await this.deleteCourseTransactions(courseId);
         if (transactions instanceof Err) return transactions;
         return prisma.$transaction(transactions).then(
-            () => { },
+            () => {},
             (reason) => {
                 console.error(`Failed deleting course: ${reason}`);
                 return new Err(500, "Failed deleting course");
@@ -136,7 +136,7 @@ export default class CourseController {
         return transactions;
     };
 
-    static deleteEnrollmentTransaction = () => { };
+    static deleteEnrollmentTransaction = () => {};
 
     static renameCourse = async (
         courseId: number,
@@ -362,7 +362,9 @@ export default class CourseController {
             })
             .then(
                 (res) => {
-                    const b = res.enrollments.find((r) => (r.total_points === null));
+                    const b = res.enrollments.find(
+                        (r) => r.total_points === null,
+                    );
                     if (b) {
                         console.error(
                             `User with null points: ${b.user.username}`,
@@ -374,7 +376,7 @@ export default class CourseController {
                             total_points: r.total_points!!,
                             username: r.is_anonymous
                                 ? "Anonymous" +
-                                (r.user_id === userId ? " (you)" : "")
+                                  (r.user_id === userId ? " (you)" : "")
                                 : r.user.username,
                         };
                     });
@@ -460,7 +462,7 @@ export default class CourseController {
                 },
             })
             .then(
-                () => { },
+                () => {},
                 (reason) => {
                     console.error(`Failed setting anonymity: ${reason}`);
                     return new Err(404, "Course or User does not exist");
