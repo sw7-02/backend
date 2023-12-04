@@ -55,14 +55,13 @@ describe("testing routes", function () {
     });
 
     it("login", async function () {
-        let user = { username: "user1", password: "password1@" };
+        let user = { username: "user2", password: "password1@" };
         return chai
             .request(app)
             .post("/login")
             .send(user)
             .then((res) => {
                 assert.equal(res.status, 200);
-                //assert.equal(res.text, "u made a DELETE request");
             });
     });
 });
