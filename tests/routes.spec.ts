@@ -7,7 +7,7 @@ chai.use(chaiHttp);
 describe("testing routes", function () {
     //const request = chai.request(app);
 
-    it("test route", (done) => {
+    it("test route", async function () {
         return chai
             .request(app)
             .get("/")
