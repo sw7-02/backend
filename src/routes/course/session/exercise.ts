@@ -209,8 +209,8 @@ routes.post(
 
 // exercise solutions
 routes.get(
-    ":exercise_id/exercise-solutions",
-    saveExerciseId,
+    "/:exercise_id/solutions",
+    [saveExerciseId],
     async (req: Request, res: Response) => {
         const exerciseId: number = +res.locals.exerciseId;
         const userId = res.locals.jwtPayload.userId;

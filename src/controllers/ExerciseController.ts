@@ -649,7 +649,6 @@ async function executeTest(data: ExerciseTest): Promise<Result<string[]>> {
         })
         .then(
             (response) => {
-                console.error(response.data);
                 const testsResponses = parseTestResponse(response.data);
 
                 if (testsResponses === undefined)
