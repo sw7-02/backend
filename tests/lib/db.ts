@@ -359,7 +359,6 @@ export async function seed() {
         },
     });
 
-
     // Create sample test cases
     const testCase1 = await prisma.testCase.create({
         data: {
