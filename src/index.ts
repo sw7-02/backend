@@ -7,7 +7,7 @@ import config from "./config";
 import { seed } from "../tests/lib/db";
 import prisma from "./prisma";
 
-const app = express();
+export const app = express();
 
 // Call middlewares
 app.use(cors());
