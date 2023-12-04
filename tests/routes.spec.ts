@@ -9,6 +9,9 @@ describe("testing routes", function () {
     it("test route", (done) => {
         let server = chai.request(app);
         server.close(() => done());
+        mocha.run(function(failures) {
+            process.exit(failures ? 1 : 0)
+        });
         /*return chai
             .request(app)
             .get("/")
