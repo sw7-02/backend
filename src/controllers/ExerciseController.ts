@@ -489,6 +489,7 @@ export default class ExerciseController {
                         exercise_id: exerciseId,
                     },
 
+                    skipDuplicates: false,
                     data: {
                         description: hints.at(hintOrder),
                         order: ++hintOrder,
