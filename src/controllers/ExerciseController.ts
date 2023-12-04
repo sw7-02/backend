@@ -414,7 +414,7 @@ export default class ExerciseController {
 
     static deleteExercise = async (exerciseId: number): Promise<Result<void>> =>
         await prisma
-            .$transaction(this.deleteExerciseTransactions(exerciseId))
+            .$transaction(await this.deleteExerciseTransactions(exerciseId))
             .then(
                 async () => {
                     await Promise.all([
@@ -437,7 +437,22 @@ export default class ExerciseController {
                 },
             );
 
-    static deleteExerciseTransactions = (exerciseId: number) => {
+    static deleteExerciseTransactions = async (exerciseId: number) => {
+        const cond = {
+            where: {
+                exercise_id: exerciseId,
+            },
+        };
+        const c = prisma.exercise.delete(cond);
+        const e1 = prisma.hint.deleteMany(cond);
+        const e2 = prisma.example.deleteMany(cond);
+        const e3 = prisma.testCase.deleteMany(cond);
+        let solutions = prisma.exerciseSolution.findMany(cond);
+
+        return [solutions, e1, e2, e3, c];
+    };
+
+    static deleteExerciseSolutionTransactions = (exerciseId: number) => {
         const cond = {
             where: {
                 exercise_id: exerciseId,

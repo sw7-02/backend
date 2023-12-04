@@ -123,11 +123,20 @@ export default class CourseController {
             if (e instanceof Err) return e;
             e.forEach(transactions.push);
         }
-        // TODO: Same for assignments, assigmentsolutions (on assignments), exercise solutions (on exercises) and enrollments
+        const enrollments = await prisma.enrollment.findMany({
+            where: {
+                course_id: courseId,
+            },
+        });
+        for (const e in enrollments) transactions.push(e);
+
+        // TODO: Same for assignments, assigmentsolutions (on assignments), exercise solutions (on exercises)
 
         transactions.push(prisma.course.delete(cond));
         return transactions;
     };
+
+    static deleteEnrollmentTransaction = () => {};
 
     static renameCourse = async (
         courseId: number,
