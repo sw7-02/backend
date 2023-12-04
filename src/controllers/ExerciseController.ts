@@ -490,13 +490,17 @@ export default class ExerciseController {
                     },
 
                     data: {
-                        description: hints[hintOrder].trim(),
+                        description: hints.at(hintOrder),
+                        order: ++hintOrder,
                     },
                 },
                 createMany: {
                     // Creates new if needed
                     data: hints.slice(hintOrder).map((h) => {
-                        return { description: h.trim() };
+                        return {
+                            description: h.trim(),
+                            order: ++hintOrder,
+                        };
                     }),
                 },
             };

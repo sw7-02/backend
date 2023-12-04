@@ -188,7 +188,7 @@ describe("ExerciseController testing", function () {
             })
             .catch((r) => {
                 console.log(r);
-                assert.fail("Exercise gone")
+                assert.fail("Exercise gone");
             });
         assert.equal(post!.hints.length, 3);
         for (let i = 0; i < 3; i++) {

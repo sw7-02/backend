@@ -29,7 +29,6 @@ model User {
   user_id       Int     @id @default(autoincrement())
   username      String  @unique
   user_password String
-  pw_salt       String
   is_teacher    Boolean @default(false)
 
   enrollments           Enrollment[]
@@ -132,7 +131,7 @@ model Hint {
   hint_id     Int    @id @default(autoincrement())
   exercise_id Int
   description String
-  order       Int    @default(autoincrement())
+  order       Int
 
   exercise Exercise @relation(fields: [exercise_id], references: [exercise_id])
 
