@@ -331,9 +331,7 @@ export async function seed() {
     });
     const testCase2 = await prisma.testCase.create({
         data: {
-            code: `void testAddTwoNumbers(void) {
-                CU_ASSERT(addTwoNumbers(1, 2) == 2);
-            }`,
+            code: `CU_ASSERT(addTwoNumbers(1, 2) == 2);`,
             exercise_id: exercise2.exercise_id,
         },
     });

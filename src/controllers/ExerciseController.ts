@@ -590,7 +590,7 @@ export default class ExerciseController {
 
         const fails = {
             count: result.length,
-            failed_visible_tests: result,
+            failed_tests: result,
         };
         return new Err(400, fails);
     };
@@ -622,22 +622,42 @@ enum ResponseCode {
     TEST_PASSED_CODE = 0,
 }
 
+function parseTestResponse(objs: any[]): TestResponse[] | undefined {
+    if (objs === undefined) return;
+    let out: TestResponse[] = [];
+    for (const o of objs) {
+        if (o === undefined) return;
+        const { testCaseId, reason, responseCode } = o;
+        const rc = responseCode as ResponseCode;
+        if (
+            testCaseId === undefined ||
+            reason === undefined ||
+            rc === undefined
+        )
+            return;
+        else out.push({ testCaseId, reason, responseCode: rc });
+    }
+    return out;
+}
+
 async function executeTest(data: ExerciseTest): Promise<Result<string[]>> {
     return axios
-        .post(config.server.test_runner, JSON.stringify(data), {
+        .post(config.server.test_runner, data, {
             timeout: 10000,
             //validateStatus: (s) => [200, 202].includes(s),
             //responseType: "json",
         })
         .then(
             (response) => {
-                const testsResponses = response.data.toJSON() as TestResponse[];
+                console.error(response.data);
+                const testsResponses = parseTestResponse(response.data);
+
+                if (testsResponses === undefined)
+                    return new Err(500, "Internal fuckup");
+
                 let failures: string[] = [];
-                for (const {
-                    testCaseId,
-                    reason,
-                    responseCode,
-                } of testsResponses) {
+                for (const t of testsResponses) {
+                    const { testCaseId, reason, responseCode } = t;
                     if (
                         testCaseId === undefined ||
                         reason === undefined ||
@@ -652,7 +672,7 @@ async function executeTest(data: ExerciseTest): Promise<Result<string[]>> {
                             continue;
                         case ResponseCode.TEST_FAILED_CODE:
                             failures.push(reason);
-                            break;
+                            continue;
                         default:
                             return new Err(
                                 500,
@@ -663,24 +683,15 @@ async function executeTest(data: ExerciseTest): Promise<Result<string[]>> {
                 return failures;
             }, // If good, test can have failed
             (error) => {
-                console.log(error);
-                //TODO: Handle if not json
-                const testResponse = error.data.toJSON() as TestResponse[];
+                const testResponse = parseTestResponse(error.response.data);
+                if (testResponse === undefined)
+                    return new Err(500, `Bad request: ${error.response.data}`);
                 if (testResponse.length !== 1)
                     return new Err(
                         500,
                         "Internal Error: Test runner returned multiple results when a single was expected",
                     );
                 const { testCaseId, reason, responseCode } = testResponse[0];
-                if (
-                    testCaseId === undefined ||
-                    reason === undefined ||
-                    responseCode === undefined
-                )
-                    return new Err(
-                        500,
-                        "Internal error: Test runner response missing",
-                    );
                 switch (responseCode) {
                     case ResponseCode.COMPILATION_ERROR_CODE:
                         return new Err(400, {

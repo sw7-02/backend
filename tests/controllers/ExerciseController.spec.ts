@@ -186,10 +186,7 @@ describe("ExerciseController testing", function () {
                 where: { exercise_id: 1 },
                 include: { hints: true },
             })
-            .catch((r) => {
-                console.log(r);
-                assert.fail("Exercise gone");
-            });
+            .catch((r) => assert.fail("Exercise gone"));
         assert.equal(post!.hints.length, 3);
         for (let i = 0; i < 3; i++) {
             assert.equal(post!.hints[i].description, hints[i]);
