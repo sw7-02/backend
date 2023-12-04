@@ -58,7 +58,7 @@ describe("testing routes", function () {
         let user = { username: "user1", password: "password1@" };
         return chai
             .request(app)
-            .post("/login" + "user1" + "password1@")
+            .post("/login").send(user)
             .then((res) => {
                 assert.equal(res.status, 200);
                 //assert.equal(res.text, "u made a DELETE request");
