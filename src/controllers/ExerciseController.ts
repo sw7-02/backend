@@ -367,10 +367,10 @@ export default class ExerciseController {
                         },
                     },
                     title: title,
-                    description: description?.trim() ?? "Description",
-                    points: points ?? 10,
+                    description: description?.trim() ?? "",
+                    points: points ?? 0,
                     programming_language: programmingLanguage ?? "Language",
-                    code_template: codeTemplate?.trim() ?? "Code template",
+                    code_template: codeTemplate?.trim() ?? "",
                     hints: {
                         createMany: {
                             data:
