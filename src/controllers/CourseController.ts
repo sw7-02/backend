@@ -276,7 +276,7 @@ export default class CourseController {
             })
             .then(
                 (r) => {
-                    if (!r.total_points) {
+                    if (r.total_points === null) {
                         console.error(`User with null points: ${userId}`);
                         return new Err(500, "Internal error");
                     } else return { total_points: r.total_points! };
@@ -362,7 +362,7 @@ export default class CourseController {
             })
             .then(
                 (res) => {
-                    const b = res.enrollments.find((r) => !r.total_points);
+                    const b = res.enrollments.find((r) => r.total_points === null);
                     if (b) {
                         console.error(
                             `User with null points: ${b.user.username}`,

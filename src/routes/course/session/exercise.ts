@@ -187,6 +187,7 @@ routes.post(
     "/:exercise_id/test",
     [saveExerciseId],
     async (req: Request, res: Response) => {
+        console.log(res.getHeaders());
         const exerciseId: number = +res.locals.exerciseId;
         const userId: number = +res.locals.jwtPayload.userId;
         const { solution } = req.body;
