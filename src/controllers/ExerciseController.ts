@@ -319,8 +319,9 @@ export default class ExerciseController {
                 },
             })
             .then(
-                (res) =>
-                    res.solutions.map((r) => {
+                (res) => {
+                    console.error(res.solutions);
+                    const out = res.solutions.map((r) => {
                         const { solution, is_pinned } = r;
                         const username = r.is_anonymous
                             ? "Anonymous"
@@ -330,7 +331,10 @@ export default class ExerciseController {
                             is_pinned,
                             username,
                         };
-                    }),
+                    });
+                    console.error(out);
+                    return out;
+                },
                 (r) => {
                     console.error(
                         `Failure getting exercise ${exerciseId}: ${r}`,

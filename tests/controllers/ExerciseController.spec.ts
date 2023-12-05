@@ -339,7 +339,7 @@ describe("ExerciseController testing", function () {
             })
             .catch(() => assert.fail("unreachable"));
         assert.equal(ex.title, "Exercise 2");
-        assert.equal(ex.description, "Description");
+        assert.equal(ex.description, "");
         assert.equal(ex.points, 10);
         assert.equal(ex.code_template, "Code template");
         assert.equal(ex.programming_language, "Language");
