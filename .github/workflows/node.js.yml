@@ -90,6 +90,8 @@ jobs:
     needs:
       - fmt
       - build-and-test
+    permissions:
+      packages: write
     env:
       REGISTRY: ghcr.io
       DOCKERFILE_PATH: ./Dockerfile
@@ -100,9 +102,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         name: Check out
-
-      - name: Setup database
-        run: npm run build-docker
 
       - uses: crazy-max/ghaction-docker-meta@v1
         name: Docker meta
