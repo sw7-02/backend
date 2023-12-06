@@ -103,9 +103,6 @@ jobs:
       - uses: actions/checkout@v2
         name: Check out
 
-      - name: Setup database
-        run: npm run build-docker
-
       - uses: crazy-max/ghaction-docker-meta@v1
         name: Docker meta
         id: docker_meta
@@ -146,7 +143,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache-new
           # The context is NOT relative to the Dockerfile location but the repository root
           context: .
-          push: true #${{ github.event_name != 'pull_request' }}
+          push: ${{ github.event_name != 'pull_request' }}
           file: ${{ env.DOCKERFILE_PATH }}
           tags: ${{ steps.docker_meta.outputs.tags }}
 
