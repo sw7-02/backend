@@ -100,7 +100,7 @@ export default async function seed() {
     });
     const session5 = await prisma.session.create({
         data: {
-            title: "Functions og Parameters",
+            title: "Functions and Parameters",
             course_id: course1.course_id,
         },
     });
@@ -141,12 +141,6 @@ export default async function seed() {
         },
     });
     const session12 = await prisma.session.create({
-        data: {
-            title: "Dynamic Data Structures - Lists and Trees",
-            course_id: course1.course_id,
-        },
-    });
-    const session13 = await prisma.session.create({
         data: {
             title: "Dynamic Data Structures - Lists and Trees",
             course_id: course1.course_id,
