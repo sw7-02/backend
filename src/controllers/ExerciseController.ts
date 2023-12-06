@@ -179,7 +179,7 @@ export default class ExerciseController {
             );
 
     static retrieveExerciseFull = async (
-        exerciseId: number,
+exerciseId: number,
     ): Promise<Result<_ExerciseFull>> =>
         prisma.exercise
             .findUniqueOrThrow({
