@@ -85,7 +85,6 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run fmt-check
-#npm can be used with package.json file to install all needed dependencies
 
   ghcr-publish:
     needs:
@@ -97,10 +96,13 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    #if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     steps:
       - uses: actions/checkout@v2
         name: Check out
+
+      - name: Setup database
+        run: npm run build-docker
 
       - uses: crazy-max/ghaction-docker-meta@v1
         name: Docker meta
