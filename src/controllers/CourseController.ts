@@ -1,5 +1,7 @@
 import prisma from "../prisma";
 import { Err, Result, Role } from "../lib";
+import SessionController from "./SessionController";
+import ExerciseController from "./ExerciseController";
 
 type _ExerciseIdentifier = {
     title: string;
@@ -44,6 +46,7 @@ type _CourseOverview = {
 export default class CourseController {
     static createCourse = async (
         title: string,
+        teacherId: number,
     ): Promise<Result<{ course_id: number }>> => {
         title = title.trim();
         if (!title) return new Err(406, "Title is needed");
@@ -52,6 +55,12 @@ export default class CourseController {
                 .create({
                     data: {
                         title: title,
+                        enrollments: {
+                            create: {
+                                user_id: teacherId,
+                                user_role: Role.TEACHER,
+                            },
+                        },
                     },
                     select: {
                         course_id: true,
@@ -63,20 +72,71 @@ export default class CourseController {
                 });
     };
 
-    static deleteCourse = async (courseId: number): Promise<Result<void>> =>
-        prisma.course
-            .delete({
-                where: {
-                    course_id: courseId,
-                },
-            })
-            .then(
-                () => {},
-                (reason) => {
-                    console.error(`Failed deleting course: ${reason}`);
-                    return new Err(500, "Failed deleting course");
-                },
-            );
+    static deleteCourse = async (courseId: number): Promise<Result<void>> => {
+        const transactions = await this.deleteCourseTransactions(courseId);
+        if (transactions instanceof Err) return transactions;
+        return prisma.$transaction(transactions).then(
+            () => {},
+            (reason) => {
+                console.error(`Failed deleting course: ${reason}`);
+                return new Err(500, "Failed deleting course");
+            },
+        );
+    };
+
+    static deleteCourseTransactions = async (courseId: number) => {
+        const cond = {
+            where: {
+                course_id: courseId,
+            },
+        };
+        const sessions = await prisma.session.findMany(cond).then(
+            (res) => res.map((r) => r.session_id),
+            (reason) => {
+                console.error(
+                    `Failed getting sessions for course to be deleted: ${reason}`,
+                );
+                return new Err(
+                    500,
+                    "Failed getting sessions for course to be deleted",
+                );
+            },
+        );
+        if (sessions instanceof Err) return sessions;
+        const assignmens = await prisma.session.findMany(cond).then(
+            (res) => res.map((r) => r.session_id),
+            (reason) => {
+                console.error(
+                    `Failed getting sessions for course to be deleted: ${reason}`,
+                );
+                return new Err(
+                    500,
+                    "Failed getting sessions for course to be deleted",
+                );
+            },
+        );
+        if (assignmens instanceof Err) return assignmens;
+
+        let transactions = [];
+        for (const num of sessions) {
+            const e = await SessionController.deleteSessionTransactions(num);
+            if (e instanceof Err) return e;
+            e.forEach(transactions.push);
+        }
+        const enrollments = prisma.enrollment.deleteMany({
+            where: {
+                course_id: courseId,
+            },
+        });
+        //for (const e of enrollments) transactions.push(e);
+
+        // TODO (FW?): Same for assignments and assigment solutions
+
+        transactions.push(enrollments, prisma.course.delete(cond));
+        return transactions;
+    };
+
+    static deleteEnrollmentTransaction = () => {};
 
     static renameCourse = async (
         courseId: number,
@@ -216,7 +276,7 @@ export default class CourseController {
             })
             .then(
                 (r) => {
-                    if (!r.total_points) {
+                    if (r.total_points === null) {
                         console.error(`User with null points: ${userId}`);
                         return new Err(500, "Internal error");
                     } else return { total_points: r.total_points! };
@@ -302,7 +362,9 @@ export default class CourseController {
             })
             .then(
                 (res) => {
-                    const b = res.enrollments.find((r) => !r.total_points);
+                    const b = res.enrollments.find(
+                        (r) => r.total_points === null,
+                    );
                     if (b) {
                         console.error(
                             `User with null points: ${b.user.username}`,

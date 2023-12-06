@@ -4,8 +4,7 @@ import helmet from "helmet";
 import cors from "cors";
 import routes from "./routes";
 import config from "./config";
-import { seed } from "../tests/lib/db";
-import prisma from "./prisma";
+import seed from "./seed";
 
 const app = express();
 

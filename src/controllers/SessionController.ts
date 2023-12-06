@@ -1,6 +1,7 @@
 import { Err, Result } from "../lib";
 import prisma from "../prisma";
 import { _Session } from "./CourseController";
+import ExerciseController from "./ExerciseController";
 
 export default class SessionController {
     static retrieveSessionFromCourse = async (
@@ -58,20 +59,53 @@ export default class SessionController {
 
     static deleteSessionFromCourse = async (
         sessionId: number,
-    ): Promise<Result<void>> =>
-        prisma.session
-            .delete({
-                where: {
-                    session_id: sessionId,
-                },
-            })
-            .then(
-                () => {},
-                (reason) => {
-                    console.error(`Failed deleting session: ${reason}`);
-                    return new Err(500, "Failed deleting session");
-                },
+    ): Promise<Result<void>> => {
+        const deleteSession = await this.deleteSessionTransactions(sessionId);
+        if (deleteSession instanceof Err) return deleteSession;
+
+        return prisma.$transaction(deleteSession).then(
+            () => {},
+            (reason) => {
+                console.error(`Failed deleting session: ${reason}`);
+                return new Err(500, "Failed deleting session");
+            },
+        );
+    };
+
+    static deleteSessionTransactions = async (sessionId: number) => {
+        const cond = {
+            where: {
+                session_id: sessionId,
+            },
+        };
+        let e = await prisma.exercise.findMany(cond).then(
+            (res) => res.map((r) => r.exercise_id),
+            (reason) => {
+                console.error(
+                    `Failed getting exercises for session to be deleted: ${reason}`,
+                );
+                return new Err(
+                    500,
+                    "Failed getting exercises for session to be deleted",
+                );
+            },
+        );
+
+        if (e instanceof Err) return e;
+        let exercises = [];
+
+        for (const num of e) {
+            (await ExerciseController.deleteExerciseTransactions(num)).forEach(
+                exercises.push,
             );
+        }
+
+        exercises.push(prisma.session.delete(cond));
+        //const c = prisma.session.delete(cond);
+        //const e = prisma.exercise.deleteMany(cond);
+
+        return exercises;
+    };
 
     static renameSessionFromCourse = async (
         sessionId: number,

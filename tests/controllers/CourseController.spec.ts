@@ -5,7 +5,7 @@ import prisma from "../../src/prisma";
 
 describe("CourseController testing", function () {
     it("Create course: Valid title", async function () {
-        const result = await CourseController.createCourse("Course 3");
+        const result = await CourseController.createCourse("Course 3", 1);
         assert.notEqual(result instanceof Err, true);
         assert.equal((<any>result).course_id, 3);
         await prisma.course
@@ -13,7 +13,7 @@ describe("CourseController testing", function () {
             .catch(() => assert.fail("course not created"));
     });
     it("Create course: Invalid title", async function () {
-        const result = await CourseController.createCourse("   ");
+        const result = await CourseController.createCourse("   ", 1);
         assert.equal(result instanceof Err, true);
         assert.equal((<Err>result).code, 406);
         assert.equal((<Err>result).msg, "Title is needed");
@@ -191,6 +191,7 @@ describe("CourseController testing", function () {
 
     it("Retrieve enrolled courses: Valid ID", async function () {
         const result = await CourseController.retrieveEnrolledCourses(1);
+
         assert.notEqual(result instanceof Err, true);
         const res = <any[]>result;
         assert.equal(res.length, 2);

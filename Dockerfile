@@ -20,6 +20,8 @@ RUN npx prisma generate
 # Copy src and tsconfig on seperate layers as src is highly volatile to changes
 COPY src/ ./src/
 COPY tsconfig.json ./
+# Kinda annoying to copy tests, should move/copy `tests/lib/db.ts` to src somewhere
+# COPY tests ./tests/
 # runs rimraf and tsc dev devdependencies and requires tsconfig.json for tsc
 RUN npm run build
 

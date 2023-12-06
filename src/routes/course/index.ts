@@ -28,20 +28,22 @@ const genericCourseIdHandler =
 routes
     .route("/")
     .get(async (req: Request, res: Response) => {
-        const userId = +res.locals.jwtPayload.userId;
+        const userId = res.locals.jwtPayload.userId;
+
         const result = await CourseController.retrieveEnrolledCourses(userId);
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);
         } else res.send(result);
     })
-    .post([isTeacher], (req: Request, res: Response) => {
+    .post([isTeacher], async (req: Request, res: Response) => {
         const title: string = req.body.title;
         if (!title) {
             res.status(400).send("No valid title provided");
             return;
         }
-        const result = CourseController.createCourse(title);
+        const userId = res.locals.jwtPayload.userId;
+        const result = await CourseController.createCourse(title, userId);
         if (result instanceof Err) {
             const { code, msg } = result;
             res.status(code).send(msg);
@@ -113,7 +115,7 @@ routes
             res.status(code).send(msg);
         } else res.send(result);
     })
-    .delete([isTeacher], (req: Request, res: Response) => {
+    .delete([roleCheck([Role.TEACHER])], (req: Request, res: Response) => {
         const courseId = +res.locals.courseId;
         const result = CourseController.deleteCourse(courseId);
         if (result instanceof Err) {

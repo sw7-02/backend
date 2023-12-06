@@ -83,6 +83,7 @@ routes
         const result = await ExerciseController.patchExercise(id, {
             programmingLanguage: req.body.programming_language,
             codeTemplate: req.body.code_template,
+            testCases: req.body.test_cases,
             ...req.body,
         });
         if (result instanceof Err) {
@@ -116,6 +117,7 @@ routes
         const result = await ExerciseController.patchExercise(id, {
             programmingLanguage: req.body.programming_language,
             codeTemplate: req.body.code_template,
+            testCases: req.body.test_cases,
             ...req.body,
         });
         if (result instanceof Err) {
@@ -139,6 +141,8 @@ routes
         const userId: number = res.locals.jwtPayload.userId;
         const courseId = res.locals.courseId;
         const { solution, is_anonymous } = req.body;
+
+        console.log(`Submission form user id ${userId}`);
 
         const testResult = await ExerciseController.testExercise(
             exerciseId,
@@ -188,7 +192,7 @@ routes.post(
         const exerciseId: number = +res.locals.exerciseId;
         const userId: number = +res.locals.jwtPayload.userId;
         const { solution } = req.body;
-        if (!solution) {
+        if (solution === undefined) {
             res.status(400).send("No solution provided");
             return;
         }
@@ -207,8 +211,8 @@ routes.post(
 
 // exercise solutions
 routes.get(
-    ":exercise_id/exercise-solutions",
-    saveExerciseId,
+    "/:exercise_id/solutions",
+    [saveExerciseId],
     async (req: Request, res: Response) => {
         const exerciseId: number = +res.locals.exerciseId;
         const userId = res.locals.jwtPayload.userId;

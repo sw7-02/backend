@@ -319,8 +319,9 @@ export default class ExerciseController {
                 },
             })
             .then(
-                (res) =>
-                    res.solutions.map((r) => {
+                (res) => {
+                    console.error(res.solutions);
+                    const out = res.solutions.map((r) => {
                         const { solution, is_pinned } = r;
                         const username = r.is_anonymous
                             ? "Anonymous"
@@ -330,7 +331,10 @@ export default class ExerciseController {
                             is_pinned,
                             username,
                         };
-                    }),
+                    });
+                    console.error(out);
+                    return out;
+                },
                 (r) => {
                     console.error(
                         `Failure getting exercise ${exerciseId}: ${r}`,
@@ -367,10 +371,10 @@ export default class ExerciseController {
                         },
                     },
                     title: title,
-                    description: description?.trim() ?? "Description",
-                    points: points ?? 10,
+                    description: description?.trim() ?? "",
+                    points: points ?? 0,
                     programming_language: programmingLanguage ?? "Language",
-                    code_template: codeTemplate?.trim() ?? "Code template",
+                    code_template: codeTemplate?.trim() ?? "",
                     hints: {
                         createMany: {
                             data:
@@ -413,12 +417,8 @@ export default class ExerciseController {
     };
 
     static deleteExercise = async (exerciseId: number): Promise<Result<void>> =>
-        prisma.exercise
-            .delete({
-                where: {
-                    exercise_id: exerciseId,
-                },
-            })
+        await prisma
+            .$transaction(await this.deleteExerciseTransactions(exerciseId))
             .then(
                 async () => {
                     await Promise.all([
@@ -440,6 +440,22 @@ export default class ExerciseController {
                     return new Err(404, "Exercise does not exist");
                 },
             );
+
+    static deleteExerciseTransactions = async (exerciseId: number) => {
+        const cond = {
+            where: {
+                exercise_id: exerciseId,
+            },
+        };
+        const c = prisma.exercise.delete(cond);
+        const e1 = prisma.hint.deleteMany(cond);
+        const e2 = prisma.example.deleteMany(cond);
+        const e3 = prisma.testCase.deleteMany(cond);
+        let solutions = prisma.exerciseSolution.findMany(cond);
+
+        return [solutions, e1, e2, e3, c];
+    };
+
     static patchExercise = async (
         exerciseId: number,
         {
@@ -460,34 +476,20 @@ export default class ExerciseController {
         if (programmingLanguage !== undefined && !programmingLanguage)
             return new Err(406, "No programming language supplied");
 
-        let hintOrder = 1;
+        let hintOrder = 0;
         let additional = { hints: {}, test_case: {}, examples: {} };
         if (hints)
             additional.hints = {
                 deleteMany: {
                     // removes additional, if any
                     exercise_id: exerciseId,
-                    order: {
-                        gt: hints.length,
-                    },
-                },
-                updateMany: {
-                    // updates current
-                    where: {
-                        exercise_id: exerciseId,
-                    },
-
-                    data: {
-                        description: hints.at(hintOrder - 1),
-                        order: hintOrder++,
-                    },
                 },
                 createMany: {
                     // Creates new if needed
-                    data: hints.slice(hintOrder - 1).map((h) => {
+                    data: hints.slice(hintOrder).map((h) => {
                         return {
                             description: h.trim(),
-                            order: hintOrder++,
+                            order: ++hintOrder,
                         };
                     }),
                 },
@@ -588,16 +590,13 @@ export default class ExerciseController {
         const result = await executeTest(data);
 
         if (result instanceof Err) return result;
-
-        if (result.length === 0) return;
+        else if (result.length === 0) return;
 
         const fails = {
             count: result.length,
-            failed_visible_tests: result,
+            failed_tests: result,
         };
-        return new Err(69, fails);
-
-        // TODO: object to return should be total num of errors, and outputs from the failed
+        return new Err(400, fails);
     };
 }
 
@@ -616,27 +615,111 @@ type ExerciseTest = {
 type TestResponse = {
     testCaseId: number;
     reason: string;
-    responseCode: number;
+    responseCode: ResponseCode;
 };
 
-async function executeTest(
-    data: ExerciseTest,
-): Promise<Result<TestResponse[], Err>> {
+enum ResponseCode {
+    UNKNOWN_FAILURE_CODE = 4,
+    TIMEOUT_CODE = 3,
+    COMPILATION_ERROR_CODE = 2,
+    TEST_FAILED_CODE = 1,
+    TEST_PASSED_CODE = 0,
+}
+
+function parseTestResponse(objs: any[]): TestResponse[] | undefined {
+    if (objs === undefined) return;
+    let out: TestResponse[] = [];
+    for (const o of objs) {
+        if (o === undefined) return;
+        const { testCaseId, reason, responseCode } = o;
+        const rc = responseCode as ResponseCode;
+        if (
+            testCaseId === undefined ||
+            reason === undefined ||
+            rc === undefined
+        )
+            return;
+        else out.push({ testCaseId, reason, responseCode: rc });
+    }
+    return out;
+}
+
+async function executeTest(data: ExerciseTest): Promise<Result<string[]>> {
     return axios
-        .post(config.server.test_runner, JSON.stringify(data), {
-            timeout: 5000,
-            validateStatus: (s) => [200, 202].includes(s),
+        .post(config.server.test_runner, data, {
+            timeout: 10000,
+            //validateStatus: (s) => [200, 202].includes(s),
             //responseType: "json",
         })
         .then(
-            () => [], // If good, send empty array (no errors)
-            (r) => {
-                const d = r.data.toJSON();
-                console.log("bad");
-                console.log(r);
-                console.log(r.data);
-                //TODO: Validate correct format, else return Err (Compile error, language not supported, other errors)
-                return r.data.toJSON();
+            (response) => {
+                const testsResponses = parseTestResponse(response.data);
+
+                if (testsResponses === undefined)
+                    return new Err(500, "Internal fuckup");
+
+                let failures: string[] = [];
+                for (const t of testsResponses) {
+                    const { testCaseId, reason, responseCode } = t;
+                    if (
+                        testCaseId === undefined ||
+                        reason === undefined ||
+                        responseCode === undefined
+                    )
+                        return new Err(
+                            500,
+                            "Internal error: Test runner response missing",
+                        );
+                    switch (responseCode) {
+                        case ResponseCode.TEST_PASSED_CODE:
+                            continue;
+                        case ResponseCode.TEST_FAILED_CODE:
+                            failures.push(reason);
+                            continue;
+                        default:
+                            return new Err(
+                                500,
+                                "Internal error: Test runner returned unexpected",
+                            );
+                    }
+                }
+                return failures;
+            }, // If good, test can have failed
+            (error) => {
+                const testResponse = parseTestResponse(error.response.data);
+                if (testResponse === undefined)
+                    return new Err(500, `Bad request: ${error.response.data}`);
+                if (testResponse.length !== 1)
+                    return new Err(
+                        500,
+                        "Internal Error: Test runner returned multiple results when a single was expected",
+                    );
+                const { testCaseId, reason, responseCode } = testResponse[0];
+                switch (responseCode) {
+                    case ResponseCode.COMPILATION_ERROR_CODE:
+                        return new Err(400, {
+                            msg: "Compilation error",
+                            description: reason,
+                        });
+                    case ResponseCode.TIMEOUT_CODE:
+                        return new Err(400, "Code timed out");
+                    case ResponseCode.UNKNOWN_FAILURE_CODE:
+                        return new Err(
+                            500,
+                            "Internal error: Test runner returned unknown error",
+                        );
+                    case ResponseCode.TEST_FAILED_CODE:
+                    case ResponseCode.TEST_PASSED_CODE:
+                        return new Err(
+                            500,
+                            "Internal error: Test runner returned unexpected output",
+                        );
+                    default:
+                        return new Err(
+                            500,
+                            "Internal error: Test runner returned unknown response code",
+                        );
+                }
             },
         );
 }

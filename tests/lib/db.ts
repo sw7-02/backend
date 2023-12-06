@@ -3,14 +3,13 @@ import prisma from "../../src/prisma";
 
 //const prisma = new PrismaClient();
 
-export async function seed() {
+export default async function seed() {
     // Create sample users
     let salt = bcrypt.genSaltSync(5);
     const user1 = await prisma.user.create({
         data: {
             username: "user1",
             user_password: await bcrypt.hash("password1@", salt),
-            pw_salt: salt,
         },
     });
 
@@ -19,14 +18,12 @@ export async function seed() {
         data: {
             username: "user2",
             user_password: await bcrypt.hash("password2@", salt),
-            pw_salt: salt,
         },
     });
     const teacher = await prisma.user.create({
         data: {
             username: "teacher",
             user_password: await bcrypt.hash("teacher1@", salt),
-            pw_salt: salt,
             is_teacher: true,
         },
     });
@@ -171,17 +168,4 @@ export async function seed() {
     });
 
     console.log("Sample data seeded successfully.");
-}
-
-export async function exhaust() {
-    await prisma.assignmentSolution.deleteMany({});
-    await prisma.assignment.deleteMany({});
-    await prisma.enrollment.deleteMany({});
-    await prisma.exerciseSolution.deleteMany({});
-    await prisma.hint.deleteMany({});
-    await prisma.testCase.deleteMany({});
-    await prisma.exercise.deleteMany({});
-    await prisma.session.deleteMany({});
-    await prisma.course.deleteMany({});
-    await prisma.user.deleteMany({});
 }

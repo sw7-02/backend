@@ -36,10 +36,9 @@ export function validatePassword(pw: string): Result<void> {
         );
 }
 
-type PW = { hash: string; salt: string };
-function genPass(pw: string, username: string): PW {
+function genPass(pw: string, username: string): string {
     const salt = bcrypt.genSaltSync(username.length);
-    return { hash: bcrypt.hashSync(pw, salt), salt };
+    return bcrypt.hashSync(pw, salt);
 }
 
 export type AuthRes = {
@@ -113,12 +112,11 @@ export default class AuthController {
                             valid.code,
                             `Password not valid: ${valid.msg}`,
                         );
-                    const { hash, salt } = genPass(password, username);
+                    const hash = genPass(password, username);
                     let { user_id: userId } = await prisma.user.create({
                         data: {
                             username,
                             user_password: hash,
-                            pw_salt: salt,
                         },
                     });
                     return {

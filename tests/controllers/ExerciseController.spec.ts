@@ -186,7 +186,7 @@ describe("ExerciseController testing", function () {
                 where: { exercise_id: 1 },
                 include: { hints: true },
             })
-            .catch(() => assert.fail("Exercise gone"));
+            .catch((r) => assert.fail("Exercise gone"));
         assert.equal(post!.hints.length, 3);
         for (let i = 0; i < 3; i++) {
             assert.equal(post!.hints[i].description, hints[i]);
@@ -339,9 +339,9 @@ describe("ExerciseController testing", function () {
             })
             .catch(() => assert.fail("unreachable"));
         assert.equal(ex.title, "Exercise 2");
-        assert.equal(ex.description, "Description");
-        assert.equal(ex.points, 10);
-        assert.equal(ex.code_template, "Code template");
+        assert.equal(ex.description, "");
+        assert.equal(ex.points, 0);
+        assert.equal(ex.code_template, "");
         assert.equal(ex.programming_language, "Language");
         assert.equal(ex.hints.length, 0);
         assert.equal(ex.examples.length, 0);

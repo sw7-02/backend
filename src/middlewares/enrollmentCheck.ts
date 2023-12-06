@@ -23,7 +23,8 @@ export default async function enrollmentCheck(
                 course_id: courseId,
             },
         },
-        include: {
+        select: {
+            user_role: true,
             user: {
                 select: {
                     is_teacher: true,
