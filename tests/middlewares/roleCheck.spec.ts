@@ -219,7 +219,7 @@ describe("RoleCheck testing", function () {
         assert.equal(
             response.statusCode,
             200,
-            "Status code not accepted, roleChecker failed to grant TA access",
+            "Status code not accepted, roleChecker failed to grant Teacher access",
         );
     });
     it("Is teacher fails", async function () {
@@ -228,7 +228,7 @@ describe("RoleCheck testing", function () {
         assert.equal(
             response.statusCode,
             401,
-            "Status code not accepted, roleChecker failed to grant TA access",
+            "Status code not accepted, roleChecker failed to restrict Teacher access",
         );
     });
 });
