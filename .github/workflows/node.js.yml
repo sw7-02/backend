@@ -90,6 +90,8 @@ jobs:
     needs:
       - fmt
       - build-and-test
+    permissions:
+      packages: write
     env:
       REGISTRY: ghcr.io
       DOCKERFILE_PATH: ./Dockerfile
@@ -144,7 +146,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache-new
           # The context is NOT relative to the Dockerfile location but the repository root
           context: .
-          push: ${{ github.event_name != 'pull_request' }} 
+          push: true #${{ github.event_name != 'pull_request' }}
           file: ${{ env.DOCKERFILE_PATH }}
           tags: ${{ steps.docker_meta.outputs.tags }}
 
