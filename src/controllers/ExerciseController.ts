@@ -690,7 +690,7 @@ async function executeTest(data: ExerciseTest): Promise<Result<string[]>> {
             (error) => {
                 const testResponse = parseTestResponse(error.response?.data);
                 if (testResponse === undefined)
-                    return new Err(500, `Bad request: ${error.response.data}`);
+                    return new Err(500, `Bad request: ${error.response?.data}`);
                 if (testResponse.length !== 1)
                     return new Err(
                         500,
