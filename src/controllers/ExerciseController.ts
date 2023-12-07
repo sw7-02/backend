@@ -626,7 +626,9 @@ enum ResponseCode {
     TEST_PASSED_CODE = 0,
 }
 
-function parseTestResponse(objs: any[]): TestResponse[] | undefined {
+function parseTestResponse(
+    objs: any[] | undefined,
+): TestResponse[] | undefined {
     if (objs === undefined) return;
     let out: TestResponse[] = [];
     for (const o of objs) {
@@ -647,7 +649,7 @@ function parseTestResponse(objs: any[]): TestResponse[] | undefined {
 async function executeTest(data: ExerciseTest): Promise<Result<string[]>> {
     return axios
         .post(config.server.test_runner, data, {
-            timeout: 10000,
+            timeout: 60000,
             //validateStatus: (s) => [200, 202].includes(s),
             //responseType: "json",
         })
@@ -686,7 +688,7 @@ async function executeTest(data: ExerciseTest): Promise<Result<string[]>> {
                 return failures;
             }, // If good, test can have failed
             (error) => {
-                const testResponse = parseTestResponse(error.response.data);
+                const testResponse = parseTestResponse(error.response?.data);
                 if (testResponse === undefined)
                     return new Err(500, `Bad request: ${error.response.data}`);
                 if (testResponse.length !== 1)
