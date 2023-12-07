@@ -55,6 +55,12 @@ export default async function seed() {
             user_password: await bcrypt.hash("password7@", salt),
         },
     });
+    const user8 = await prisma.user.create({
+        data: {
+            username: "user8",
+            user_password: await bcrypt.hash("password8@", salt),
+        },
+    });
 
     // Create sample courses
     const course1 = await prisma.course.create({
@@ -118,7 +124,7 @@ export default async function seed() {
     });
     const session8 = await prisma.session.create({
         data: {
-            title: "Characters and Strings",
+            title: "Characters and Stringsss",
             course_id: course1.course_id,
         },
     });
@@ -146,6 +152,12 @@ export default async function seed() {
             course_id: course1.course_id,
         },
     });
+    const session13 = await prisma.session.create({
+        data: {
+            title: "Dynamic Data Structures - Lists and Trees",
+            course_id: course1.course_id,
+        },
+    });
 
     // Create sample student enrollment
     await prisma.enrollment.create({
@@ -154,7 +166,7 @@ export default async function seed() {
             course_id: course1.course_id,
             user_role: 0,
             is_anonymous: false,
-            total_points: 79,
+            total_points: 0,
         },
     });
     await prisma.enrollment.create({
@@ -163,7 +175,7 @@ export default async function seed() {
             course_id: course1.course_id,
             user_role: 0,
             is_anonymous: false,
-            total_points: 67,
+            total_points: 25,
         },
     });
     await prisma.enrollment.create({
@@ -172,7 +184,7 @@ export default async function seed() {
             course_id: course1.course_id,
             user_role: 0,
             is_anonymous: false,
-            total_points: 50,
+            total_points: 20,
         },
     });
     await prisma.enrollment.create({
@@ -181,7 +193,7 @@ export default async function seed() {
             course_id: course1.course_id,
             user_role: 0,
             is_anonymous: false,
-            total_points: 19,
+            total_points: 8,
         },
     });
     await prisma.enrollment.create({
@@ -190,7 +202,7 @@ export default async function seed() {
             course_id: course1.course_id,
             user_role: 0,
             is_anonymous: false,
-            total_points: 42,
+            total_points: 50,
         },
     });
     await prisma.enrollment.create({
@@ -199,7 +211,7 @@ export default async function seed() {
             course_id: course1.course_id,
             user_role: 0,
             is_anonymous: false,
-            total_points: 1,
+            total_points: 3,
         },
     });
     await prisma.enrollment.create({
@@ -238,6 +250,14 @@ export default async function seed() {
         data: {
             user_id: user1.user_id,
             course_id: course2.course_id,
+            user_role: 2,
+        },
+    });
+
+    await prisma.enrollment.create({
+        data: {
+            user_id: user8.user_id,
+            course_id: course1.course_id,
             user_role: 2,
         },
     });
@@ -353,6 +373,17 @@ export default async function seed() {
         },
     });
 
+    const exercise9 = await prisma.exercise.create({
+        data: {
+            title: "Sum of Int Array",
+            description: "Find the sum of all the elements in an array of integers.",
+            points: 10,
+            programming_language: "C",
+            code_template: "int sumArray(const int array[], size_t length){\n\n}",
+            session_id: session6.session_id,
+        },
+    });
+
     // Create sample test cases
     const testCase1 = await prisma.testCase.create({
         data: {
@@ -390,6 +421,22 @@ export default async function seed() {
         },
     });
 
+    const testCase3 = await prisma.testCase.create({
+        data: {
+            code: `int testArray[] = {1, 2, 3, 4, 5};
+            CU_ASSERT_EQUAL(sumArray(testArray, sizeof(testArray) / sizeof(testArray[0])), 15);`,
+            exercise_id: exercise9.exercise_id,
+        },
+    });
+
+    const testCase4 = await prisma.testCase.create({
+        data: {
+            code: `int testArray[] = {1};
+            CU_ASSERT_EQUAL(sumArray(testArray, sizeof(testArray) / sizeof(testArray[0])), 1);`,
+            exercise_id: exercise9.exercise_id,
+        },
+    });
+
     // Create sample hints
     const hint1 = await prisma.hint.create({
         data: {
@@ -421,6 +468,22 @@ export default async function seed() {
         },
     });
 
+    const hint5 = await prisma.hint.create({
+        data: {
+            description: "Use the return keyword to return the result.",
+            order: 1,
+            exercise_id: exercise2.exercise_id,
+        },
+    });
+
+    const hint6 = await prisma.hint.create({
+        data: {
+            description: "You can use a for-loop to loop over the elements in an array.",
+            order: 1,
+            exercise_id: exercise9.exercise_id,
+        },
+    });
+
     // Create sample examples
     const example1 = await prisma.example.create({
         data: {
@@ -436,6 +499,24 @@ export default async function seed() {
             output: "9",
             exercise_id: exercise2.exercise_id,
             example_id: 2,
+        },
+    });
+
+    const example3 = await prisma.example.create({
+        data: {
+            input: "[1,2,3,4,5]",
+            output: "15",
+            exercise_id: exercise9.exercise_id,
+            example_id: 3,
+        },
+    });
+
+    const example4 = await prisma.example.create({
+        data: {
+            input: "[1]",
+            output: "1",
+            exercise_id: exercise9.exercise_id,
+            example_id: 4,
         },
     });
 
