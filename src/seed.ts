@@ -376,10 +376,12 @@ export default async function seed() {
     const exercise9 = await prisma.exercise.create({
         data: {
             title: "Sum of Int Array",
-            description: "Find the sum of all the elements in an array of integers.",
+            description:
+                "Find the sum of all the elements in an array of integers.",
             points: 10,
             programming_language: "C",
-            code_template: "int sumArray(const int array[], size_t length){\n\n}",
+            code_template:
+                "int sumArray(const int array[], size_t length){\n\n}",
             session_id: session6.session_id,
         },
     });
@@ -478,7 +480,8 @@ export default async function seed() {
 
     const hint6 = await prisma.hint.create({
         data: {
-            description: "You can use a for-loop to loop over the elements in an array.",
+            description:
+                "You can use a for-loop to loop over the elements in an array.",
             order: 1,
             exercise_id: exercise9.exercise_id,
         },
