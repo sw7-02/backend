@@ -142,8 +142,6 @@ routes
         const courseId = res.locals.courseId;
         const { solution, is_anonymous } = req.body;
 
-        console.log(`Submission form user id ${userId}`);
-
         const testResult = await ExerciseController.testExercise(
             exerciseId,
             userId,
